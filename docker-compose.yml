@@ -6,3 +6,10 @@ services:
     build:
       context: .
       dockerfile: DiscordBot/Dockerfile
+    volumes:
+      - type: bind
+        source: DiscordBot/Defends.csv
+        target: /app/Defends.csv
+      - type: bind
+        source: DiscordBot/DiscordServers.csv
+        target: /app/DiscordServers.csv

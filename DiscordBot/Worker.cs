@@ -76,6 +76,11 @@ namespace DiscordBot
                     }
                 );
 
+                Task.Run(async () =>
+                    {
+                        await _client.SetGameAsync(name: "over Legion", type: ActivityType.Watching);
+                    }
+                );
                 // await _client.SetGameAsync(name: "Star Trek Fleet Command", type: ActivityType.Watching);
 
                 return Task.CompletedTask;

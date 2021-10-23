@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 
@@ -46,26 +47,45 @@ namespace DiscordBot
                 }
                 if (!stoppingToken.IsCancellationRequested && DateTime.UtcNow >= nextPost.NextScheduledPost)
                 {
-                    var guild = _client.GetGuild(nextPost.GuildId);
-                    if (guild == null)
+                    try
                     {
-                        _logger.LogError($"Unable to log to guild {nextPost.GuildId} channel {nextPost.PostToChannel} for {nextPost.AllianceAcronym} - Guild not found");
-                        nextPost.FlagPosted();
-                    }
-                    else
-                    {
-                        var channel = guild.GetTextChannel(nextPost.PostToChannel);
-                        if (channel == null)
+
+                        var guild = _client.GetGuild(nextPost.GuildId);
+                        if (guild == null)
                         {
-                            _logger.LogError($"Unable to log to guild {nextPost.GuildId} channel {nextPost.PostToChannel} for {nextPost.AllianceAcronym} - Guild or channel not found");
+                            _logger.LogError($"Unable to post schedule to guild {nextPost.GuildId} channel {nextPost.PostToChannel} for {nextPost.AllianceAcronym} - Guild not found");
                             nextPost.FlagPosted();
                         }
                         else
                         {
-                            var embedMsg = _schedule.GetForDate(DateTime.UtcNow);
-                            await channel.SendMessageAsync(embed: embedMsg.Build());
-                            nextPost.FlagPosted();
+                            var channel = guild.GetTextChannel(nextPost.PostToChannel);
+                            if (channel == null)
+                            {
+                                _logger.LogError($"Unable to post schedule to guild {nextPost.GuildId} channel {nextPost.PostToChannel} for {nextPost.AllianceAcronym} - Guild or channel not found");
+                                nextPost.FlagPosted();
+                            }
+                            else
+                            {
+                                var myUserId = _client.CurrentUser.Id;
+
+                                var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
+                                var myMessages = channelMessages.Where(m =>
+                                        !m.IsPinned
+                                        && m.Author.Id == _client.CurrentUser.Id
+                                        && (DateTimeOffset.UtcNow - m.Timestamp).TotalDays <= 14
+                                    );
+                                await channel.DeleteMessagesAsync(myMessages);
+
+                                var embedMsg = _schedule.GetForDate(DateTime.UtcNow);
+                                await channel.SendMessageAsync(embed: embedMsg.Build());
+                                nextPost.FlagPosted();
+                            }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"An unexpected error occurred while trying to post the schedule to guild {nextPost.AllianceAcronym} ({nextPost.GuildId}), channel {nextPost.PostToChannel}");
+                        nextPost.FlagPosted();
                     }
                 }
             }

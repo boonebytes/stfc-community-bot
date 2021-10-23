@@ -36,6 +36,7 @@ namespace DiscordBot
                     services.AddSingleton<Services.CommandHandler>();
 
                     services.AddTransient<Responses.Schedule>();
+                    services.AddTransient<Responses.Broadcast>();
 
                     services.AddSingleton<Scheduler>();
                     services.AddHostedService<Worker>();

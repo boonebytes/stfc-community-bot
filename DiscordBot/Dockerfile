@@ -17,5 +17,7 @@ RUN dotnet publish "DiscordBot.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY DiscordBot/*.csv ./
+# COPY DiscordBot/*.csv ./
+
+#VOLUME ["/app/Defends.csv", "/app/DiscordServers.csv", "/app/appsettings.json"]
 ENTRYPOINT ["dotnet", "DiscordBot.dll"]

@@ -17,7 +17,7 @@ namespace DiscordBot.Models.Tdl
         {
             get
             {
-                if (Level == 1 && Threats == "")
+                if (Level > 1 && Threats == "")
                     return true;
                 else
                     return false;
@@ -29,7 +29,7 @@ namespace DiscordBot.Models.Tdl
         {
             get
             {
-                if (_nextDefend.HasValue && _nextDefend > DateTime.Now)
+                if (_nextDefend.HasValue && _nextDefend > DateTime.UtcNow)
                 {
                     return _nextDefend.Value.ToUniversalTime();
                 }
@@ -63,7 +63,7 @@ namespace DiscordBot.Models.Tdl
                         throw new InvalidCastException("Cannot cast day of week " + DefendUtcDayOfWeek);
                 }
 
-                DateTime result = DateTime.ParseExact(DefendUtcTime, "h:mm tt", culture, DateTimeStyles.AssumeUniversal);
+                DateTime result = DateTime.ParseExact(DefendUtcTime, "h:mm tt", culture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 if (dayOfWeek != DateTime.UtcNow.DayOfWeek)
                 {
                     result = result.AddDays((-1 * (int)DateTime.UtcNow.DayOfWeek) + ((int)dayOfWeek));
@@ -85,11 +85,13 @@ namespace DiscordBot.Models.Tdl
         {
             string response = "";
 
-            response = $"When: <t:{NextDefend.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}> local / {DefendUtcTime} UTC";
-            response += "\nThreats: " + (string.IsNullOrEmpty(Threats) ? "None" : Threats);
+            if (LowRisk)
+                response += "__Low Risk__\n";
+            response += $"**When**: <t:{NextDefend.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}:t> local / {DefendUtcTime} UTC";
+            response += "\n**Threats**: " + (string.IsNullOrEmpty(Threats) ? "None" : Threats);
             if (!string.IsNullOrEmpty(Notes))
             {
-                response += $"\nNotes: {Notes}";
+                response += $"\n**Notes**: {Notes}";
             }
 
             return response;

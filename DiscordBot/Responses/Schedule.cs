@@ -28,12 +28,20 @@ namespace DiscordBot.Responses
             }
             else
             {
+                int currentLine = 0;
                 foreach (Models.Tdl.Zone zone in zones)
                 {
+                    if (currentLine > 0)
+                    {
+                        //embedMsg.AddField("\u200B", "\u200B", true);
+                        //embedMsg.AddField("\b", "\b", true);
+                        //embedMsg.AddField("\u200b", "\u200b", true);
+                    }
+                    currentLine++;
                     var thisField = new EmbedFieldBuilder
                     {
                         Name = zone.GetDiscordEmbedName(),
-                        Value = zone.GetDiscordEmbedValue()
+                        Value = zone.GetDiscordEmbedValue() + "\n\u200b"
                     };
                     embedMsg.AddField(thisField);
                 }
@@ -48,8 +56,14 @@ namespace DiscordBot.Responses
                 //Description = ""
             };
 
-            var fromDate = date.ToUniversalTime().AddHours(-date.ToUniversalTime().Hour + 3);
-            var todayDefends = _defendTimes.GetNext24Hours(fromDate);
+            var fromDate = date.ToUniversalTime();
+            if (fromDate.Hour < 4)
+            {
+                fromDate = fromDate.AddDays(-1);
+            }
+            fromDate = fromDate.AddHours(-date.ToUniversalTime().Hour + 3);
+
+            var todayDefends = _defendTimes.GetNext24Hours(fromDate).OrderBy(z => z.NextDefend).ToList();
 
             AddDefendsToEmbed(todayDefends, ref embedMsg);
 
@@ -64,7 +78,7 @@ namespace DiscordBot.Responses
                 //Description = ""
             };
 
-            var allDefends = _defendTimes.Zones;
+            var allDefends = _defendTimes.Zones.OrderBy(z => z.NextDefend).ToList();
 
             AddDefendsToEmbed(allDefends, ref embedMsg);
 
