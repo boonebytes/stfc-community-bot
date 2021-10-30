@@ -32,7 +32,7 @@ namespace DiscordBot.Domain.Entities.Zones
         {
             get
             {
-                if (Level > 1 && Threats == "")
+                if (Level > 1 && string.IsNullOrEmpty(Threats))
                     return true;
                 else
                     return false;
@@ -104,7 +104,7 @@ namespace DiscordBot.Domain.Entities.Zones
             string response = "";
 
             if (LowRisk)
-                response += "__Low Risk__\n";
+                response += "*_Low Risk_*\n";
             response += $"**When**: <t:{NextDefend.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}:t> local / {DefendUtcTime} UTC";
             response += "\n**Threats**: " + (string.IsNullOrEmpty(Threats) ? "None" : Threats);
             if (!string.IsNullOrEmpty(Notes))
