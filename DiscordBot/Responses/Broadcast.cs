@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Alliances;
 using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Responses
@@ -11,13 +12,13 @@ namespace DiscordBot.Responses
     public class Broadcast
     {
         private readonly ILogger<Broadcast> _logger;
-        private readonly Managers.DiscordServers _discordServers;
+        private readonly IAllianceRepository _allianceRepository;
         private readonly DiscordSocketClient _client;
 
-        public Broadcast(ILogger<Broadcast> logger, Managers.DiscordServers discordServers, DiscordSocketClient client)
+        public Broadcast(ILogger<Broadcast> logger, IAllianceRepository allianceRepository, DiscordSocketClient client)
         {
             _logger = logger;
-            _discordServers = discordServers;
+            _allianceRepository = allianceRepository;
             _client = client;
         }
 
@@ -34,23 +35,23 @@ namespace DiscordBot.Responses
 
             int sentTo = 0;
 
-            foreach (Models.Tdl.DiscordServer server in _discordServers.Servers)
+            foreach (Alliance alliance in _allianceRepository.GetAllWithServers())
             {
-                var targetGuild = _client.GetGuild(server.GuildId);
+                var targetGuild = _client.GetGuild(alliance.GuildId.Value);
                 if (targetGuild == null)
                 {
-                    _logger.LogError($"Unable to broadcast for {fromGuildUser.Nickname} ({fromGuildUser.Id}) from {fromGuildUser.Guild.Name} ({fromGuildUser.Guild.Id}) to {server.AllianceAcronym} ({server.GuildId}) - Guild could not be resolved.");
+                    _logger.LogError($"Unable to broadcast for {fromGuildUser.Nickname} ({fromGuildUser.Id}) from {fromGuildUser.Guild.Name} ({fromGuildUser.Guild.Id}) to {alliance.Acronym} ({alliance.GuildId.Value}) - Guild could not be resolved.");
                 }
                 else
                 {
-                    var targetChannel = targetGuild.GetTextChannel(server.PostToChannel);
+                    var targetChannel = targetGuild.GetTextChannel(alliance.DefendSchedulePostChannel.Value);
                     if (targetChannel == null)
                     {
-                        _logger.LogError($"Unable to broadcast for {fromGuildUser.Nickname} ({fromGuildUser.Id}) from {fromGuildUser.Guild.Name} ({fromGuildUser.Guild.Id}) to {server.AllianceAcronym} ({server.GuildId}) {server.PostToChannel} - Channel could not be resolved.");
+                        _logger.LogError($"Unable to broadcast for {fromGuildUser.Nickname} ({fromGuildUser.Id}) from {fromGuildUser.Guild.Name} ({fromGuildUser.Guild.Id}) to {alliance.Acronym} ({alliance.GuildId.Value}) {alliance.DefendSchedulePostChannel} - Channel could not be resolved.");
                     }
                     else
                     {
-                        _logger.LogInformation($"Sending broadcast for {fromGuildUser.Nickname} ({fromGuildUser.Id}) from {fromGuildUser.Guild.Name} ({fromGuildUser.Guild.Id}) to {server.AllianceAcronym} ({server.GuildId}) {targetChannel.Name} ({server.PostToChannel})");
+                        _logger.LogInformation($"Sending broadcast for {fromGuildUser.Nickname} ({fromGuildUser.Id}) from {fromGuildUser.Guild.Name} ({fromGuildUser.Guild.Id}) to {alliance.Acronym} ({alliance.GuildId.Value}) {targetChannel.Name} ({alliance.DefendSchedulePostChannel.Value})");
                         await targetChannel.SendMessageAsync(embed: embedMsg);
                         sentTo += 1;
                     }

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Zones;
 using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Modules
@@ -12,30 +14,42 @@ namespace DiscordBot.Modules
     public class TdlModule : ModuleBase<SocketCommandContext>
     {
         private readonly ILogger<TdlModule> _logger;
-        private readonly Managers.DefendTimes _defendTimes;
-        private readonly Managers.DiscordServers _discordServers;
+        private readonly IZoneRepository _zoneRespository;
+        private readonly IAllianceRepository _allianceRepository;
         private readonly Responses.Schedule _schedule;
         private readonly Responses.Broadcast _broadcast;
         private readonly DiscordSocketClient _client;
 
-        public TdlModule(ILogger<TdlModule> logger, Managers.DefendTimes defendTimes, Managers.DiscordServers discordServers, Responses.Schedule schedule, Responses.Broadcast broadcast, DiscordSocketClient client)
+        public TdlModule(ILogger<TdlModule> logger, IZoneRepository zoneRepository, IAllianceRepository allianceRepository, Responses.Schedule schedule, Responses.Broadcast broadcast, DiscordSocketClient client)
         {
             _logger = logger;
-            _defendTimes = defendTimes;
-            _discordServers = discordServers;
+            _zoneRespository = zoneRepository;
+            _allianceRepository = allianceRepository;
             _schedule = schedule;
             _broadcast = broadcast;
             _client = client;
         }
 
+        protected async Task TryDeleteMessage(SocketUserMessage message)
+        {
+            try
+            {
+                await message.DeleteAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, $"Unable to delete source message.");
+            }
+        }
+
         [Command("today")]
-        [Summary("Prints the defense times for today")]
+        [Summary("Prints the defense times for the rest of today")]
         public async Task TodayAsync()
         {
             try
             {
                 var embedMsg = _schedule.GetForDate(DateTime.UtcNow);
-                await this.Context.Message.DeleteAsync();
+                _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
             catch (Exception ex)
@@ -51,7 +65,7 @@ namespace DiscordBot.Modules
             try
             {
                 var embedMsg = _schedule.GetForDate(DateTime.UtcNow.AddDays(1));
-                await this.Context.Message.DeleteAsync();
+                _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
             catch (Exception ex)
@@ -67,12 +81,27 @@ namespace DiscordBot.Modules
         {
             try
             {
-                var embedMsg = _schedule.GetAll();
+                var embedMsg = await _schedule.GetAll();
+                _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run ALL for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
+        }
+
+        [Command("welcome")]
+        public async Task WelcomeAsync()
+        {
+            try
+            {
+                _ = TryDeleteMessage(Context.Message);
+                await this.ReplyAsync("Welcome to the happiest place on earth: Boone's Bot Berry Farm!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run WELCOME for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
         }
 

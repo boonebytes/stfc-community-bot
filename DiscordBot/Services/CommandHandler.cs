@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DiscordBot.Services
 {
@@ -38,11 +39,12 @@ namespace DiscordBot.Services
             //
             // If you do not use Dependency Injection, pass null.
             // See Dependency Injection guide for more information.
-            var test = (Managers.DefendTimes) _serviceProvider.GetService(typeof(Managers.DefendTimes));
 
-
-            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
-                                            services: _serviceProvider);
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
+                                                services: scope.ServiceProvider);
+            }
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -65,10 +67,13 @@ namespace DiscordBot.Services
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
-            await _commands.ExecuteAsync(
-                context: context,
-                argPos: argPos,
-                services: _serviceProvider);
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                await _commands.ExecuteAsync(
+                    context: context,
+                    argPos: argPos,
+                    services: scope.ServiceProvider);
+            }
         }
     }
 }

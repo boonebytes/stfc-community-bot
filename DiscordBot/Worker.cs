@@ -19,7 +19,7 @@ namespace DiscordBot
         private readonly Models.Config.Discord _discordConfg;
         private readonly DiscordSocketClient _client;
 
-        public Worker(ILogger<Worker> logger, Models.Config.Discord discordConfig, IServiceProvider serviceProvider, DiscordSocketClient discordSocketClient, Managers.DefendTimes defendTimes)
+        public Worker(ILogger<Worker> logger, Models.Config.Discord discordConfig, IServiceProvider serviceProvider, DiscordSocketClient discordSocketClient)
         {
             _logger = logger;
             _discordConfg = discordConfig;
@@ -71,7 +71,7 @@ namespace DiscordBot
                 _logger.LogInformation("Bot is connected");
                 Task.Run(async () =>
                     {
-                        var cmdScheduler = _serviceProvider.GetRequiredService<Scheduler>();
+                        var cmdScheduler = _serviceProvider.GetService<Scheduler>();
                         await cmdScheduler.Run(stoppingToken);
                     }
                 );

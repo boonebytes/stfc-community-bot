@@ -17,8 +17,6 @@
     <None Remove="Models\Config\" />
     <None Remove="Modules\" />
     <None Remove="Services\" />
-    <None Remove="Models\Tdl\" />
-    <None Remove="Managers\" />
     <None Remove="CsvHelper" />
     <None Remove="Views\" />
   </ItemGroup>
@@ -27,8 +25,10 @@
     <Folder Include="Models\Config\" />
     <Folder Include="Modules\" />
     <Folder Include="Services\" />
-    <Folder Include="Models\Tdl\" />
-    <Folder Include="Managers\" />
     <Folder Include="Responses\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 </Project>

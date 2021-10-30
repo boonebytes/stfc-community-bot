@@ -1,17 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Events;
+using DiscordBot.Domain.Seedwork;
 
-namespace DiscordBot.Models.Tdl
+namespace DiscordBot.Domain.Entities.Zones
 {
-    public class Zone
+    public partial class Zone : Entity
     {
-        public string Name { get; set; }
-        public int Level { get; set; }
-        public string Owner { get; set; }
-        public string Threats { get; set; }
-        public string DefendUtcDayOfWeek { get; set; }
-        public string DefendUtcTime { get; set; }
-        public string Notes { get; set; }
+        public Zone()
+        {
+            _starSystems = new List<StarSystem>();
+        }
+
+        public virtual string Name { get; private set; }
+        public virtual int Level { get; private set; }
+        public virtual string Threats { get; private set; }
+        public virtual string DefendUtcDayOfWeek { get; private set; }
+        public virtual string DefendUtcTime { get; private set; }
+        public virtual string Notes { get; private set; }
+
+        private long? _ownerId;
+        public virtual Alliance Owner { get; private set; }
+
+        private readonly List<StarSystem> _starSystems;
+        public IReadOnlyCollection<StarSystem> StarSystems => _starSystems;
+
 
         public bool LowRisk
         {
@@ -67,7 +82,7 @@ namespace DiscordBot.Models.Tdl
                 if (dayOfWeek != DateTime.UtcNow.DayOfWeek)
                 {
                     result = result.AddDays((-1 * (int)DateTime.UtcNow.DayOfWeek) + ((int)dayOfWeek));
-                    
+
                 }
                 if (result < DateTime.UtcNow) result = result.AddDays(7);
                 _nextDefend = result;
@@ -78,7 +93,10 @@ namespace DiscordBot.Models.Tdl
 
         public string GetDiscordEmbedName()
         {
-            return $"{Owner} - {Name} ({Level}^)";
+            if (_ownerId.HasValue)
+                return $"{Owner.Acronym} - {Name} ({Level}^)";
+            else
+                return $"Unclaimed - {Name} ({Level}^)";
         }
 
         public string GetDiscordEmbedValue()
@@ -96,5 +114,38 @@ namespace DiscordBot.Models.Tdl
 
             return response;
         }
+
+        public void SetName(string name)
+        {
+            Name = name;
+            this.AddZoneChangedDomainEvent();
+        }
+
+        public void SetLevel(int level)
+        {
+            if (level < 1 || level > 3)
+                throw new ArgumentOutOfRangeException("Level must be between 1 and 3");
+
+            Level = level;
+            this.AddZoneChangedDomainEvent();
+        }
+
+        public void SetOwnerId(long id)
+        {
+            _ownerId = id;
+            this.AddZoneChangedDomainEvent();
+        }
+
+        public void AddStarSystem(StarSystem starSystem)
+        {
+            if (!_starSystems.Contains(starSystem))
+                _starSystems.Add(starSystem);
+        }
+
+        public void AddZoneChangedDomainEvent()
+        {
+            this.AddDomainEvent(new ZoneUpdatedDomainEvent(this));
+        }
+
     }
 }

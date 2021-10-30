@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Infrastructure;
+using DiscordBot.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,12 +28,14 @@ namespace DiscordBot
                     IConfiguration configuration = hostContext.Configuration;
                     Models.Config.Discord discordConfig = configuration.GetSection(Models.Config.Discord.SECTION).Get<Models.Config.Discord>();
 
+                    services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
+
+                    services.AddScoped<IZoneRepository, ZoneRepository>();
+                    services.AddScoped<IAllianceRepository, AllianceRepository>();
+
                     //CommandService commandService = new CommandService();
 
                     services.AddSingleton(discordConfig);
-
-                    services.AddSingleton<Managers.DefendTimes>();
-                    services.AddSingleton<Managers.DiscordServers>();
 
                     services.AddSingleton<DiscordSocketClient>();
                     services.AddSingleton<CommandService>();

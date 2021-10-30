@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using DiscordBot.Domain.Entities.Zones;
 
 namespace DiscordBot.Responses
 {
     public class Schedule
     {
-        private readonly Managers.DefendTimes _defendTimes;
+        private readonly IZoneRepository _zoneRepository;
 
-        public Schedule(Managers.DefendTimes defendTimes)
+        public Schedule(IZoneRepository zoneRepository)
         {
-            _defendTimes = defendTimes;
+            _zoneRepository = zoneRepository;
         }
 
-        protected void AddDefendsToEmbed(List<Models.Tdl.Zone> zones, ref EmbedBuilder embedMsg)
+        protected void AddDefendsToEmbed(List<Zone> zones, ref EmbedBuilder embedMsg)
         {
             if (zones.Count() == 0)
             {
@@ -29,7 +30,7 @@ namespace DiscordBot.Responses
             else
             {
                 int currentLine = 0;
-                foreach (Models.Tdl.Zone zone in zones)
+                foreach (Zone zone in zones)
                 {
                     if (currentLine > 0)
                     {
@@ -63,14 +64,14 @@ namespace DiscordBot.Responses
             }
             fromDate = fromDate.AddHours(-date.ToUniversalTime().Hour + 3);
 
-            var todayDefends = _defendTimes.GetNext24Hours(fromDate).OrderBy(z => z.NextDefend).ToList();
+            var todayDefends = _zoneRepository.GetNext24Hours(fromDate).OrderBy(z => z.NextDefend).ToList();
 
             AddDefendsToEmbed(todayDefends, ref embedMsg);
 
             return embedMsg;
         }
 
-        public EmbedBuilder GetAll()
+        public async Task<EmbedBuilder> GetAll()
         {
             var embedMsg = new EmbedBuilder
             {
@@ -78,7 +79,7 @@ namespace DiscordBot.Responses
                 //Description = ""
             };
 
-            var allDefends = _defendTimes.Zones.OrderBy(z => z.NextDefend).ToList();
+            var allDefends = (await _zoneRepository.GetAllAsync()).OrderBy(z => z.NextDefend).ToList();
 
             AddDefendsToEmbed(allDefends, ref embedMsg);
 
