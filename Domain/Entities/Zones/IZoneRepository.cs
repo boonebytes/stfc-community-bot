@@ -15,6 +15,6 @@ namespace DiscordBot.Domain.Entities.Zones
 
         Task<List<Zone>> GetAllAsync();
 
-        List<Zone> GetNext24Hours(DateTime? fromDate = null);
+        List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null);
     }
 }

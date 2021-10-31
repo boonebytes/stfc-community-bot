@@ -72,15 +72,18 @@ namespace DiscordBot
                 Task.Run(async () =>
                     {
                         var cmdScheduler = _serviceProvider.GetService<Scheduler>();
-                        await cmdScheduler.Run(stoppingToken);
+                        await cmdScheduler.Run(stoppingToken, _discordConfg.SchedulePollSeconds);
                     }
                 );
 
-                Task.Run(async () =>
-                    {
-                        await _client.SetGameAsync(name: "over Legion", type: ActivityType.Watching);
-                    }
-                );
+                if (!string.IsNullOrEmpty(_discordConfg.WatchingStatus))
+                {
+                    Task.Run(async () =>
+                        {
+                            await _client.SetGameAsync(name: _discordConfg.WatchingStatus, type: ActivityType.Watching);
+                        }
+                    );
+                }
                 // await _client.SetGameAsync(name: "Star Trek Fleet Command", type: ActivityType.Watching);
 
                 return Task.CompletedTask;

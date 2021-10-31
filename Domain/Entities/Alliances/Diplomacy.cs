@@ -5,12 +5,13 @@ namespace DiscordBot.Domain.Entities.Alliances
 {
     public class Diplomacy : Entity
     {
-        public long _ownerId;
+        protected long _ownerId;
         public virtual Alliance Owner { get; private set; }
 
-        public long _relatedId;
+        protected long _relatedId;
         public virtual Alliance Related { get; private set; }
 
-
+        protected int _relationId;
+        public virtual DiplomaticRelation Relationship { get; private set; }
     }
 }

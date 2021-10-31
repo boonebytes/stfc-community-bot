@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 using Microsoft.EntityFrameworkCore;
@@ -66,15 +67,47 @@ namespace DiscordBot.Infrastructure.Repositories
                     .Entity;
         }
 
-        public List<Zone> GetNext24Hours(DateTime? fromDate = null)
+        public List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null)
         {
             if (!fromDate.HasValue)
             {
                 fromDate = DateTime.UtcNow;
             }
 
+            List<long> interestedAlliances;
+            if (allianceId.HasValue)
+            {
+                var thisAlliance = _context.Alliances
+                    .Include(a => a.Group)
+                        .ThenInclude(ag => ag.Alliances)
+                    .Include(a => a.AssignedDiplomacy)
+                        .ThenInclude(ad => ad.Related)
+                    .Where(a => a.Id == allianceId)
+                    .FirstOrDefault();
+
+                var thisGroupMembers = thisAlliance.Group.Alliances
+                                            .Select(gm => gm.Id).ToList();
+
+                var friendlies = thisAlliance.AssignedDiplomacy
+                                    .Where(ad =>
+                                            ad.Relationship == DiplomaticRelation.Friendly
+                                            || ad.Relationship == DiplomaticRelation.Allied
+                                        );
+
+                interestedAlliances = friendlies
+                                            .Select(ag => ag.Related.Id).ToList()
+                                            .Union(thisGroupMembers).ToList();
+            }
+            else
+            {
+                interestedAlliances = _context.Alliances
+                                            .Select(a => a.Id)
+                                            .ToList();
+            }
+
             var nextDefends = _context.Zones
                 .Include(z => z.Owner)
+                .Where(z => interestedAlliances.Contains(z.Owner.Id))
                 .ToList()
                 .Where(z =>
                         z.NextDefend > fromDate.Value &&

@@ -16,6 +16,11 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             diplomacyConfiguration.Property(a => a.Id)
                 .ValueGeneratedOnAdd();
 
+            //diplomacyConfiguration
+            //    .Ignore("AllianceId");
+
+
+
             diplomacyConfiguration
                 .Property<long>("_ownerId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
@@ -23,9 +28,12 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .IsRequired(true);
 
             diplomacyConfiguration.HasOne<Alliance>(d => d.Owner)
-                .WithMany()
+                .WithMany(a => a.AssignedDiplomacy)
                 .HasForeignKey("_ownerId")
                 .OnDelete(DeleteBehavior.Cascade);
+
+            var ownerNavigation = diplomacyConfiguration.Metadata.FindNavigation(nameof(Diplomacy.Owner));
+            ownerNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
 
 
             diplomacyConfiguration
@@ -35,10 +43,27 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .IsRequired(true);
 
             diplomacyConfiguration.HasOne<Alliance>(d => d.Related)
-                .WithMany()
+                .WithMany(a => a.ReceivedDiplomacy)
                 .HasForeignKey("_relatedId")
                 .OnDelete(DeleteBehavior.Cascade);
 
+            var relatedNavigation = diplomacyConfiguration.Metadata.FindNavigation(nameof(Diplomacy.Related));
+            relatedNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+
+
+            diplomacyConfiguration
+                .Property<int>("_relationId")
+                .UsePropertyAccessMode(PropertyAccessMode.Field)
+                .HasColumnName("RelationshipId")
+                .IsRequired(true);
+
+            diplomacyConfiguration.HasOne<DiplomaticRelation>(d => d.Relationship)
+                .WithMany()
+                .HasForeignKey("_relationId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            var relationshipNavigation = diplomacyConfiguration.Metadata.FindNavigation(nameof(Diplomacy.Relationship));
+            relationshipNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace DiscordBot
             _serviceProvider = serviceProvider;
         }
 
-        public async Task Run(CancellationToken stoppingToken)
+        public async Task Run(CancellationToken stoppingToken, int pollingIntervalSeconds)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -41,17 +41,17 @@ namespace DiscordBot
                     var nextPost = allianceRepository.GetNextOnPostSchedule();
 
 
-                    if (nextPost.NextScheduledPost > DateTime.UtcNow)
+                    if (nextPost.NextScheduledPost.ToUniversalTime() > DateTime.UtcNow)
                     {
-                        var delay = nextPost.NextScheduledPost - DateTime.UtcNow;
-                        if (delay.TotalMinutes > 30) delay = new TimeSpan(0, 30, 0);
+                        var delay = nextPost.NextScheduledPost.ToUniversalTime() - DateTime.UtcNow;
+                        if (delay.TotalSeconds > pollingIntervalSeconds) delay = new TimeSpan(0, 0, pollingIntervalSeconds);
                         await Task.Delay(delay, stoppingToken);
                     }
                     if (!stoppingToken.IsCancellationRequested && DateTime.UtcNow >= nextPost.NextScheduledPost)
                     {
+                        _logger.LogInformation($"Preparing to post schedule for {nextPost.Acronym}");
                         try
                         {
-
                             var guild = _client.GetGuild(nextPost.GuildId.Value);
                             if (guild == null)
                             {
@@ -89,7 +89,7 @@ namespace DiscordBot
                                     }
 
 
-                                    var embedMsg = scheduleResponse.GetForDate(DateTime.UtcNow);
+                                    var embedMsg = scheduleResponse.GetForDate(DateTime.UtcNow, nextPost.Id);
                                     await channel.SendMessageAsync(embed: embedMsg.Build());
 
                                     allianceRepository.FlagSchedulePosted(nextPost);

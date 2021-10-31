@@ -14,8 +14,14 @@ namespace DiscordBot.Domain.Entities.Alliances
         public virtual string Name { get; private set; }
         public virtual string Acronym { get; private set; }
 
-        private readonly List<Diplomacy> _diplomacy;
-        public IReadOnlyCollection<Diplomacy> Diplomacy => _diplomacy;
+        private long? _allianceGroupId;
+        public virtual AllianceGroup Group { get; private set; }
+
+        private readonly List<Diplomacy> _assignedDiplomacy;
+        public IReadOnlyCollection<Diplomacy> AssignedDiplomacy => _assignedDiplomacy;
+
+        private readonly List<Diplomacy> _receivedDiplomacy;
+        public IReadOnlyCollection<Diplomacy> ReceivedDiplomacy => _receivedDiplomacy;
 
         public virtual ulong? GuildId { get; protected set; }
         public virtual ulong? DefendSchedulePostChannel { get; protected set; }

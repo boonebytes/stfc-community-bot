@@ -48,7 +48,8 @@ namespace DiscordBot.Modules
         {
             try
             {
-                var embedMsg = _schedule.GetForDate(DateTime.UtcNow);
+                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
+                var embedMsg = _schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
@@ -64,7 +65,8 @@ namespace DiscordBot.Modules
         {
             try
             {
-                var embedMsg = _schedule.GetForDate(DateTime.UtcNow.AddDays(1));
+                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
+                var embedMsg = _schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
@@ -81,6 +83,7 @@ namespace DiscordBot.Modules
         {
             try
             {
+                //TODO: Look at restricting this to just the interested alliances.
                 var embedMsg = await _schedule.GetAll();
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());

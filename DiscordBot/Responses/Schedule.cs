@@ -49,7 +49,7 @@ namespace DiscordBot.Responses
             }
         }
 
-        public EmbedBuilder GetForDate(DateTime date)
+        public EmbedBuilder GetForDate(DateTime date, long? allianceId = null)
         {
             var embedMsg = new EmbedBuilder
             {

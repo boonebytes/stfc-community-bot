@@ -14,6 +14,7 @@ namespace DiscordBot.Infrastructure
     public class BotContext : DbContext, IUnitOfWork
     {
         public DbSet<Alliance> Alliances { get; set; }
+        public DbSet<AllianceGroup> AllianceGroups { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<StarSystem> StarSystems { get; set; }
         public DbSet<Resource> Resources { get; set; }
@@ -42,12 +43,13 @@ namespace DiscordBot.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new DiplomaticRelationEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ZoneEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new StarSystemEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AllianceGroupEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DiplomaticRelationEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new StarSystemEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ZoneEntityTypeConfiguration());
         }
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))

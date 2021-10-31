@@ -3,14 +3,16 @@ using System;
 using DiscordBot.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DiscordBot.Infrastructure.Migrations
 {
     [DbContext(typeof(BotContext))]
-    partial class BotContextModelSnapshot : ModelSnapshot
+    [Migration("20211031083646_2")]
+    partial class _2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,17 +83,11 @@ namespace DiscordBot.Infrastructure.Migrations
                         .HasColumnName("RelatedId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("_relationId")
-                        .HasColumnName("RelationshipId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("_ownerId");
 
                     b.HasIndex("_relatedId");
-
-                    b.HasIndex("_relationId");
 
                     b.ToTable("alliance_diplomacy");
                 });
@@ -331,12 +327,6 @@ namespace DiscordBot.Infrastructure.Migrations
                         .WithMany("ReceivedDiplomacy")
                         .HasForeignKey("_relatedId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DiscordBot.Domain.Entities.Alliances.DiplomaticRelation", "Relationship")
-                        .WithMany()
-                        .HasForeignKey("_relationId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

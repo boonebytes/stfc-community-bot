@@ -19,6 +19,8 @@ namespace DiscordBot.Domain.Entities.Alliances
 
         Alliance GetNextOnPostSchedule();
 
+        Alliance FindFromGuildId(ulong id);
+
         Alliance FlagSchedulePosted(Alliance alliance);
     }
 }

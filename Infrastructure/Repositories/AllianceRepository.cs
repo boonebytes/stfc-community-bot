@@ -81,6 +81,16 @@ namespace DiscordBot.Infrastructure.Repositories
                 .First();
         }
 
+        public Alliance FindFromGuildId(ulong id)
+        {
+            return _context.Alliances
+                .Include(a => a.Group)
+                .Include(a => a.AssignedDiplomacy)
+                    .ThenInclude(ad => ad.Related)
+                .Where(a => a.GuildId == id)
+                .First();
+        }
+
         public Alliance FlagSchedulePosted(Alliance alliance)
         {
             alliance.FlagPosted();
