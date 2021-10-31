@@ -96,5 +96,21 @@ namespace DiscordBot.Infrastructure.Repositories
             alliance.FlagPosted();
             return Update(alliance);
         }
+
+        public async Task InitPostSchedule()
+        {
+            var alliances = _context.Alliances
+                .Where(a =>
+                    a.GuildId.HasValue
+                    && a.DefendSchedulePostChannel.HasValue
+                    && !string.IsNullOrEmpty(a.DefendSchedulePostTime)
+                    && !a.NextScheduledPost.HasValue
+                );
+            foreach (var alliance in alliances)
+            {
+                alliance.SetNextScheduledPost();
+            }
+            await _context.SaveEntitiesAsync();
+        }
     }
 }

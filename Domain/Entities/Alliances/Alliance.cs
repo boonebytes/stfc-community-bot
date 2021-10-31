@@ -27,24 +27,26 @@ namespace DiscordBot.Domain.Entities.Alliances
         public virtual ulong? DefendSchedulePostChannel { get; protected set; }
         public virtual string DefendSchedulePostTime { get; protected set; }
 
-        protected DateTime? _nextScheduledPost = null;
-        public DateTime NextScheduledPost
-        {
-            get
-            {
-                if (_nextScheduledPost.HasValue) return _nextScheduledPost.Value;
+        public virtual DateTime? NextScheduledPost { get; private set; }
 
+        public void SetNextScheduledPost()
+        {
+            if (GuildId.HasValue && DefendSchedulePostChannel.HasValue && !string.IsNullOrEmpty(DefendSchedulePostTime))
+            {
                 CultureInfo culture = new CultureInfo("en-US");
-                _nextScheduledPost = DateTime.ParseExact(DefendSchedulePostTime, "h:mm tt", culture, DateTimeStyles.AssumeUniversal);
-                if (_nextScheduledPost.Value.ToUniversalTime() < DateTime.UtcNow) _nextScheduledPost = _nextScheduledPost.Value.AddDays(1);
-                _nextScheduledPost = _nextScheduledPost.Value.ToUniversalTime();
-                return _nextScheduledPost.Value;
+                NextScheduledPost = DateTime.ParseExact(DefendSchedulePostTime, "h:mm tt", culture, DateTimeStyles.AssumeUniversal);
+                if (NextScheduledPost.Value.ToUniversalTime() < DateTime.UtcNow) NextScheduledPost = NextScheduledPost.Value.AddDays(1);
+                NextScheduledPost = NextScheduledPost.Value.ToUniversalTime();
+            }
+            else
+            {
+                NextScheduledPost = null;
             }
         }
 
         public void FlagPosted()
         {
-            _nextScheduledPost = null;
+            SetNextScheduledPost();
         }
     }
 }
