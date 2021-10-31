@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.5'
 
 services:
   discordbot:
@@ -6,10 +6,23 @@ services:
     build:
       context: .
       dockerfile: DiscordBot/Dockerfile
-    volumes:
-      - type: bind
-        source: DiscordBot/Defends.csv
-        target: /app/Defends.csv
-      - type: bind
-        source: DiscordBot/DiscordServers.csv
-        target: /app/DiscordServers.csv
+    networks:
+      db:
+        ipv4_address: 172.16.2.121
+#    volumes:
+#      - type: bind
+#        source: DiscordBot/Defends.csv
+#        target: /app/Defends.csv
+#      - type: bind
+#        source: DiscordBot/DiscordServers.csv
+#        target: /app/DiscordServers.csv
+
+networks:
+  db:
+    name: bb-dbs
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.2.0/24"
+
