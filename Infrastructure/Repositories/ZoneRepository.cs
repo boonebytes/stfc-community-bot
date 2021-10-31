@@ -74,6 +74,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 fromDate = DateTime.UtcNow;
             }
 
+            /*
             List<long> interestedAlliances;
             if (allianceId.HasValue)
             {
@@ -104,10 +105,11 @@ namespace DiscordBot.Infrastructure.Repositories
                                             .Select(a => a.Id)
                                             .ToList();
             }
+            */
 
             var nextDefends = _context.Zones
                 .Include(z => z.Owner)
-                .Where(z => interestedAlliances.Contains(z.Owner.Id))
+                //.Where(z => interestedAlliances.Contains(z.Owner.Id))
                 .ToList()
                 .Where(z =>
                         z.NextDefend > fromDate.Value &&
