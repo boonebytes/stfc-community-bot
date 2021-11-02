@@ -32,12 +32,6 @@ namespace DiscordBot
 
         public async Task Run(CancellationToken stoppingToken, int pollingIntervalSeconds)
         {
-            using (var thisServiceScope = _serviceProvider.CreateScope())
-            {
-                IAllianceRepository allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
-                await allianceRepository.InitPostSchedule();
-            }
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 using (var thisServiceScope = _serviceProvider.CreateScope())

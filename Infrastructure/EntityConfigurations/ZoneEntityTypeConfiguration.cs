@@ -35,8 +35,11 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             //zoneConfiguration
             //    .Ignore("Owner");
 
-            zoneConfiguration
-                .Ignore("_nextDefend");
+            zoneConfiguration.Property(z => z.NextDefend)
+                .IsRequired(false);
+
+            //zoneConfiguration
+            //    .Ignore("_nextDefend");
 
             var starSystemNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.StarSystems));
             starSystemNav.SetPropertyAccessMode(PropertyAccessMode.Field);

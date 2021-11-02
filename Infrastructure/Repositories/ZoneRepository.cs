@@ -130,5 +130,14 @@ namespace DiscordBot.Infrastructure.Repositories
                 .ToList();
             return nextDefends;
         }
+
+        public async Task InitZones()
+        {
+            var allZones = _context.Zones; //.Where(z => !z.NextDefend.HasValue || z.NextDefend.Value < DateTime.UtcNow);
+            await allZones.ForEachAsync(z =>
+                    z.SetNextDefend()
+                );
+            await _context.SaveEntitiesAsync();
+        }
     }
 }

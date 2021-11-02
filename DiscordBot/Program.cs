@@ -11,6 +11,7 @@ using DiscordBot.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace DiscordBot
 {
@@ -25,6 +26,16 @@ namespace DiscordBot
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
+                    /*
+                    services.AddLogging(opt =>
+                    {
+                        opt.AddConsole(c =>
+                        {
+                            c.TimestampFormat = "[HH:mm:ss]";
+                        });
+                    });
+                    */
+
                     IConfiguration configuration = hostContext.Configuration;
                     Models.Config.Discord discordConfig = configuration.GetSection(Models.Config.Discord.SECTION).Get<Models.Config.Discord>();
 

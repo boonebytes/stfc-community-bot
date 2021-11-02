@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Zones;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -32,8 +34,18 @@ namespace DiscordBot
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //while (!stoppingToken.IsCancellationRequested)
-            //{
+
+            using (var thisServiceScope = _serviceProvider.CreateScope())
+            {
+                IAllianceRepository allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var initSchedule = allianceRepository.InitPostSchedule();
+
+                IZoneRepository zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
+                var initZones = zoneRepository.InitZones();
+
+                Task.WaitAll(initSchedule, initZones);
+            }
+
             var _config = new DiscordSocketConfig { MessageCacheSize = 100 };
             var cmdService = _serviceProvider.GetRequiredService<CommandService>();
 
