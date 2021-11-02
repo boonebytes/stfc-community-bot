@@ -15,11 +15,12 @@ namespace DiscordBot.Infrastructure
     {
         public DbSet<Alliance> Alliances { get; set; }
         public DbSet<AllianceGroup> AllianceGroups { get; set; }
-        public DbSet<Zone> Zones { get; set; }
-        public DbSet<StarSystem> StarSystems { get; set; }
-        public DbSet<Resource> Resources { get; set; }
+        public DbSet<Diplomacy> Diplomacies { get; set; }
         public DbSet<DiplomaticRelation> DiplomaticRelaitons { get; set; }
-        
+        public DbSet<Resource> Resources { get; set; }
+        public DbSet<StarSystem> StarSystems { get; set; }
+        public DbSet<Zone> Zones { get; set; }
+
         private readonly IMediator _mediator;
         //private IDbContextTransaction _currentTransaction;
         //public bool HasActiveTransaction => _currentTransaction != null;

@@ -64,7 +64,7 @@ namespace DiscordBot.Responses
             }
             fromDate = fromDate.AddHours(-date.ToUniversalTime().Hour + 3);
 
-            var todayDefends = _zoneRepository.GetNext24Hours(fromDate).OrderBy(z => z.NextDefend).ToList();
+            var todayDefends = _zoneRepository.GetNext24Hours(fromDate, allianceId).OrderBy(z => z.NextDefend).ToList();
 
             AddDefendsToEmbed(todayDefends, ref embedMsg);
 

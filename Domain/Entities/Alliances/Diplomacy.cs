@@ -11,7 +11,7 @@ namespace DiscordBot.Domain.Entities.Alliances
         protected long _relatedId;
         public virtual Alliance Related { get; private set; }
 
-        protected int _relationId;
+        protected int _relationshipId;
         public virtual DiplomaticRelation Relationship { get; private set; }
     }
 }

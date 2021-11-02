@@ -22,6 +22,7 @@ namespace DiscordBot.Domain.Seedwork
                      .Select(f => f.GetValue(null))
                      .Cast<T>();
 
+        /*
         public override bool Equals(object obj)
         {
             if (obj is not Enumeration otherValue)
@@ -36,6 +37,7 @@ namespace DiscordBot.Domain.Seedwork
         }
 
         public override int GetHashCode() => Id.GetHashCode();
+        */
 
         public static int AbsoluteDifference(Enumeration firstValue, Enumeration secondValue)
         {
@@ -66,5 +68,58 @@ namespace DiscordBot.Domain.Seedwork
         }
 
         public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
+
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not Entity other)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            if (GetUnproxiedType(this) != GetUnproxiedType(other))
+                return false;
+
+            if (Id.Equals(default) || other.Id.Equals(default))
+                return false;
+
+            return Id.Equals(other.Id);
+        }
+
+        public static bool operator ==(Enumeration a, Enumeration b)
+        {
+            if (a is null && b is null)
+                return true;
+
+            if (a is null || b is null)
+                return false;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Enumeration a, Enumeration b)
+        {
+            return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return (GetUnproxiedType(this).ToString() + Id).GetHashCode();
+        }
+
+        internal static Type GetUnproxiedType(object obj)
+        {
+            const string EFCoreProxyPrefix = "Castle.Proxies.";
+            const string NHibernateProxyPrefix = "Proxy";
+
+            Type type = obj.GetType();
+            string typeString = type.ToString();
+
+            if (typeString.Contains(EFCoreProxyPrefix) || typeString.EndsWith(NHibernateProxyPrefix))
+                return type.BaseType;
+
+            return type;
+        }
     }
 }

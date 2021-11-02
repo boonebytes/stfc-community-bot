@@ -74,7 +74,6 @@ namespace DiscordBot.Infrastructure.Repositories
                 fromDate = DateTime.UtcNow;
             }
 
-            /*
             List<long> interestedAlliances;
             if (allianceId.HasValue)
             {
@@ -86,18 +85,31 @@ namespace DiscordBot.Infrastructure.Repositories
                     .Where(a => a.Id == allianceId)
                     .FirstOrDefault();
 
-                var thisGroupMembers = thisAlliance.Group.Alliances
-                                            .Select(gm => gm.Id).ToList();
 
-                var friendlies = thisAlliance.AssignedDiplomacy
-                                    .Where(ad =>
-                                            ad.Relationship == DiplomaticRelation.Friendly
-                                            || ad.Relationship == DiplomaticRelation.Allied
-                                        );
+                List<long> thisAllianceGroupMembers;
+
+                if (thisAlliance.Group == null)
+                {
+                    thisAllianceGroupMembers = new();
+                }
+                else
+                {
+                    thisAllianceGroupMembers = thisAlliance.Group.Alliances
+                                                .Select(gm => gm.Id).ToList();
+                }
+
+                var friendlies = _context.Diplomacies
+                                .Where(d =>
+                                        d.Owner == thisAlliance
+                                        && (
+                                            d.Relationship == DiplomaticRelation.Friendly
+                                            || d.Relationship == DiplomaticRelation.Allied
+                                        )
+                                    );
 
                 interestedAlliances = friendlies
                                             .Select(ag => ag.Related.Id).ToList()
-                                            .Union(thisGroupMembers).ToList();
+                                            .Union(thisAllianceGroupMembers).ToList();
             }
             else
             {
@@ -105,11 +117,10 @@ namespace DiscordBot.Infrastructure.Repositories
                                             .Select(a => a.Id)
                                             .ToList();
             }
-            */
 
             var nextDefends = _context.Zones
                 .Include(z => z.Owner)
-                //.Where(z => interestedAlliances.Contains(z.Owner.Id))
+                .Where(z => interestedAlliances.Contains(z.Owner.Id))
                 .ToList()
                 .Where(z =>
                         z.NextDefend > fromDate.Value &&

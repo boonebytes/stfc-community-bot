@@ -6,6 +6,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Modules
@@ -53,6 +54,11 @@ namespace DiscordBot.Modules
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
+            catch (BotDomainException ex)
+            {
+                await this.ReplyAsync(ex.Message);
+                _logger.LogError(ex, $"Exception when trying to run TODAY for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run TODAY for {Context.Guild.Name} in {Context.Channel.Name}.");
@@ -69,6 +75,11 @@ namespace DiscordBot.Modules
                 var embedMsg = _schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
+            }
+            catch (BotDomainException ex)
+            {
+                await this.ReplyAsync(ex.Message);
+                _logger.LogError(ex, $"Exception when trying to run TOMORROW for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
             catch (Exception ex)
             {

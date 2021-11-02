@@ -52,17 +52,18 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
 
 
             diplomacyConfiguration
-                .Property<int>("_relationId")
+                .Property<int>("_relationshipId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
                 .HasColumnName("RelationshipId")
                 .IsRequired(true);
 
             diplomacyConfiguration.HasOne<DiplomaticRelation>(d => d.Relationship)
                 .WithMany()
-                .HasForeignKey("_relationId")
+                .HasForeignKey("_relationshipId")
                 .OnDelete(DeleteBehavior.Restrict);
 
             var relationshipNavigation = diplomacyConfiguration.Metadata.FindNavigation(nameof(Diplomacy.Relationship));
+            relationshipNavigation.SetIsEagerLoaded(true);
             relationshipNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }

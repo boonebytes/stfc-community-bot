@@ -32,24 +32,6 @@ namespace DiscordBot
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            /*
-            Models.Tdl.Zone zone = new Models.Tdl.Zone
-            {
-                Name = "JB Test",
-                Level = 1,
-                Owner = "LEGN",
-                Threats = "None",
-                DefendUtcDayOfWeek = "Tuesday",
-                DefendUtcTime = "12:00 AM"
-            };
-
-            
-            Console.WriteLine("Next Defend: " + zone.NextDefend);
-            Console.ReadLine();
-
-            return;
-            */
-
             //while (!stoppingToken.IsCancellationRequested)
             //{
             var _config = new DiscordSocketConfig { MessageCacheSize = 100 };
