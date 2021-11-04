@@ -16,7 +16,7 @@ namespace DiscordBot.Responses
             _zoneRepository = zoneRepository;
         }
 
-        protected void AddDefendsToEmbed(List<Zone> zones, ref EmbedBuilder embedMsg)
+        protected void AddDefendsToEmbed(List<Zone> zones, ref EmbedBuilder embedMsg, bool shortVersion = false)
         {
             if (zones.Count() == 0)
             {
@@ -39,17 +39,24 @@ namespace DiscordBot.Responses
                         //embedMsg.AddField("\u200b", "\u200b", true);
                     }
                     currentLine++;
-                    var thisField = new EmbedFieldBuilder
+                    if (shortVersion)
                     {
-                        Name = zone.GetDiscordEmbedName(),
-                        Value = zone.GetDiscordEmbedValue() + "\n\u200b"
-                    };
-                    embedMsg.AddField(thisField);
+                        embedMsg.Description += zone.GetDiscordEmbedValue(true) + "\n\u200b";
+                    }
+                    else
+                    {
+                        var thisField = new EmbedFieldBuilder
+                        {
+                            Name = zone.GetDiscordEmbedName(),
+                            Value = zone.GetDiscordEmbedValue(false) + "\n\u200b"
+                        };
+                        embedMsg.AddField(thisField);
+                    }
                 }
             }
         }
 
-        public EmbedBuilder GetForDate(DateTime date, long? allianceId = null)
+        public EmbedBuilder GetForDate(DateTime date, long? allianceId = null, bool shortVersion = false)
         {
             var embedMsg = new EmbedBuilder
             {
@@ -66,7 +73,7 @@ namespace DiscordBot.Responses
 
             var todayDefends = _zoneRepository.GetNext24Hours(fromDate, allianceId).OrderBy(z => z.NextDefend).ToList();
 
-            AddDefendsToEmbed(todayDefends, ref embedMsg);
+            AddDefendsToEmbed(todayDefends, ref embedMsg, shortVersion);
 
             return embedMsg;
         }

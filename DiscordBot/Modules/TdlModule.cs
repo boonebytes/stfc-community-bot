@@ -58,12 +58,16 @@ namespace DiscordBot.Modules
 
         [Command("today")]
         [Summary("Prints the defense times for the rest of today")]
-        public async Task TodayAsync()
+        public async Task TodayAsync(string extra = "")
         {
             try
             {
                 var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
-                var embedMsg = _schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id);
+
+                var shortVersion = false;
+                if (extra.Trim().ToLower() == "short")
+                    shortVersion = true;
+                var embedMsg = _schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
@@ -80,12 +84,17 @@ namespace DiscordBot.Modules
 
         [Command("tomorrow")]
         [Summary("Prints the defense times for tomorrow")]
-        public async Task TomorrowAsync()
+        public async Task TomorrowAsync(string extra = "")
         {
             try
             {
                 var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
-                var embedMsg = _schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id);
+
+                var shortVersion = false;
+                if (extra.Trim().ToLower() == "short")
+                    shortVersion = true;
+
+                var embedMsg = _schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }

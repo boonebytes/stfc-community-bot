@@ -96,21 +96,33 @@ namespace DiscordBot.Domain.Entities.Zones
                 return $"Unclaimed - {Name} ({Level}^)";
         }
 
-        public string GetDiscordEmbedValue()
+        public string GetDiscordEmbedValue(bool shortVersion = false)
         {
             string response = "";
             //var tz = TimeZoneInfo.ConvertTime(NextDefend.Value, )
 
-            if (LowRisk)
-                response += "*_Low Risk_*\n";
-            response += $"**When**: "
-                        + $"<t:{NextDefend.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}:t> local / "
-                        + $"{DefendUtcTime} UTC / "
-                        + $"{NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
-            response += "\n**Threats**: " + (string.IsNullOrEmpty(Threats) ? "None" : Threats);
-            if (!string.IsNullOrEmpty(Notes))
+            if (shortVersion)
             {
-                response += $"\n**Notes**: {Notes}";
+                response = $"{Owner.Acronym}/{Name}({Level}^): <t:{NextDefend.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}:t> local / {NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
+                if (!string.IsNullOrEmpty(Threats))
+                    response += " [*_" + Threats + "_*]";
+                else if (LowRisk)
+                    response += " [*_Low Risk_*]";
+            }
+            else
+            {
+                if (LowRisk)
+                    response += "*_Low Risk_*\n";
+
+                response += $"**When**: "
+                            + $"<t:{NextDefend.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}:t> local / "
+                            + $"{DefendUtcTime} UTC / "
+                            + $"{NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
+                response += "\n**Threats**: " + (string.IsNullOrEmpty(Threats) ? "None" : Threats);
+                if (!string.IsNullOrEmpty(Notes))
+                {
+                    response += $"\n**Notes**: {Notes}";
+                }
             }
 
             return response;
