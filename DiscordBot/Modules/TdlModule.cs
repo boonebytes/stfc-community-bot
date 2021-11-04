@@ -43,6 +43,19 @@ namespace DiscordBot.Modules
             }
         }
 
+        [Command("help")]
+        [Summary("Displays help information")]
+        public async Task HelpAsync()
+        {
+            await this.ReplyAsync("For support purposes, please conact Boonebytes.\n"
+                            + "\n"
+                            + "Accepted Commands:\n"
+                            + "help - Displays this message\n"
+                            + "today - Prints the defends scheduled for the remainder of today\n"
+                            + "tomorrow - Prints the defend schedule for tomorrow\n"
+                            + "next - Prints the next defend on the schedule");
+        }
+
         [Command("today")]
         [Summary("Prints the defense times for the rest of today")]
         public async Task TodayAsync()
@@ -119,20 +132,6 @@ namespace DiscordBot.Modules
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run ALL for {Context.Guild.Name} in {Context.Channel.Name}.");
-            }
-        }
-
-        [Command("welcome")]
-        public async Task WelcomeAsync()
-        {
-            try
-            {
-                _ = TryDeleteMessage(Context.Message);
-                await this.ReplyAsync("Welcome to the happiest place on earth: Boone's Bot Berry Farm!");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An unexpected error has occured while trying to run WELCOME for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
         }
 
