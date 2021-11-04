@@ -15,7 +15,7 @@ namespace DiscordBot.Modules
     public class TdlModule : ModuleBase<SocketCommandContext>
     {
         private readonly ILogger<TdlModule> _logger;
-        private readonly IZoneRepository _zoneRespository;
+        private readonly IZoneRepository _zoneRepository;
         private readonly IAllianceRepository _allianceRepository;
         private readonly Responses.Schedule _schedule;
         private readonly Responses.Broadcast _broadcast;
@@ -24,7 +24,7 @@ namespace DiscordBot.Modules
         public TdlModule(ILogger<TdlModule> logger, IZoneRepository zoneRepository, IAllianceRepository allianceRepository, Responses.Schedule schedule, Responses.Broadcast broadcast, DiscordSocketClient client)
         {
             _logger = logger;
-            _zoneRespository = zoneRepository;
+            _zoneRepository = zoneRepository;
             _allianceRepository = allianceRepository;
             _schedule = schedule;
             _broadcast = broadcast;
@@ -84,6 +84,23 @@ namespace DiscordBot.Modules
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run TOMORROW for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
+        }
+
+        [Command("next")]
+        [Summary("Prints the next item on the defend schedule")]
+        public async Task NextAsync()
+        {
+            try
+            {
+                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
+                var embedMsg = _schedule.GetNext(thisAlliance.Id);
+                _ = TryDeleteMessage(Context.Message);
+                await this.ReplyAsync(embed: embedMsg.Build());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run NEXT for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
         }
 

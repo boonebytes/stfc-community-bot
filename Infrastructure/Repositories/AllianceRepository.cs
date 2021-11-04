@@ -10,11 +10,8 @@ using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Infrastructure.Repositories
 {
-    public class AllianceRepository : IAllianceRepository
+    public class AllianceRepository : BaseRepository, IAllianceRepository
     {
-        private readonly ILogger<AllianceRepository> _logger;
-        private readonly BotContext _context;
-
         public IUnitOfWork UnitOfWork
         {
             get
@@ -23,11 +20,8 @@ namespace DiscordBot.Infrastructure.Repositories
             }
         }
 
-        public AllianceRepository(ILogger<AllianceRepository> logger, BotContext context)
-        {
-            _logger = logger;
-            _context = context;
-        }
+        public AllianceRepository(ILogger<AllianceRepository> logger, BotContext context) : base(logger, context)
+        { }
 
         public Alliance Add(Alliance alliance)
         {

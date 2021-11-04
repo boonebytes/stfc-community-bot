@@ -10,11 +10,8 @@ using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Infrastructure.Repositories
 {
-    public class ZoneRepository : IZoneRepository
+    public class ZoneRepository : BaseRepository, IZoneRepository
     {
-        private readonly ILogger<ZoneRepository> _logger;
-        private readonly BotContext _context;
-
         public IUnitOfWork UnitOfWork
         {
             get
@@ -23,11 +20,8 @@ namespace DiscordBot.Infrastructure.Repositories
             }
         }
 
-        public ZoneRepository(ILogger<ZoneRepository> logger, BotContext context)
-        {
-            _logger = logger;
-            _context = context;
-        }
+        public ZoneRepository(ILogger<ZoneRepository> logger, BotContext context) : base(logger, context)
+        { }
 
         public Zone Add(Zone zone)
         {
@@ -67,6 +61,20 @@ namespace DiscordBot.Infrastructure.Repositories
                     .Entity;
         }
 
+        public Zone GetNextDefend(long? allianceId = null)
+        {
+            List<long> interestedAlliances = GetInterestedAlliances(allianceId);
+            var next = _context.Zones
+                            .Include(z => z.Owner)
+                            .Where(z => interestedAlliances.Contains(z.Owner.Id))
+                            .OrderBy(z => z.NextDefend)
+                            .ToList();
+            if (next == null)
+                return null;
+            else
+                return next.First();
+        }
+
         public List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null)
         {
             if (!fromDate.HasValue)
@@ -74,49 +82,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 fromDate = DateTime.UtcNow;
             }
 
-            List<long> interestedAlliances;
-            if (allianceId.HasValue)
-            {
-                var thisAlliance = _context.Alliances
-                    .Include(a => a.Group)
-                        .ThenInclude(ag => ag.Alliances)
-                    .Include(a => a.AssignedDiplomacy)
-                        .ThenInclude(ad => ad.Related)
-                    .Where(a => a.Id == allianceId)
-                    .FirstOrDefault();
-
-
-                List<long> thisAllianceGroupMembers;
-
-                if (thisAlliance.Group == null)
-                {
-                    thisAllianceGroupMembers = new();
-                }
-                else
-                {
-                    thisAllianceGroupMembers = thisAlliance.Group.Alliances
-                                                .Select(gm => gm.Id).ToList();
-                }
-
-                var friendlies = _context.Diplomacies
-                                .Where(d =>
-                                        d.Owner == thisAlliance
-                                        && (
-                                            d.Relationship == DiplomaticRelation.Friendly
-                                            || d.Relationship == DiplomaticRelation.Allied
-                                        )
-                                    );
-
-                interestedAlliances = friendlies
-                                            .Select(ag => ag.Related.Id).ToList()
-                                            .Union(thisAllianceGroupMembers).ToList();
-            }
-            else
-            {
-                interestedAlliances = _context.Alliances
-                                            .Select(a => a.Id)
-                                            .ToList();
-            }
+            List<long> interestedAlliances = GetInterestedAlliances(allianceId);
 
             var nextDefends = _context.Zones
                 .Include(z => z.Owner)

@@ -4,6 +4,7 @@ using System.Globalization;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
+using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Domain.Entities.Zones
 {
@@ -98,10 +99,14 @@ namespace DiscordBot.Domain.Entities.Zones
         public string GetDiscordEmbedValue()
         {
             string response = "";
+            //var tz = TimeZoneInfo.ConvertTime(NextDefend.Value, )
 
             if (LowRisk)
                 response += "*_Low Risk_*\n";
-            response += $"**When**: <t:{NextDefend.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}:t> local / {DefendUtcTime} UTC";
+            response += $"**When**: "
+                        + $"<t:{NextDefend.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}:t> local / "
+                        + $"{DefendUtcTime} UTC / "
+                        + $"{NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
             response += "\n**Threats**: " + (string.IsNullOrEmpty(Threats) ? "None" : Threats);
             if (!string.IsNullOrEmpty(Notes))
             {

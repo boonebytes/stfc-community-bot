@@ -71,6 +71,31 @@ namespace DiscordBot.Responses
             return embedMsg;
         }
 
+        public EmbedBuilder GetNext(long? allianceId = null)
+        {
+            var embedMsg = new EmbedBuilder
+            {
+                Title = "Next Defense"
+                //Description = ""
+            };
+            var nextDefend = _zoneRepository.GetNextDefend(allianceId);
+            if (nextDefend == null)
+            {
+                embedMsg.Description = "No defends were found.";
+                return embedMsg;
+            }
+            else
+            {
+                var thisField = new EmbedFieldBuilder
+                {
+                    Name = nextDefend.GetDiscordEmbedName(),
+                    Value = nextDefend.GetDiscordEmbedValue() + "\n\u200b"
+                };
+                embedMsg.AddField(thisField);
+                return embedMsg;
+            }
+        }
+
         public async Task<EmbedBuilder> GetAll()
         {
             var embedMsg = new EmbedBuilder

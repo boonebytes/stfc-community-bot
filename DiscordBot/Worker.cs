@@ -8,6 +8,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,6 @@ namespace DiscordBot
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
             using (var thisServiceScope = _serviceProvider.CreateScope())
             {
                 IAllianceRepository allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
