@@ -6,7 +6,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Admin
+namespace DiscordBot.AdminWeb
 {
     public class DiscordClient : BackgroundService
     {

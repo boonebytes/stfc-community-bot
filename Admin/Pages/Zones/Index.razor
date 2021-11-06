@@ -1,0 +1,75 @@
+﻿@page "/zones/"
+@namespace DiscordBot.AdminWeb.Pages.Zones
+@using DiscordBot.Domain.Entities.Zones
+@inject IZoneRepository zoneRepository
+
+<h1>Zones</h1>
+
+@if (zones == null)
+{
+    <p><i>Loading...</i></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Owner</th>
+                <th>Defend Time (UTC)</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 0;
+                foreach (Zone zone in zones
+                                        .OrderBy(z => z.NextDefend)
+                                        .ThenBy(z => z.DefendUtcDayOfWeek)
+                                        .ThenBy(z => z.DefendUtcTime)
+                                    )
+                {
+                    <tr>
+                        <td>@zone.Name</td>
+                        <td>@zone.Level</td>
+                        <td>@zone.Owner.Name (@zone.Owner.Acronym)</td>
+                        <td>@zone.DefendUtcDayOfWeek at @zone.DefendUtcTime</td>
+                        <td>
+                            <button class="btn btn-light" @onclick="() => OnEditZone(index, zone)">
+                                <span class="oi oi-pencil" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    index++;
+                }
+            }
+        </tbody>
+    </table>
+    <ZoneForm @ref="zoneForm" OnSubmitCallback="OnAddOrEditZoneSubmitted"></ZoneForm>
+
+}
+
+@code {
+    List<Zone> zones;
+    ZoneForm zoneForm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        zones = await zoneRepository.GetAllAsync();
+    }
+
+    private void OnEditZone(int index, Zone zone)
+    {
+        zoneForm.SetZone(zone);
+        zoneForm.SetMode(ZoneForm.Modes.Edit);
+        zoneForm.Show();
+    }
+
+    public async void OnAddOrEditZoneSubmitted(EventArgs e)
+    {
+        var viewModel = zoneForm.ZoneObj;
+
+    }
+}

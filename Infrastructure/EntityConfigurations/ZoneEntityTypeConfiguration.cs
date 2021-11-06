@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using Microsoft.EntityFrameworkCore;
@@ -44,10 +45,28 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             var starSystemNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.StarSystems));
             starSystemNav.SetPropertyAccessMode(PropertyAccessMode.Field);
 
+
+            zoneConfiguration
+                .Ignore(z => z.ZoneNeighbours);
+
+            zoneConfiguration
+                .HasMany<ZoneNeighbour>("_neighbours")
+                .WithOne(zn => zn.FromZone)
+                .OnDelete(DeleteBehavior.Restrict);
             
+            /*
+            var neighboursNav = zoneConfiguration.Metadata.FindNavigation("_neighbours");
+            neighboursNav.SetPropertyAccessMode(PropertyAccessMode.Field);
+            zoneConfiguration
+                .Property<List<ZoneNeighbour>>("_neighbours")
+                .UsePropertyAccessMode(PropertyAccessMode.Field)
+                .IsRequired(false);
+            */
+
 
             var ownerNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.Owner));
             ownerNav.SetPropertyAccessMode(PropertyAccessMode.Field);
+            ownerNav.SetIsEagerLoaded(true);
 
             zoneConfiguration
                 .Property<long?>("_ownerId")

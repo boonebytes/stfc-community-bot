@@ -78,6 +78,8 @@ namespace DiscordBot
                                         var myMessages = channelMessages.Where(m =>
                                                 !m.IsPinned
                                                 && m.Author.Id == _client.CurrentUser.Id
+                                                && m.Embeds.Count == 1
+                                                && m.Embeds.First().Title.StartsWith("Defend Schedule for ")
                                                 && (DateTimeOffset.UtcNow - m.Timestamp).TotalDays <= 14
                                             )
                                             .ToList();

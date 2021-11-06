@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Responses
 {
@@ -29,29 +30,53 @@ namespace DiscordBot.Responses
             }
             else
             {
+                bool includeDayHeaders = false;
+                if (zones.Select(z => z.DefendEasternDay).Distinct().Count() > 1)
+                    includeDayHeaders = true;
+
+                DayOfWeek? lastDay = null;
                 int currentLine = 0;
                 foreach (Zone zone in zones)
                 {
-                    if (currentLine > 0)
-                    {
-                        //embedMsg.AddField("\u200B", "\u200B", true);
-                        //embedMsg.AddField("\b", "\b", true);
-                        //embedMsg.AddField("\u200b", "\u200b", true);
-                    }
-                    currentLine++;
+                    bool useNextWeek = false;
+                    if (includeDayHeaders && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek)
+                        useNextWeek = true;
+
                     if (shortVersion)
                     {
-                        embedMsg.Description += zone.GetDiscordEmbedValue(true) + "\n\u200b";
+                        if (includeDayHeaders)
+                        {
+                            if (!lastDay.HasValue || lastDay.Value != zone.DefendEasternDay)
+                            {
+                                if (currentLine > 0) embedMsg.Description += "\n";
+                                embedMsg.Description += "**__" + zone.DefendEasternDay.ToString() + "__**" + "\n";
+                                lastDay = zone.DefendEasternDay;
+                            }
+                            embedMsg.Description += "> ";
+                        }
+                        embedMsg.Description += zone.GetDiscordEmbedValue(true, useNextWeek) + "\n";
                     }
                     else
                     {
+                        if (includeDayHeaders && (!lastDay.HasValue || lastDay.Value != zone.DefendEasternDay))
+                        {
+                            var fieldHeader = new EmbedFieldBuilder
+                            {
+                                Name = "*__" + zone.DefendEasternDay.ToString() + "__*",
+                                Value = "\u200B"
+                            };
+                            embedMsg.AddField(fieldHeader);
+                            lastDay = zone.DefendEasternDay;
+                        }
+                        
                         var thisField = new EmbedFieldBuilder
                         {
                             Name = zone.GetDiscordEmbedName(),
-                            Value = zone.GetDiscordEmbedValue(false) + "\n\u200b"
+                            Value = zone.GetDiscordEmbedValue(false, useNextWeek) + "\n\u200b"
                         };
                         embedMsg.AddField(thisField);
                     }
+                    currentLine++;
                 }
             }
         }
@@ -103,7 +128,7 @@ namespace DiscordBot.Responses
             }
         }
 
-        public async Task<EmbedBuilder> GetAll()
+        public async Task<EmbedBuilder> GetAll(long? allianceId = null, bool shortVersion = false)
         {
             var embedMsg = new EmbedBuilder
             {
@@ -111,10 +136,12 @@ namespace DiscordBot.Responses
                 //Description = ""
             };
 
-            var allDefends = (await _zoneRepository.GetAllAsync()).OrderBy(z => z.NextDefend).ToList();
-
-            AddDefendsToEmbed(allDefends, ref embedMsg);
-
+            var allDefends = (await _zoneRepository.GetAllAsync(allianceId, false))
+                .OrderBy(z => z.DefendEasternDay)
+                .ThenBy(z => z.DefendEasternTime)
+                .ToList();
+            AddDefendsToEmbed(allDefends, ref embedMsg, shortVersion);
+            
             return embedMsg;
         }
     }

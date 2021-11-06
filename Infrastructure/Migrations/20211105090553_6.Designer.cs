@@ -3,14 +3,16 @@ using System;
 using DiscordBot.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DiscordBot.Infrastructure.Migrations
 {
     [DbContext(typeof(BotContext))]
-    partial class BotContextModelSnapshot : ModelSnapshot
+    [Migration("20211105090553_6")]
+    partial class _6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,12 +279,6 @@ namespace DiscordBot.Infrastructure.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    b.Property<int?>("DefendEasternDay")
-                        .HasColumnType("int");
-
-                    b.Property<TimeSpan?>("DefendEasternTime")
-                        .HasColumnType("time(6)");
 
                     b.Property<string>("DefendUtcDayOfWeek")
                         .IsRequired()

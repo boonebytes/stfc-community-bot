@@ -21,6 +21,7 @@ namespace DiscordBot.Infrastructure
         public DbSet<Resource> Resources { get; set; }
         public DbSet<StarSystem> StarSystems { get; set; }
         public DbSet<Zone> Zones { get; set; }
+        public DbSet<ZoneNeighbour> ZoneNeighbours { get; set; }
 
         private readonly IMediator _mediator;
         //private IDbContextTransaction _currentTransaction;
@@ -52,6 +53,7 @@ namespace DiscordBot.Infrastructure
             modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new StarSystemEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ZoneEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ZoneNeighbourEntityTypeConfiguration());
 
             var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
                 v => v.ToUniversalTime(),

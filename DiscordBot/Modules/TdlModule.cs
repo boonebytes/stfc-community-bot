@@ -129,12 +129,17 @@ namespace DiscordBot.Modules
         [Command("all")]
         [Summary("Prints the full defense schedule")]
         [Alias("full")]
-        public async Task AllAsync()
+        public async Task AllAsync(string extra = "")
         {
             try
             {
-                //TODO: Look at restricting this to just the interested alliances.
-                var embedMsg = await _schedule.GetAll();
+                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
+
+                var shortVersion = false;
+                if (extra.Trim().ToLower() == "short")
+                    shortVersion = true;
+
+                var embedMsg = await _schedule.GetAll(thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }

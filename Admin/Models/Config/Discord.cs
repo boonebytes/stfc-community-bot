@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Admin.Models.Config
+namespace DiscordBot.AdminWeb.Models.Config
 {
     public class Discord
     {

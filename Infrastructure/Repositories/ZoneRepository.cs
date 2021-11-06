@@ -47,11 +47,20 @@ namespace DiscordBot.Infrastructure.Repositories
             return zone;
         }
 
-        public async Task<List<Zone>> GetAllAsync()
+        public async Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true)
         {
+            QueryTrackingBehavior tracking = _context.ChangeTracker.QueryTrackingBehavior;
+            if (!withTracking) tracking = QueryTrackingBehavior.NoTracking;
+
+            List<long> interestedAlliances = GetInterestedAlliances(allianceId);
             return await _context.Zones
-                .Include(z => z.Owner)
-                .ToListAsync();
+                            .Include(z => z.Owner)
+                            .AsTracking(tracking)
+                            .Where(z => interestedAlliances.Contains(z.Owner.Id))
+                            //.OrderBy(z => z.NextDefend)
+                            .OrderBy(z => z.DefendEasternDay)
+                            .ThenBy(z => z.DefendEasternTime)
+                            .ToListAsync();
         }
 
         public Zone Update(Zone zone)
@@ -101,7 +110,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             var allZones = _context.Zones; //.Where(z => !z.NextDefend.HasValue || z.NextDefend.Value < DateTime.UtcNow);
             await allZones.ForEachAsync(z =>
-                    z.SetNextDefend()
+                    z.SetNextDefend(true)
                 );
             await _context.SaveEntitiesAsync();
         }

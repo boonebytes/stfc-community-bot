@@ -13,7 +13,7 @@ namespace DiscordBot.Domain.Entities.Zones
 
         Task<Zone> GetAsync(long id);
 
-        Task<List<Zone>> GetAllAsync();
+        Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true);
 
         Zone GetNextDefend(long? allianceId = null);
 

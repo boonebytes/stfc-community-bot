@@ -24,6 +24,13 @@ namespace DiscordBot
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostContext, builder) =>
+                {
+                    if (hostContext.HostingEnvironment.IsDevelopment())
+                    {
+                        builder.AddUserSecrets<Worker>();
+                    }
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
                     /*
