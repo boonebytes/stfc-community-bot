@@ -139,9 +139,9 @@ namespace DiscordBot.Modules
                 if (extra.Trim().ToLower() == "short")
                     shortVersion = true;
 
-                var embedMsg = await _schedule.GetAll(thisAlliance.Id, shortVersion);
+                await _schedule.PostAllAsync(Context, thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
-                await this.ReplyAsync(embed: embedMsg.Build());
+                //await this.ReplyAsync(embed: embedMsg.Build());
             }
             catch (Exception ex)
             {
