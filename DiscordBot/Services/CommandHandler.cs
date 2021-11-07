@@ -11,6 +11,8 @@ namespace DiscordBot.Services
     {
         private readonly Models.Config.Discord _discordConfig;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScope _serviceScope;
+        private readonly IServiceProvider _scopedProvider;
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
 
@@ -21,6 +23,9 @@ namespace DiscordBot.Services
             _client = client;
             _discordConfig = discordConfig;
             _serviceProvider = serviceProvider;
+
+            _serviceScope = _serviceProvider.CreateScope();
+            _scopedProvider = _serviceScope.ServiceProvider;
 
             //_commands.CommandExecuted += CommandExecutedAsync;
             //_client.MessageReceived += MessageReceivedAsync;
@@ -40,11 +45,15 @@ namespace DiscordBot.Services
             // If you do not use Dependency Injection, pass null.
             // See Dependency Injection guide for more information.
 
+            /*
             using (var scope = _serviceProvider.CreateScope())
             {
                 await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
                                                 services: scope.ServiceProvider);
             }
+            */
+            
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -57,9 +66,11 @@ namespace DiscordBot.Services
             int argPos = 0;
 
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-            if (!(message.HasStringPrefix(_discordConfig.Prefix, ref argPos) ||
-                message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
-                message.Author.IsBot)
+            if (!(
+                        message.HasStringPrefix(_discordConfig.Prefix, ref argPos)
+                        || message.HasMentionPrefix(_client.CurrentUser, ref argPos)
+                    )
+                    || message.Author.IsBot)
                 return;
 
             // Create a WebSocket-based command context based on the message
@@ -67,6 +78,7 @@ namespace DiscordBot.Services
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
+            /*
             using (var scope = _serviceProvider.CreateScope())
             {
                 await _commands.ExecuteAsync(
@@ -74,6 +86,11 @@ namespace DiscordBot.Services
                     argPos: argPos,
                     services: scope.ServiceProvider);
             }
+            */
+            await _commands.ExecuteAsync(
+                    context: context,
+                    argPos: argPos,
+                    services: _scopedProvider);
         }
     }
 }

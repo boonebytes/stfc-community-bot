@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Modules
@@ -15,20 +16,12 @@ namespace DiscordBot.Modules
     public class TdlModule : ModuleBase<SocketCommandContext>
     {
         private readonly ILogger<TdlModule> _logger;
-        private readonly IZoneRepository _zoneRepository;
-        private readonly IAllianceRepository _allianceRepository;
-        private readonly Responses.Schedule _schedule;
-        private readonly Responses.Broadcast _broadcast;
-        private readonly DiscordSocketClient _client;
-
-        public TdlModule(ILogger<TdlModule> logger, IZoneRepository zoneRepository, IAllianceRepository allianceRepository, Responses.Schedule schedule, Responses.Broadcast broadcast, DiscordSocketClient client)
+        private readonly IServiceProvider _serviceProvider;
+        
+        public TdlModule(ILogger<TdlModule> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _zoneRepository = zoneRepository;
-            _allianceRepository = allianceRepository;
-            _schedule = schedule;
-            _broadcast = broadcast;
-            _client = client;
+            _serviceProvider = serviceProvider;
         }
 
         protected async Task TryDeleteMessage(SocketUserMessage message)
@@ -60,14 +53,18 @@ namespace DiscordBot.Modules
         [Summary("Prints the defense times for the rest of today")]
         public async Task TodayAsync(string extra = "")
         {
+            using var serviceScope = _serviceProvider.CreateScope();
             try
             {
-                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
+
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
                 var shortVersion = false;
                 if (extra.Trim().ToLower() == "short")
                     shortVersion = true;
-                var embedMsg = _schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id, shortVersion);
+                var embedMsg = schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
@@ -86,15 +83,19 @@ namespace DiscordBot.Modules
         [Summary("Prints the defense times for tomorrow")]
         public async Task TomorrowAsync(string extra = "")
         {
+            using var serviceScope = _serviceProvider.CreateScope();
             try
             {
-                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
+
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
                 var shortVersion = false;
                 if (extra.Trim().ToLower() == "short")
                     shortVersion = true;
 
-                var embedMsg = _schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id, shortVersion);
+                var embedMsg = schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
             }
@@ -113,12 +114,21 @@ namespace DiscordBot.Modules
         [Summary("Prints the next item on the defend schedule")]
         public async Task NextAsync()
         {
+            using var serviceScope = _serviceProvider.CreateScope();
             try
             {
-                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
-                var embedMsg = _schedule.GetNext(thisAlliance.Id);
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
+
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                var embedMsg = schedule.GetNext(thisAlliance.Id);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
+            }
+            catch (BotDomainException ex)
+            {
+                await this.ReplyAsync(ex.Message);
+                _logger.LogError(ex, $"Exception when trying to run NEXT for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
             catch (Exception ex)
             {
@@ -126,22 +136,35 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("all")]
+        [Command("all", RunMode = RunMode.Async)]
         [Summary("Prints the full defense schedule")]
         [Alias("full")]
         public async Task AllAsync(string extra = "")
         {
+            using var serviceScope = _serviceProvider.CreateScope();
             try
             {
-                var thisAlliance = _allianceRepository.FindFromGuildId(Context.Guild.Id);
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
+
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
                 var shortVersion = false;
                 if (extra.Trim().ToLower() == "short")
                     shortVersion = true;
 
-                await _schedule.PostAllAsync(Context, thisAlliance.Id, shortVersion);
-                _ = TryDeleteMessage(Context.Message);
+                var targetGuild = Context.Guild.Id;
+                var targetChannel = Context.Channel.Id;
+
+                await schedule.PostAllAsync(targetGuild, targetChannel, thisAlliance.Id, shortVersion);
+                await TryDeleteMessage(Context.Message);
+
                 //await this.ReplyAsync(embed: embedMsg.Build());
+            }
+            catch (BotDomainException ex)
+            {
+                await this.ReplyAsync(ex.Message);
+                _logger.LogError(ex, $"Exception when trying to run ALL for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
             catch (Exception ex)
             {

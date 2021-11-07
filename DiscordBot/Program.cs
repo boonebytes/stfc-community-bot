@@ -55,7 +55,15 @@ namespace DiscordBot
 
                     services.AddSingleton(discordConfig);
 
-                    services.AddSingleton<DiscordSocketClient>();
+                    var clientConfig = new DiscordSocketConfig
+                    {
+                        ExclusiveBulkDelete = false,
+                        //GatewayIntents =  Discord.GatewayIntents.GuildMembers
+                        //                & Discord.GatewayIntents.GuildMessages
+                    };
+                    var client = new DiscordSocketClient(clientConfig);
+                    services.AddSingleton<DiscordSocketClient>(client);
+
                     services.AddSingleton<CommandService>();
                     services.AddSingleton<Services.CommandHandler>();
 
