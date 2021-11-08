@@ -39,14 +39,13 @@ namespace DiscordBot
 
         public async Task Run(CancellationToken stoppingToken, int pollingIntervalSeconds)
         {
-            using (var thisServiceScope = _serviceProvider.CreateScope())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
-                zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
-                scheduleResponse = thisServiceScope.ServiceProvider.GetService<Responses.Schedule>();
-
-                while (!stoppingToken.IsCancellationRequested)
+                using (var thisServiceScope = _serviceProvider.CreateScope())
                 {
+                    allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+                    zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
+                    scheduleResponse = thisServiceScope.ServiceProvider.GetService<Responses.Schedule>();
                     var nextAllianceToPost = allianceRepository.GetNextOnPostSchedule();
 
                     if (nextAllianceToPost.NextScheduledPost.Value > DateTime.UtcNow)
