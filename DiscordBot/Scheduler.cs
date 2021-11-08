@@ -37,8 +37,31 @@ namespace DiscordBot
             _serviceProvider = serviceProvider;
         }
 
+        public async Task Monitor(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var now = DateTime.UtcNow;
+                var delay = new DateTime(now.Year, now.Month, now.Day, 6, 0, 0, DateTimeKind.Utc).AddDays(1) - DateTime.UtcNow;
+                await Task.Delay(delay, stoppingToken);
+
+                if (!stoppingToken.IsCancellationRequested)
+                {
+                    using (var thisServiceScope = _serviceProvider.CreateScope())
+                    {
+                        allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+                        zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
+
+                        await allianceRepository.InitPostSchedule();
+                        await zoneRepository.InitZones();
+                    }
+                }
+            }
+        }
+
         public async Task Run(CancellationToken stoppingToken, int pollingIntervalSeconds)
         {
+            _ = Monitor(stoppingToken);
             while (!stoppingToken.IsCancellationRequested)
             {
                 using (var thisServiceScope = _serviceProvider.CreateScope())
@@ -83,6 +106,7 @@ namespace DiscordBot
 
                                     await TryCleanMessages(channel, channelMessages, nextAllianceToPost);
                                     await TryUpdateYesterdayMessage(channelMessages, nextAllianceToPost);
+                                    await TryPinToday(channelMessages, nextAllianceToPost);
                                     
                                     var embedMsg = scheduleResponse.GetForDate(DateTime.UtcNow, nextAllianceToPost.Id);
                                     await channel.SendMessageAsync(embed: embedMsg.Build());
@@ -137,6 +161,21 @@ namespace DiscordBot
                 if (yesterdayShortPosts.Count == 1)
                 {
                     var yesterdaysShortPost = (Discord.Rest.RestUserMessage)yesterdayShortPosts.First();
+                    if (yesterdaysShortPost.IsPinned)
+                        await yesterdaysShortPost.UnpinAsync();
+
+                    var pinnedNotifications = channelMessages.Where(m =>
+                            m.Type == MessageType.ChannelPinnedMessage
+                            && m.Timestamp > DateTime.Now.AddDays(-10)
+                        );
+                    if (pinnedNotifications.Count() > 0)
+                    {
+                        foreach (Discord.Rest.RestSystemMessage msg in pinnedNotifications)
+                        {
+                            await msg.DeleteAsync();
+                        }
+                    }
+
                     var yesterdayDefends = zoneRepository.GetNext24Hours(
                                                     DateTime.Now.AddDays(6),
                                                     alliance.Id)
@@ -155,6 +194,28 @@ namespace DiscordBot
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, $"Unable to edit message for yesterday's schedule for {alliance.Acronym} in guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value}");
+            }
+        }
+
+        protected async Task TryPinToday(IEnumerable<IMessage> channelMessages, Alliance alliance)
+        {
+            try
+            {
+                var todayShortPosts = channelMessages.Where(m =>
+                        m.Author.Id == _client.CurrentUser.Id
+                        && m.Embeds.Count == 0
+                        && m.Content.StartsWith("**__" + DateTime.Now.ToEasternTime().DayOfWeek.ToString() + "__**")
+                    )
+                    .ToList();
+                if (todayShortPosts.Count == 1)
+                {
+                    var todayShortPost = (Discord.Rest.RestUserMessage)todayShortPosts.First();
+                    await todayShortPost.PinAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, $"Unable to pin today's schedule for {alliance.Acronym} in guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value}");
             }
         }
     }
