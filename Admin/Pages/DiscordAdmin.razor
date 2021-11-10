@@ -25,8 +25,41 @@
     </tbody>
 </table>
 
+<EditForm Model="@editMessage">
+    <table>
+        <tr>
+            <td>Guild ID:</td>
+            <td><InputNumber TValue="decimal" @bind-Value="editMessage.GuildId" /></td>
+        </tr>
+        <tr>
+            <td>Channel ID:</td>
+            <td><InputNumber TValue="decimal" @bind-Value="editMessage.ChannelId" /></td>
+        </tr>
+        <tr>
+            <td>Message ID:</td>
+            <td><InputNumber TValue="decimal" @bind-Value="editMessage.MessageId" /></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><button @onclick="() => GetMessage()">Get Message</button></td>
+        </tr>
+        <tr>
+            <td>Message:</td>
+            <td>
+                <InputTextArea @bind-Value="editMessage.MessageText" />
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><button @onclick="() => SetMessage()">Set Message</button></td>
+        </tr>
+    </table>
+</EditForm>
+
 @code {
+    protected EditMessage editMessage = new() { };
     protected List<global::Discord.WebSocket.SocketGuild> guilds;
+
 
     protected override void OnInitialized()
     {
@@ -36,5 +69,29 @@
     protected void LeaveGuild(ulong id)
     {
         discordClient.GetGuild(id).LeaveAsync().RunSynchronously();
+    }
+
+    protected async void GetMessage()
+    {
+        var msg = await discordClient.GetGuild((ulong) editMessage.GuildId).GetTextChannel((ulong) editMessage.ChannelId).GetMessageAsync((ulong) editMessage.MessageId);
+        editMessage.MessageText = msg.Content;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    protected async void SetMessage()
+    {
+        Discord.Rest.RestUserMessage originalMessage = (Discord.Rest.RestUserMessage)await discordClient.GetGuild((ulong)editMessage.GuildId).GetTextChannel((ulong)editMessage.ChannelId).GetMessageAsync((ulong)editMessage.MessageId);
+
+        await originalMessage.ModifyAsync(msg => msg.Content = editMessage.MessageText);
+
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    protected class EditMessage
+    {
+        public decimal GuildId = 0;
+        public decimal ChannelId = 0;
+        public decimal MessageId = 0;
+        public string MessageText = "";
     }
 }
