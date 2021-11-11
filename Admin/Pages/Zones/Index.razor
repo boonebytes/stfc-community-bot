@@ -48,7 +48,6 @@ else
         </tbody>
     </table>
     <ZoneForm @ref="zoneForm" OnSubmitCallback="OnAddOrEditZoneSubmitted"></ZoneForm>
-
 }
 
 @code {
@@ -60,16 +59,36 @@ else
         zones = await zoneRepository.GetAllAsync();
     }
 
-    private void OnEditZone(int index, Zone zone)
+    private async Task OnEditZone(int index, Zone zone)
     {
-        zoneForm.SetZone(zone);
+        await zoneForm.SetZone(zone);
         zoneForm.SetMode(ZoneForm.Modes.Edit);
         zoneForm.Show();
+
+        await InvokeAsync(StateHasChanged);
+        //StateHasChanged();
     }
 
-    public async void OnAddOrEditZoneSubmitted(EventArgs e)
+    public async Task OnAddOrEditZoneSubmitted(EventArgs e)
     {
         var viewModel = zoneForm.ZoneObj;
 
+        if (zoneForm.Mode == ZoneForm.Modes.Edit)
+        {
+            var saveZone = await zoneRepository.GetAsync(viewModel.Id);
+
+            saveZone.Update(
+                viewModel.Name,
+                viewModel.Level.Value,
+                viewModel.Owner,
+                viewModel.Threats,
+                viewModel.DefendUtcDayOfWeek,
+                viewModel.DefendUtcTime,
+                viewModel.Notes);
+
+            zoneRepository.Update(saveZone);
+            await zoneRepository.UnitOfWork.SaveEntitiesAsync();
+            await InvokeAsync(StateHasChanged);
+        }
     }
 }

@@ -182,7 +182,9 @@ namespace DiscordBot
                                                 .OrderBy(z => z.NextDefend)
                                                 .ToList();
                     await yesterdaysShortPost.ModifyAsync(msg =>
-                            msg.Content = scheduleResponse.GetDayScheduleAsString(yesterdayDefends, DateTime.Now.ToEasternTime().AddDays(-1).DayOfWeek, true)
+                            msg.Content =
+                                scheduleResponse.GetDayScheduleAsString(yesterdayDefends, DateTime.Now.ToEasternTime().AddDays(-1).DayOfWeek, true)
+                                + $"*_Last Updated: <t:{DateTime.UtcNow.ToUnixTimestamp()}:R>_*" + "\n\u200b"
                         );
 
                 }

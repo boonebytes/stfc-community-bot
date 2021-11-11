@@ -37,44 +37,49 @@
                 <h5 class="modal-title">Zone Information</h5>
             </div>
 
-            <EditForm Model=@ZoneObj OnSubmit=@OnSubmit>
-                <div class="modal-body">
-                    <table width="100%">
-                        <tr>
-                            <td>Id:</td>
-                            <td>@ZoneObj.Id</td>
-                        </tr>
-                        <tr>
-                            <td>Name:</td>
-                            <td><InputText @bind-Value=ZoneObj.Name style="width:100%;" /></td>
-                        </tr>
-                        <tr>
-                            <td>Level:</td>
-                            <td><InputNumber @bind-Value=ZoneObj.Level ParsingErrorMessage="Must be a number" /></td>
-                        </tr>
-                        <tr>
-                            <td>Owner:</td>
-                            <td>
-                                <InputSelect @bind-Value=ZoneObj.OwnerId>
-                                    @foreach (var value in allianceRepository.GetAllAsync().GetAwaiter().GetResult())
+        <EditForm Model=@ZoneObj OnSubmit=@OnSubmit>
+            <div class="modal-body">
+                <table width="100%">
+                    <tr>
+                        <td>Id:</td>
+                        <td>@ZoneObj.Id</td>
+                    </tr>
+                    <tr>
+                        <td>Name:</td>
+                        <td><InputText @bind-Value=ZoneObj.Name style="width:100%;" /></td>
+                    </tr>
+                    <tr>
+                        <td>Level:</td>
+                        <td><InputNumber @bind-Value=ZoneObj.Level ParsingErrorMessage="Must be a number" /></td>
+                    </tr>
+                    <tr>
+                        <td>Owner:</td>
+                        <td>
+                            <InputSelect @bind-Value=ZoneObj.OwnerId>
+                                @foreach (var value in ZoneObj.Alliances)
                                     {
-                                        <option value="@value.Id">@value.Acronym - @value.Name</option>
+                                    <option value="@value.Id">@value.Acronym - @value.Name</option>
                                     }
-                                </InputSelect>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Notes:</td>
-                            <td><textarea rows="5" @bind="ZoneObj.Notes" style="width:100%;"></textarea></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <input type="submit" value="Ok" class="btn btn-primary" />
-                    <input type="button" value="Cancel" class="btn btn-secondary" @onclick="OnCancel" />
-                </div>
-            </EditForm>
+                            </InputSelect>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Threats:</td>
+                        <td><InputText @bind-Value="ZoneObj.Threats" /></td>
+                    </tr>
+                    <tr>
+                        <td>Notes:</td>
+                        <td><textarea rows="5" @bind="ZoneObj.Notes" style="width:100%;"></textarea></td>
+                    </tr>
+                </table>
 
+            </div>
+                
+            <div class="modal-footer">
+                <input type="submit" value="Ok" class="btn btn-primary" />
+                <input type="button" value="Cancel" class="btn btn-secondary" @onclick="OnCancel" />
+            </div>
+            </EditForm>
         </div>
     </div>
 }
@@ -105,9 +110,10 @@ else
     /// </summary>
     [Parameter]
     public ZoneViewModel ZoneObj { get; set; }
-    public void SetZone(Zone zone)
+    public async Task SetZone(Zone zone)
     {
         ZoneObj = AdminMapper.GetMapper().Map<ZoneViewModel>(zone);
+        ZoneObj.Alliances = (await allianceRepository.GetAllAsync()).ToList();
     }
 
     public enum Modes { Edit, Create };
@@ -115,14 +121,14 @@ else
     public void Show()
     {
         IsVisible = true;
+        //StateHasChanged();
         //InvokeAsync(() => StateHasChanged());
-        StateHasChanged();
     }
     public void Hide()
     {
         IsVisible = false;
         //InvokeAsync(() => StateHasChanged());
-        StateHasChanged();
+        //StateHasChanged();
     }
 
     /// <summary>

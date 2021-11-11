@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DiscordBot.Domain.Entities.Alliances;
 
 namespace DiscordBot.AdminWeb.ViewModels
@@ -16,5 +17,7 @@ namespace DiscordBot.AdminWeb.ViewModels
         public long? OwnerId { get; set; }
         public Alliance Owner { get; set; }
         public DateTime? NextDefend { get; set; }
+
+        public List<Alliance> Alliances { get; set; } = new();
     }
 }

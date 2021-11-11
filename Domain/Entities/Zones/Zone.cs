@@ -145,11 +145,11 @@ namespace DiscordBot.Domain.Entities.Zones
                 response = $"{Owner.Acronym}/{Name}({Level}^): <t:";
                 if (useNextWeek)
                 {
-                    response += NextDefend.Value.ToUniversalTime().AddDays(7).Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    response += NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
                 }
                 else
                 {
-                    response += NextDefend.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    response += NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
                 }
                 response += $":t> local / {NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
                 if (!string.IsNullOrEmpty(Threats))
@@ -166,11 +166,11 @@ namespace DiscordBot.Domain.Entities.Zones
                             + $"<t:"; //
                 if (useNextWeek)
                 {
-                    response += NextDefend.Value.ToUniversalTime().AddDays(7).Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    response += NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
                 }
                 else
                 {
-                    response += NextDefend.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    response += NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
                 }
                 response += ":t> local / "
                             + $"{DefendUtcTime} UTC / "
