@@ -172,6 +172,37 @@ namespace DiscordBot.Modules
             }
         }
 
+        [Command("refresh", RunMode = RunMode.Async)]
+        [Summary("Refreshes any short posts for the entire week")]
+        public async Task RefreshAsync()
+        {
+            using var serviceScope = _serviceProvider.CreateScope();
+            try
+            {
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
+
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+
+                if (Context.Channel is SocketTextChannel channel)
+                {
+                    var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
+
+                    await schedule.TryCleanMessages(channel, channelMessages, thisAlliance);
+                    await schedule.TryUpdateWeeklyMessages(channelMessages, thisAlliance);
+                    await TryDeleteMessage(Context.Message);
+                }
+                else
+                {
+                    _logger.LogError($"Unable to cast context channel to text channel for {Context.Guild.Name} in {Context.Channel.Name}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run REFRESH for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
+        }
+
         /*
         [Command("broadcast")]
         [Summary("Sends a broadcast message to registered servers")]

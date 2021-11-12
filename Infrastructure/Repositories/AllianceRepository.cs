@@ -40,7 +40,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<Alliance> GetAsync(long id)
         {
-            var alliance = await _context.Alliances
+            var alliance = await _context.Alliances.AsQueryable()
                 .Where(z => z.Id == id)
                 .SingleOrDefaultAsync();
             return alliance;
@@ -48,7 +48,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Alliance>> GetAllAsync()
         {
-            return await _context.Alliances.ToListAsync();
+            return await _context.Alliances.ToAsyncEnumerable().ToListAsync();
         }
 
         public Alliance Update(Alliance alliance)
@@ -61,6 +61,7 @@ namespace DiscordBot.Infrastructure.Repositories
         public List<Alliance> GetAllWithServers()
         {
             return _context.Alliances
+                .AsQueryable()
                 .Where(a => a.GuildId.HasValue)
                 .Where(a => a.DefendSchedulePostChannel.HasValue)
                 .ToList();
@@ -69,6 +70,7 @@ namespace DiscordBot.Infrastructure.Repositories
         public Alliance GetNextOnPostSchedule()
         {
             return _context.Alliances
+                .AsQueryable()
                 .Where(a => a.GuildId.HasValue)
                 .Where(a => a.DefendSchedulePostChannel.HasValue)
                 .ToList()
@@ -99,6 +101,7 @@ namespace DiscordBot.Infrastructure.Repositories
         public async Task InitPostSchedule()
         {
             var alliances = _context.Alliances
+                .AsQueryable()
                 .Where(a =>
                     a.GuildId.HasValue
                     && a.DefendSchedulePostChannel.HasValue

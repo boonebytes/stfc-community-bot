@@ -17,6 +17,8 @@ namespace DiscordBot.Domain.Entities.Zones
 
         Zone GetNextDefend(long? allianceId = null);
 
+        List<Zone> GetFromDayOfWeek(DayOfWeek dayOfWeek, long? allianceId = null);
+
         List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null);
 
         Task InitZones();

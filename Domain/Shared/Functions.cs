@@ -12,7 +12,7 @@ namespace DiscordBot.Domain.Shared
 
         public static long ToUnixTimestamp(this DateTime dateTime)
         {
-            return (long) Math.Round(dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds, 0);
+            return (long) Math.Round(dateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds, 0);
         }
     }
 }

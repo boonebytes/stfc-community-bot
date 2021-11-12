@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 using Microsoft.Extensions.Logging;
@@ -310,6 +311,104 @@ namespace DiscordBot.Responses
             }
             
             //AddDefendsToEmbed(allDefends, ref embedMsg, shortVersion);
+        }
+
+
+
+        // SCHEDULER SPECIFIC
+
+        public async Task TryCleanMessages(SocketTextChannel channel, IEnumerable<IMessage> channelMessages, Alliance alliance)
+        {
+            try
+            {
+                // Delete any of the long "defend schedule for today" kind of messages
+                var myMessages = channelMessages.Where(m =>
+                        !m.IsPinned
+                        && m.Author.Id == _client.CurrentUser.Id
+                        && m.Embeds.Count == 1
+                        && m.Embeds.First().Title.StartsWith("Defend Schedule for ")
+                        && (DateTimeOffset.UtcNow - m.Timestamp).TotalDays <= 14
+                    )
+                    .ToList();
+                await channel.DeleteMessagesAsync(myMessages);
+
+
+                // Delete pinned notifications
+                var pinnedNotifications = channelMessages.Where(m =>
+                            m.Author.Id == _client.CurrentUser.Id
+                            && m.Type == MessageType.ChannelPinnedMessage
+                            && m.Timestamp > DateTime.Now.AddDays(-10)
+                        );
+                if (pinnedNotifications.Count() > 0)
+                {
+                    foreach (Discord.Rest.RestSystemMessage msg in pinnedNotifications)
+                    {
+                        await msg.DeleteAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, $"Unable to delete messages for new schedule for {alliance.Acronym} in guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value}");
+            }
+        }
+
+        public async Task TryUpdateWeeklyMessages(IEnumerable<IMessage> channelMessages, Alliance alliance)
+        {
+            try
+            {
+                DayOfWeek currentDay = DayOfWeek.Sunday;
+                while (currentDay <= DayOfWeek.Saturday)
+                {
+                    await TryUpdateDayMessage(channelMessages, alliance, currentDay);
+                    currentDay += 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unable to update all weekly messages for {alliance.Acronym}");
+            }
+        }
+
+        public async Task TryUpdateDayMessage(IEnumerable<IMessage> channelMessages, Alliance alliance, DayOfWeek dayOfWeek)
+        {
+            try
+            {
+                var dayShortPosts = channelMessages.Where(m =>
+                        m.Author.Id == _client.CurrentUser.Id
+                        && m.Embeds.Count == 0
+                        //&& m.Content.StartsWith("**__" + DateTime.Now.ToEasternTime().AddDays(-1).DayOfWeek.ToString() + "__**")
+                        && m.Content.StartsWith("**__" + dayOfWeek.ToString() + "__**")
+                    )
+                    .ToList();
+
+                if (dayShortPosts.Count == 1)
+                {
+                    var dayShortPost = (Discord.Rest.RestUserMessage)dayShortPosts.First();
+                    if (dayShortPost.IsPinned && dayOfWeek != DateTime.Now.ToEasternTime().DayOfWeek)
+                        await dayShortPost.UnpinAsync();
+
+                    var yesterdayDefends = _zoneRepository.GetFromDayOfWeek(
+                                                    dayOfWeek,
+                                                    alliance.Id)
+                                                .OrderBy(z => z.DefendEasternTime)
+                                                .ToList();
+                    await dayShortPost.ModifyAsync(msg =>
+                            msg.Content =
+                                this.GetDayScheduleAsString(yesterdayDefends, dayOfWeek, true)
+                                + $"*_Last Updated: <t:{DateTime.UtcNow.ToUnixTimestamp()}:R>_*" + "\n\u200b"
+                        );
+
+                }
+                else
+                {
+                    _logger.LogError($"Unable to find mesage to edit {dayOfWeek} day-of-week schedule for {alliance.Acronym}. Records returned: {dayShortPosts.Count}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, $"Unable to edit message for {dayOfWeek} day-of-week schedule for {alliance.Acronym}.");
+            }
         }
     }
 }
