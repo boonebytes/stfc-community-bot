@@ -45,6 +45,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 }
 
                 var friendlies = _context.Diplomacies
+                                .AsQueryable()
                                 .Where(d =>
                                         d.Owner == thisAlliance
                                         && (
@@ -60,6 +61,7 @@ namespace DiscordBot.Infrastructure.Repositories
             else
             {
                 interestedAlliances = _context.Alliances
+                                            .AsQueryable()
                                             .Select(a => a.Id)
                                             .ToList();
             }

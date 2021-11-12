@@ -104,8 +104,8 @@ namespace DiscordBot
                                 {
                                     var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
 
-                                    await TryCleanMessages(channel, channelMessages, nextAllianceToPost);
-                                    await TryUpdateYesterdayMessage(channelMessages, nextAllianceToPost);
+                                    await scheduleResponse.TryCleanMessages(channel, channelMessages, nextAllianceToPost);
+                                    await scheduleResponse.TryUpdateWeeklyMessages(channelMessages, nextAllianceToPost);
                                     await TryPinToday(channelMessages, nextAllianceToPost);
                                     
                                     var embedMsg = scheduleResponse.GetForDate(DateTime.UtcNow, nextAllianceToPost.Id);
@@ -124,78 +124,6 @@ namespace DiscordBot
                         }
                     }
                 }
-            }
-        }
-
-        protected async Task TryCleanMessages(SocketTextChannel channel, IEnumerable<IMessage> channelMessages, Alliance alliance)
-        {
-            try
-            {
-                var myMessages = channelMessages.Where(m =>
-                        !m.IsPinned
-                        && m.Author.Id == _client.CurrentUser.Id
-                        && m.Embeds.Count == 1
-                        && m.Embeds.First().Title.StartsWith("Defend Schedule for ")
-                        && (DateTimeOffset.UtcNow - m.Timestamp).TotalDays <= 14
-                    )
-                    .ToList();
-                await channel.DeleteMessagesAsync(myMessages);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, $"Unable to delete messages for new schedule for {alliance.Acronym} in guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value}");
-            }
-        }
-
-        protected async Task TryUpdateYesterdayMessage(IEnumerable<IMessage> channelMessages, Alliance alliance)
-        {
-            try
-            {
-                var yesterdayShortPosts = channelMessages.Where(m =>
-                        m.Author.Id == _client.CurrentUser.Id
-                        && m.Embeds.Count == 0
-                        && m.Content.StartsWith("**__" + DateTime.Now.ToEasternTime().AddDays(-1).DayOfWeek.ToString() + "__**")
-                    )
-                    .ToList();
-
-                if (yesterdayShortPosts.Count == 1)
-                {
-                    var yesterdaysShortPost = (Discord.Rest.RestUserMessage)yesterdayShortPosts.First();
-                    if (yesterdaysShortPost.IsPinned)
-                        await yesterdaysShortPost.UnpinAsync();
-
-                    var pinnedNotifications = channelMessages.Where(m =>
-                            m.Type == MessageType.ChannelPinnedMessage
-                            && m.Timestamp > DateTime.Now.AddDays(-10)
-                        );
-                    if (pinnedNotifications.Count() > 0)
-                    {
-                        foreach (Discord.Rest.RestSystemMessage msg in pinnedNotifications)
-                        {
-                            await msg.DeleteAsync();
-                        }
-                    }
-
-                    var yesterdayDefends = zoneRepository.GetNext24Hours(
-                                                    DateTime.Now.AddDays(6),
-                                                    alliance.Id)
-                                                .OrderBy(z => z.NextDefend)
-                                                .ToList();
-                    await yesterdaysShortPost.ModifyAsync(msg =>
-                            msg.Content =
-                                scheduleResponse.GetDayScheduleAsString(yesterdayDefends, DateTime.Now.ToEasternTime().AddDays(-1).DayOfWeek, true)
-                                + $"*_Last Updated: <t:{DateTime.UtcNow.ToUnixTimestamp()}:R>_*" + "\n\u200b"
-                        );
-
-                }
-                else
-                {
-                    _logger.LogError($"Unable to find mesage to edit yesterday's schedule for {alliance.Acronym} in guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value}. Records returned: {yesterdayShortPosts.Count}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, $"Unable to edit message for yesterday's schedule for {alliance.Acronym} in guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value}");
             }
         }
 

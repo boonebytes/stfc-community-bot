@@ -84,6 +84,23 @@ namespace DiscordBot.Infrastructure.Repositories
                 return next.First();
         }
 
+        public List<Zone> GetFromDayOfWeek(DayOfWeek dayOfWeek, long? allianceId = null)
+        {
+            List<long> interestedAlliances = GetInterestedAlliances(allianceId);
+
+            var results = _context.Zones
+                .Include(z => z.Owner)
+                .Where(z => interestedAlliances.Contains(z.Owner.Id))
+                .ToList()
+                .Where(z =>
+                        z.DefendEasternDay == dayOfWeek
+                    )
+                .OrderBy(z => z.DefendEasternTime)
+                .ToList();
+            return results;
+        }
+
+
         public List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null)
         {
             if (!fromDate.HasValue)
@@ -108,7 +125,8 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task InitZones()
         {
-            var allZones = _context.Zones; //.Where(z => !z.NextDefend.HasValue || z.NextDefend.Value < DateTime.UtcNow);
+            var allZones = _context.Zones.AsAsyncEnumerable();
+                            //.Where(z => !z.NextDefend.HasValue || z.NextDefend.Value < DateTime.UtcNow);
             await allZones.ForEachAsync(z =>
                     z.SetNextDefend(true)
                 );
