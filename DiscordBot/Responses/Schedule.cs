@@ -40,7 +40,7 @@ namespace DiscordBot.Responses
 
             if (dayZones.Count() == 0)
             {
-                response += indent + "(empty)";
+                response += indent + "(empty)\n";
                 return response;
             }
 
