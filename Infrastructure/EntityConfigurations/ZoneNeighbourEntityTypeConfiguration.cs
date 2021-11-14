@@ -12,11 +12,12 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
         {
             neighbourConfiguration.ToTable("zone_neighbours");
 
-            neighbourConfiguration.HasKey(z => z.Id);
+            neighbourConfiguration.HasKey(zn => zn.Id);
 
-            neighbourConfiguration.Property(z => z.Id)
+            neighbourConfiguration.Property(zn => zn.Id)
                 .ValueGeneratedOnAdd();
 
+            
             var fromZoneNav = neighbourConfiguration.Metadata.FindNavigation(nameof(ZoneNeighbour.FromZone));
             fromZoneNav.SetPropertyAccessMode(PropertyAccessMode.Field);
             fromZoneNav.SetIsEagerLoaded(true);
@@ -27,12 +28,12 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .HasColumnName("FromZoneId")
                 .IsRequired(true);
 
-            neighbourConfiguration.HasOne<Zone>(z => z.FromZone)
-                .WithMany()
+            neighbourConfiguration.HasOne<Zone>(zn => zn.FromZone)
+                .WithMany(z => z.ZoneNeighbours)
                 .HasForeignKey("_fromZoneId")
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.Restrict);
-
+            
 
             var toZoneNav = neighbourConfiguration.Metadata.FindNavigation(nameof(ZoneNeighbour.ToZone));
             toZoneNav.SetPropertyAccessMode(PropertyAccessMode.Field);
@@ -44,7 +45,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .HasColumnName("ToZoneId")
                 .IsRequired(true);
 
-            neighbourConfiguration.HasOne<Zone>(z => z.ToZone)
+            neighbourConfiguration.HasOne<Zone>(zn => zn.ToZone)
                 .WithMany()
                 .HasForeignKey("_toZoneId")
                 .IsRequired(true)

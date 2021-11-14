@@ -44,16 +44,29 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
 
             var starSystemNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.StarSystems));
             starSystemNav.SetPropertyAccessMode(PropertyAccessMode.Field);
+            
+            zoneConfiguration
+                .Ignore(z => z.Neighbours);
+
+            //zoneConfiguration
+            //    .Ignore(z => z.ZoneNeighbours);
 
 
             zoneConfiguration
-                .Ignore(z => z.ZoneNeighbours);
-
-            zoneConfiguration
-                .HasMany<ZoneNeighbour>("_neighbours")
+                .HasMany<ZoneNeighbour>(z => z.ZoneNeighbours)
                 .WithOne(zn => zn.FromZone)
+                .HasForeignKey("_fromZoneId")
                 .OnDelete(DeleteBehavior.Restrict);
             
+
+            /*
+            zoneConfiguration
+                .HasMany<ZoneNeighbour>("_zoneNeighboursIn")
+                .WithOne(zn => zn.ToZone)
+                .HasForeignKey("_toZoneId")
+                .OnDelete(DeleteBehavior.Restrict);
+            */
+
             /*
             var neighboursNav = zoneConfiguration.Metadata.FindNavigation("_neighbours");
             neighboursNav.SetPropertyAccessMode(PropertyAccessMode.Field);

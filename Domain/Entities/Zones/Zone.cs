@@ -31,8 +31,13 @@ namespace DiscordBot.Domain.Entities.Zones
         private readonly List<StarSystem> _starSystems;
         public IReadOnlyCollection<StarSystem> StarSystems => _starSystems;
 
-        private readonly List<ZoneNeighbour> _neighbours;
-        public IReadOnlyCollection<Zone> ZoneNeighbours => (IReadOnlyCollection<Zone>) _neighbours.Select(z => z.ToZone);
+        private readonly List<ZoneNeighbour> _zoneNeighbours;
+        public IReadOnlyCollection<ZoneNeighbour> ZoneNeighbours => _zoneNeighbours;
+
+        //private readonly List<ZoneNeighbour> _zoneNeighboursIn;
+        //public IReadOnlyCollection<ZoneNeighbour> ZoneNeighboursIn => _zoneNeighboursIn;
+
+        public IReadOnlyCollection<ZoneNeighbour> Neighbours => _zoneNeighbours;
 
         public bool LowRisk
         {
@@ -47,17 +52,18 @@ namespace DiscordBot.Domain.Entities.Zones
 
         public virtual DateTime? NextDefend { get; private set; }
 
+        
         public void AddNeighbour(Zone newZone)
         {
-            _neighbours.Add(new ZoneNeighbour(this, newZone));
+            _zoneNeighbours.Add(new ZoneNeighbour(this, newZone));
         }
 
         public void RemoveNeighbour(Zone zone)
         {
-            var found = _neighbours.Where(z => z.ToZone == zone);
+            var found = _zoneNeighbours.Where(z => z.ToZone == zone);
             if (found.Count() == 1)
             {
-                _neighbours.Remove(found.First());
+                _zoneNeighbours.Remove(found.First());
             }
             else
             {

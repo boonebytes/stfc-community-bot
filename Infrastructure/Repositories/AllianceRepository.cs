@@ -41,8 +41,23 @@ namespace DiscordBot.Infrastructure.Repositories
         public async Task<Alliance> GetAsync(long id)
         {
             var alliance = await _context.Alliances.AsQueryable()
-                .Where(z => z.Id == id)
+                .Where(a => a.Id == id)
                 .SingleOrDefaultAsync();
+            return alliance;
+        }
+
+        public async Task<Alliance> GetByNameOrAcronymAsync(string value)
+        {
+            var alliance = await _context.Alliances.AsQueryable()
+                    .Where(a => a.Acronym.ToUpper() == value.ToUpper())
+                    .SingleOrDefaultAsync();
+
+            if (alliance == null || alliance == default)
+            {
+                alliance = await _context.Alliances.AsQueryable()
+                    .Where(a => a.Name.ToUpper() == value.ToUpper())
+                    .SingleOrDefaultAsync();
+            }
             return alliance;
         }
 
@@ -64,6 +79,14 @@ namespace DiscordBot.Infrastructure.Repositories
                 .AsQueryable()
                 .Where(a => a.GuildId.HasValue)
                 .Where(a => a.DefendSchedulePostChannel.HasValue)
+                .ToList();
+        }
+
+        public List<AllianceGroup> GetAllianceGroups()
+        {
+            return _context.AllianceGroups
+                .AsQueryable()
+                .OrderBy(ag => ag.Name)
                 .ToList();
         }
 

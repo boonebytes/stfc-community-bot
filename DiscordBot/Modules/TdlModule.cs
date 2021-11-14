@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -203,28 +204,230 @@ namespace DiscordBot.Modules
             }
         }
 
-        /*
-        [Command("broadcast")]
-        [Summary("Sends a broadcast message to registered servers")]
-        public async Task BroadcastAsync([Remainder][Summary("The message to broadcast")] string message)
+        [Command("alliance")]
+        [Summary("Create or update an alliance")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task AllianceCreateUpdateAsync(string acronym, string name, string group = "")
         {
-            // Check to see if this is a guild user, which is the user context
-            // where roles exist.
-            if (Context.User is SocketGuildUser guildUser)
+            using var serviceScope = _serviceProvider.CreateScope();
+            try
             {
-                // Check for appropriate roles
-                if (guildUser.Roles.Any(r => (new[] { "admin", "commodore", "commodores" }).Contains(r.Name.ToLower())))
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+
+                var allianceExists = await allianceRepository.GetByNameOrAcronymAsync(acronym);
+                if (allianceExists == null || allianceExists == default)
                 {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    _broadcast.SendBroadcast(Context.Channel, guildUser, message);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    allianceExists = await allianceRepository.GetByNameOrAcronymAsync(name);
+                }
+
+
+                AllianceGroup allianceGroup = null;
+                if (group != "" && group != "0")
+                {
+                    var allianceGroups = allianceRepository.GetAllianceGroups();
+                    allianceGroup = allianceGroups.FirstOrDefault(g => g.Name == group);
+                }
+
+                if (allianceExists == null || allianceExists == default)
+                {
+                    // Create alliance
+                    Alliance newAlliance = new(
+                        0,
+                        name,
+                        acronym,
+                        allianceGroup,
+                        null,
+                        null,
+                        null);
+                    allianceRepository.Add(newAlliance);
+                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                    await Context.Message.ReplyAsync("Alliance created");
                 }
                 else
                 {
-                    await this.ReplyAsync("Sorry, I couldn't find the right permissions for that.");
+                    // Edit alliance
+                    allianceExists.Update(
+                        name,
+                        acronym,
+                        allianceGroup,
+                        allianceExists.GuildId,
+                        allianceExists.DefendSchedulePostChannel,
+                        allianceExists.DefendSchedulePostTime);
+                    allianceRepository.Update(allianceExists);
+                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                    await Context.Message.ReplyAsync("Alliance updated");
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run Connect for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
         }
-        */
+
+
+        [Command("zone")]
+        [Summary("Create or update a zone")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task ZoneCreateUpdateAsync(string name, string owner, int level = 0, string threats = "", string dayOfWeekUtc = "", string timeOfDayUtc = "", [Remainder] string notes = "")
+        {
+            using var serviceScope = _serviceProvider.CreateScope();
+            try
+            {
+                var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+
+                if (level < 0 || level > 3)
+                {
+                    await Context.Message.ReplyAsync("Level must be between 1 and 3. Specify 0 if you do not wish to change an existing value.");
+                    return;
+                }
+
+                Alliance ownerAlliance = null;
+                if (owner != "" && owner != "0")
+                {
+                    ownerAlliance = await allianceRepository.GetByNameOrAcronymAsync(owner);
+                    if (ownerAlliance == null || ownerAlliance == default)
+                    {
+                        await Context.Message.ReplyAsync("The owner could not be found. Please check it and try again.");
+                        return;
+                    }
+                }
+
+                if (!(new[] { "", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}.Contains(dayOfWeekUtc)))
+                {
+                    await Context.Message.ReplyAsync("The day of the week could not be detrmined.");
+                    return;
+                }
+                if (timeOfDayUtc != "")
+                {
+                    DateTime verifyTimeOfDay;
+                    CultureInfo culture = new CultureInfo("en-US");
+
+                    if (!DateTime.TryParseExact(timeOfDayUtc, "h:mm tt", culture, DateTimeStyles.AssumeUniversal, out verifyTimeOfDay))
+                    {
+                        await Context.Message.ReplyAsync("The time of day could not be understood.");
+                        return;
+                    }
+                }
+
+                var zoneExists = await zoneRepository.GetByNameAsync(name);
+                if (zoneExists == null || zoneExists == default)
+                {
+                    // Create zone
+                    if (level == 0)
+                    {
+                        await Context.Message.ReplyAsync("Level cannot be 0 for a new record.");
+                        return;
+                    }
+                    if (dayOfWeekUtc == "")
+                    {
+                        await Context.Message.ReplyAsync("The day of the week cannot be blank for a new record.");
+                        return;
+                    }
+                    if (timeOfDayUtc == "")
+                    {
+                        await Context.Message.ReplyAsync("The time of day cannot be blank for a new record.");
+                        return;
+                    }
+
+                    Zone newZone = new(
+                        0,
+                        name,
+                        level,
+                        ownerAlliance,
+                        threats,
+                        dayOfWeekUtc,
+                        timeOfDayUtc,
+                        notes
+                        );
+                    zoneRepository.Add(newZone);
+                    await zoneRepository.UnitOfWork.SaveEntitiesAsync();
+                    await zoneRepository.InitZones();
+                    await Context.Message.ReplyAsync("Zone created");
+                }
+                else
+                {
+                    // Update zone
+                    var newLevel = (level == 0 ? zoneExists.Level : level);
+                    var newThreats = (threats == "" || threats == "0" ? zoneExists.Threats : threats);
+                    var newDayOfWeek = (dayOfWeekUtc == "" || dayOfWeekUtc == "0" ? zoneExists.DefendUtcDayOfWeek : dayOfWeekUtc);
+                    var newTimeOfDay = (timeOfDayUtc == "" || timeOfDayUtc == "0" ? zoneExists.DefendUtcTime : timeOfDayUtc);
+                    var newNotes = (notes == "" || notes == "0" ? zoneExists.Notes : notes);
+
+                    zoneExists.Update(
+                        zoneExists.Name,
+                        level,
+                        ownerAlliance,
+                        newThreats,
+                        newDayOfWeek,
+                        newTimeOfDay,
+                        newNotes
+                        );
+                    zoneRepository.Update(zoneExists);
+                    await zoneRepository.UnitOfWork.SaveEntitiesAsync();
+                    await zoneRepository.InitZones();
+                    await Context.Message.ReplyAsync("Zone updated");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run Zone Create Update for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
+        }
+
+        [Command("connect")]
+        [Summary("Register a connection between two zones")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task ConnectAsync(string zone1, string zone2)
+        {
+            using var serviceScope = _serviceProvider.CreateScope();
+            try
+            {
+                var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
+                var objZone1 = await zoneRepository.GetByNameAsync(zone1);
+                var objZone2 = await zoneRepository.GetByNameAsync(zone2);
+
+                if (objZone1 == null || objZone1 == default)
+                {
+                    await Context.Message.ReplyAsync($"I'm sorry, I couldn't find a zone called {zone1}");
+                    return;
+                }
+                if (objZone2 == null || objZone2 == default)
+                {
+                    await Context.Message.ReplyAsync($"I'm sorry, I couldn't find a zone called {zone2}");
+                    return;
+                }
+
+                string results = "";
+                if (!objZone1.Neighbours.Select(n => n.ToZone).Contains(objZone2))
+                {
+                    objZone1.AddNeighbour(objZone2);
+                    zoneRepository.Update(objZone1);
+                    results += $"Added {objZone1.Name} -> {objZone2.Name}\n";
+                }
+                if (!objZone2.Neighbours.Select(n => n.ToZone).Contains(objZone1))
+                {
+                    objZone2.AddNeighbour(objZone1);
+                    zoneRepository.Update(objZone2);
+                    results += $"Added {objZone1.Name} <- {objZone2.Name}\n";
+                }
+                results = results.TrimEnd();
+
+                if (results == "")
+                {
+                    results = "No changes made.";
+                }
+                else
+                {
+                    await zoneRepository.UnitOfWork.SaveEntitiesAsync();
+                }
+
+                await Context.Message.ReplyAsync(results);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run Connect for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
+        }
     }
 }

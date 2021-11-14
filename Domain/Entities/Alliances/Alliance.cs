@@ -5,7 +5,7 @@ using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Alliances
 {
-    public partial class Alliance : Entity, IAggregateRoot
+    public partial class Alliance : Entity
     {
         public Alliance()
         {

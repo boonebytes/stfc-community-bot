@@ -44,7 +44,7 @@ namespace DiscordBot.AdminWeb
             services.AddScoped<IAllianceRepository, AllianceRepository>();
 
             services.AddSingleton<DiscordSocketClient>();
-            services.AddHostedService<DiscordClient>();
+            //services.AddHostedService<DiscordClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

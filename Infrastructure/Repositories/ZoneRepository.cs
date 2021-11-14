@@ -42,7 +42,22 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             var zone = await _context.Zones
                 .Include(z => z.Owner)
+                .Include(z => z.ZoneNeighbours)
+                    .ThenInclude(zn => zn.ToZone)
+                        .ThenInclude(tz => tz.Owner)
                 .Where(z => z.Id == id)
+                .SingleOrDefaultAsync();
+            return zone;
+        }
+
+        public async Task<Zone> GetByNameAsync(string name)
+        {
+            var zone = await _context.Zones
+                .Include(z => z.Owner)
+                .Include(z => z.ZoneNeighbours)
+                    .ThenInclude(zn => zn.ToZone)
+                        .ThenInclude(tz => tz.Owner)
+                .Where(z => z.Name.ToUpper() == name.ToUpper())
                 .SingleOrDefaultAsync();
             return zone;
         }
@@ -55,6 +70,9 @@ namespace DiscordBot.Infrastructure.Repositories
             List<long> interestedAlliances = GetInterestedAlliances(allianceId);
             return await _context.Zones
                             .Include(z => z.Owner)
+                            .Include(z => z.ZoneNeighbours)
+                                .ThenInclude(zn => zn.ToZone)
+                                    .ThenInclude(tz => tz.Owner)
                             .AsTracking(tracking)
                             .Where(z => interestedAlliances.Contains(z.Owner.Id))
                             //.OrderBy(z => z.NextDefend)
@@ -75,6 +93,9 @@ namespace DiscordBot.Infrastructure.Repositories
             List<long> interestedAlliances = GetInterestedAlliances(allianceId);
             var next = _context.Zones
                             .Include(z => z.Owner)
+                            .Include(z => z.ZoneNeighbours)
+                                .ThenInclude(zn => zn.ToZone)
+                                    .ThenInclude(tz => tz.Owner)
                             .Where(z => interestedAlliances.Contains(z.Owner.Id))
                             .OrderBy(z => z.NextDefend)
                             .ToList();
@@ -90,6 +111,9 @@ namespace DiscordBot.Infrastructure.Repositories
 
             var results = _context.Zones
                 .Include(z => z.Owner)
+                .Include(z => z.ZoneNeighbours)
+                    .ThenInclude(zn => zn.ToZone)
+                        .ThenInclude(tz => tz.Owner)
                 .Where(z => interestedAlliances.Contains(z.Owner.Id))
                 .ToList()
                 .Where(z =>
@@ -112,6 +136,9 @@ namespace DiscordBot.Infrastructure.Repositories
 
             var nextDefends = _context.Zones
                 .Include(z => z.Owner)
+                .Include(z => z.ZoneNeighbours)
+                    .ThenInclude(zn => zn.ToZone)
+                        .ThenInclude(tz => tz.Owner)
                 .Where(z => interestedAlliances.Contains(z.Owner.Id))
                 .ToList()
                 .Where(z =>

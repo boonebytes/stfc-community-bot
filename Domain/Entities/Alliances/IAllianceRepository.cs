@@ -13,9 +13,13 @@ namespace DiscordBot.Domain.Entities.Alliances
 
         Task<Alliance> GetAsync(long id);
 
+        Task<Alliance> GetByNameOrAcronymAsync(string value);
+
         Task<List<Alliance>> GetAllAsync();
 
         List<Alliance> GetAllWithServers();
+
+        List<AllianceGroup> GetAllianceGroups();
 
         Alliance GetNextOnPostSchedule();
 

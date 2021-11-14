@@ -39,6 +39,8 @@ namespace DiscordBot.Domain.Entities.Zones
                 string notes
             )
         {
+            if (threats == "") threats = null;
+
             Name = name;
             Level = level;
             Owner = owner;
