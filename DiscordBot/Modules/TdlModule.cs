@@ -349,10 +349,28 @@ namespace DiscordBot.Modules
                 {
                     // Update zone
                     var newLevel = (level == 0 ? zoneExists.Level : level);
-                    var newThreats = (threats == "" || threats == "0" ? zoneExists.Threats : threats);
                     var newDayOfWeek = (dayOfWeekUtc == "" || dayOfWeekUtc == "0" ? zoneExists.DefendUtcDayOfWeek : dayOfWeekUtc);
                     var newTimeOfDay = (timeOfDayUtc == "" || timeOfDayUtc == "0" ? zoneExists.DefendUtcTime : timeOfDayUtc);
-                    var newNotes = (notes == "" || notes == "0" ? zoneExists.Notes : notes);
+
+                    string newThreats = zoneExists.Threats;
+                    if (threats == "null")
+                    {
+                        newThreats = "";
+                    }
+                    else if (threats != "" && threats != "0")
+                    {
+                        newThreats = threats;
+                    }
+
+                    string newNotes = zoneExists.Notes;
+                    if (notes == "null")
+                    {
+                        newNotes = "";
+                    }
+                    else if (notes != "" && notes != "0")
+                    {
+                        newNotes = notes;
+                    }
 
                     zoneExists.Update(
                         zoneExists.Name,
