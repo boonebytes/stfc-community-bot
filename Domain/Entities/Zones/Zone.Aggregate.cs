@@ -42,7 +42,9 @@ namespace DiscordBot.Domain.Entities.Zones
             if (threats == "") threats = null;
 
             Name = name;
-            Level = level;
+            if (level >= 1 && level <= 3)
+                Level = level;
+
             Owner = owner;
             Threats = threats;
             DefendUtcDayOfWeek = defendUtcDayOfWeek;
