@@ -37,7 +37,7 @@ namespace DiscordBot.Domain.Entities.Zones
         //private readonly List<ZoneNeighbour> _zoneNeighboursIn;
         //public IReadOnlyCollection<ZoneNeighbour> ZoneNeighboursIn => _zoneNeighboursIn;
 
-        public IReadOnlyCollection<ZoneNeighbour> Neighbours => _zoneNeighbours;
+        public IReadOnlyCollection<Zone> Neighbours => _zoneNeighbours.Select(zn => zn.ToZone).ToList();
 
         public bool LowRisk
         {
@@ -131,64 +131,6 @@ namespace DiscordBot.Domain.Entities.Zones
             var easternTime = NextDefend.Value.ToEasternTime();
             DefendEasternDay = easternTime.DayOfWeek;
             DefendEasternTime = easternTime.TimeOfDay;
-        }
-
-        public string GetDiscordEmbedName()
-        {
-            if (_ownerId.HasValue)
-                return $"{Owner.Acronym} - {Name} ({Level}^)";
-            else
-                return $"Unclaimed - {Name} ({Level}^)";
-        }
-
-        public string GetDiscordEmbedValue(bool shortVersion = false, bool useNextWeek = false)
-        {
-            string response = "";
-            //var tz = TimeZoneInfo.ConvertTime(NextDefend.Value, )
-
-            if (shortVersion)
-            {
-                response = $"{Owner.Acronym}/{Name}({Level}^): <t:";
-                if (useNextWeek)
-                {
-                    response += NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
-                }
-                else
-                {
-                    response += NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
-                }
-                response += $":t> local / {NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
-                if (!string.IsNullOrEmpty(Threats))
-                    response += " [*_" + Threats + "_*]";
-                else if (LowRisk)
-                    response += " [*_Low Risk_*]";
-            }
-            else
-            {
-                if (LowRisk)
-                    response += "*_Low Risk_*\n";
-
-                response += $"**When**: "
-                            + $"<t:"; //
-                if (useNextWeek)
-                {
-                    response += NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
-                }
-                else
-                {
-                    response += NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
-                }
-                response += ":t> local / "
-                            + $"{DefendUtcTime} UTC / "
-                            + $"{NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
-                response += "\n**Threats**: " + (string.IsNullOrEmpty(Threats) ? "None" : Threats);
-                if (!string.IsNullOrEmpty(Notes))
-                {
-                    response += $"\n**Notes**: {Notes}";
-                }
-            }
-
-            return response;
         }
 
         public void SetName(string name)

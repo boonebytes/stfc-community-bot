@@ -57,6 +57,15 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             var receivedDiplomacyNavigation = allianceConfiguration.Metadata.FindNavigation(nameof(Alliance.ReceivedDiplomacy));
             receivedDiplomacyNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
 
+            /*
+            allianceConfiguration.HasMany<Zone>(a => a.Zones)
+                .WithOne(z => z.Owner)
+                .HasForeignKey("_ownerId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            var zoneNavigation = allianceConfiguration.Metadata.FindNavigation(nameof(Alliance.Zones));
+            zoneNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+            */
         }
     }
 }

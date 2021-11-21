@@ -25,6 +25,78 @@ namespace DiscordBot.Responses
             _client = client;
         }
 
+        public string GetDiscordEmbedTitle(Zone zone)
+        {
+            if (zone.Owner == null)
+                return $"Unclaimed - {zone.Name} ({zone.Level}^)"; 
+            else
+                return $"{zone.Owner.Acronym} - {zone.Name} ({zone.Level}^)";
+        }
+
+        public string GetDiscordEmbedValue(Zone zone, bool shortVersion = false, bool useNextWeek = false)
+        {
+            string response = "";
+            //var tz = TimeZoneInfo.ConvertTime(NextDefend.Value, )
+
+            string potentialThreats = "";
+            var potentialHostiles = _zoneRepository
+                .GetPotentialHostiles(zone.Id)
+                .Select(a => a.Acronym)
+                .OrderBy(a => a);
+
+            potentialThreats = string.Join(", ", potentialHostiles);
+
+            if (shortVersion)
+            {
+                response = $"{zone.Owner.Acronym}/{zone.Name}({zone.Level}^): <t:";
+                if (useNextWeek)
+                {
+                    response += zone.NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
+                }
+                else
+                {
+                    response += zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
+                }
+                response += $":t> local / {zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
+
+                //if (!string.IsNullOrEmpty(zone.Threats))
+                //    response += " [*_" + zone.Threats + "_*]";
+                if (!string.IsNullOrEmpty(potentialThreats))
+                    response += " [*_" + potentialThreats + "_*]";
+                else if (zone.LowRisk)
+                    response += " [*_Low Risk_*]";
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(potentialThreats) && string.IsNullOrEmpty(zone.Threats) && zone.LowRisk)
+                    response += "*_Low Risk_*\n";
+
+                response += $"**When**: "
+                            + $"<t:"; //
+                if (useNextWeek)
+                {
+                    response += zone.NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
+                }
+                else
+                {
+                    response += zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
+                }
+                response += ":t> local / "
+                            + $"{zone.DefendUtcTime} UTC / "
+                            + $"{zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
+                if (!string.IsNullOrEmpty(zone.Threats))
+                    response += "\n**Saved Threats**: " + zone.Threats;
+                response += "\n**Nearby Threats**: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialThreats);
+                if (!string.IsNullOrEmpty(zone.Notes))
+                {
+                    response += $"\n**Notes**: {zone.Notes}";
+                }
+            }
+
+            return response;
+        }
+
+
         public string GetDayScheduleAsString(List<Zone> zones, DayOfWeek day, bool includeDayHeader = true)
         {
             string indent = "";
@@ -50,7 +122,7 @@ namespace DiscordBot.Responses
                 if (includeDayHeader && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek && zone.DefendEasternDay != DayOfWeek.Sunday)
                     useNextWeek = true;
 
-                response += indent + zone.GetDiscordEmbedValue(true, useNextWeek) + "\n";
+                response += indent + GetDiscordEmbedValue(zone, true, useNextWeek) + "\n";
             }
             return response;
         }
@@ -69,47 +141,6 @@ namespace DiscordBot.Responses
                 var postMessage = GetDayScheduleAsString(zones, day, includeDayHeaders);
                 await channel.SendMessageAsync(postMessage);
             }
-            /*
-            DayOfWeek? lastDay = null;
-            foreach (Zone zone in zones)
-            {
-                bool useNextWeek = false;
-                if (includeDayHeaders && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek && zone.DefendEasternDay != DayOfWeek.Sunday)
-                    useNextWeek = true;
-
-                if (includeDayHeaders)
-                {
-                    if (!lastDay.HasValue || lastDay.Value != zone.DefendEasternDay)
-                    {
-                        if (nextMessage != "")
-                            await channel.SendMessageAsync(nextMessage);
-                        DayOfWeek dowIndex = DayOfWeek.Sunday;
-                        if (lastDay.HasValue)
-                            dowIndex = lastDay.Value + 1;
-
-                        int dowCounter = 0; // Simply to prevent a potential infinite loop
-                        while (dowIndex < zone.DefendEasternDay && dowIndex <= DayOfWeek.Saturday && dowCounter < 14)
-                        {
-                            nextMessage = "**__" + dowIndex.ToString() + "__**" + "\n"
-                                        + "> (empty)";
-                            await channel.SendMessageAsync(nextMessage);
-
-                            dowCounter++;
-                            dowIndex++;
-                        }
-
-                        nextMessage = "";
-                        nextMessage += "**__" + zone.DefendEasternDay.ToString() + "__**" + "\n";
-                        lastDay = zone.DefendEasternDay;
-                    }
-                    nextMessage += "> ";
-                }
-                nextMessage += zone.GetDiscordEmbedValue(true, useNextWeek) + "\n";
-            }
-
-            if (nextMessage != "")
-                await channel.SendMessageAsync(nextMessage);
-            */
         }
 
         protected async Task PostDefendsViaEmbedsAsync(SocketCommandContext context, string title, List<Zone> zones)
@@ -162,8 +193,8 @@ namespace DiscordBot.Responses
 
                     var thisField = new EmbedFieldBuilder
                     {
-                        Name = zone.GetDiscordEmbedName(),
-                        Value = zone.GetDiscordEmbedValue(false, useNextWeek) + "\n\u200b"
+                        Name = GetDiscordEmbedTitle(zone),
+                        Value = GetDiscordEmbedValue(zone, false, useNextWeek) + "\n\u200b"
                     };
                     embedMsg.AddField(thisField);
                     
@@ -210,7 +241,7 @@ namespace DiscordBot.Responses
                             }
                             embedMsg.Description += "> ";
                         }
-                        embedMsg.Description += zone.GetDiscordEmbedValue(true, useNextWeek) + "\n";
+                        embedMsg.Description += GetDiscordEmbedValue(zone, true, useNextWeek) + "\n";
                     }
                     else
                     {
@@ -227,8 +258,8 @@ namespace DiscordBot.Responses
                         
                         var thisField = new EmbedFieldBuilder
                         {
-                            Name = zone.GetDiscordEmbedName(),
-                            Value = zone.GetDiscordEmbedValue(false, useNextWeek) + "\n\u200b"
+                            Name = GetDiscordEmbedTitle(zone),
+                            Value = GetDiscordEmbedValue(zone, false, useNextWeek) + "\n\u200b"
                         };
                         embedMsg.AddField(thisField);
                     }
@@ -276,8 +307,8 @@ namespace DiscordBot.Responses
             {
                 var thisField = new EmbedFieldBuilder
                 {
-                    Name = nextDefend.GetDiscordEmbedName(),
-                    Value = nextDefend.GetDiscordEmbedValue() + "\n\u200b"
+                    Name = GetDiscordEmbedTitle(nextDefend),
+                    Value = GetDiscordEmbedValue(nextDefend) + "\n\u200b"
                 };
                 embedMsg.AddField(thisField);
                 return embedMsg;

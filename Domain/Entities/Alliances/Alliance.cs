@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Alliances
@@ -26,6 +27,9 @@ namespace DiscordBot.Domain.Entities.Alliances
         public virtual ulong? GuildId { get; protected set; }
         public virtual ulong? DefendSchedulePostChannel { get; protected set; }
         public virtual string DefendSchedulePostTime { get; protected set; }
+
+        private readonly List<Zone> _zones;
+        public IReadOnlyCollection<Zone> Zones => _zones;
 
         public virtual DateTime? NextScheduledPost { get; private set; }
 

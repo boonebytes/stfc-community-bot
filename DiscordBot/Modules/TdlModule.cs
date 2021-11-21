@@ -39,6 +39,7 @@ namespace DiscordBot.Modules
 
         [Command("help")]
         [Summary("Displays help information")]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task HelpAsync()
         {
             await this.ReplyAsync("For support purposes, please conact Boonebytes.\n"
@@ -52,6 +53,7 @@ namespace DiscordBot.Modules
 
         [Command("today")]
         [Summary("Prints the defense times for the rest of today")]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task TodayAsync(string extra = "")
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -82,6 +84,7 @@ namespace DiscordBot.Modules
 
         [Command("tomorrow")]
         [Summary("Prints the defense times for tomorrow")]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task TomorrowAsync(string extra = "")
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -113,6 +116,7 @@ namespace DiscordBot.Modules
 
         [Command("next")]
         [Summary("Prints the next item on the defend schedule")]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task NextAsync()
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -140,6 +144,7 @@ namespace DiscordBot.Modules
         [Command("all", RunMode = RunMode.Async)]
         [Summary("Prints the full defense schedule")]
         [Alias("full")]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task AllAsync(string extra = "")
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -175,6 +180,7 @@ namespace DiscordBot.Modules
 
         [Command("refresh", RunMode = RunMode.Async)]
         [Summary("Refreshes any short posts for the entire week")]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task RefreshAsync()
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -417,13 +423,13 @@ namespace DiscordBot.Modules
                 }
 
                 string results = "";
-                if (!objZone1.Neighbours.Select(n => n.ToZone).Contains(objZone2))
+                if (!objZone1.Neighbours.Contains(objZone2))
                 {
                     objZone1.AddNeighbour(objZone2);
                     zoneRepository.Update(objZone1);
                     results += $"Added {objZone1.Name} -> {objZone2.Name}\n";
                 }
-                if (!objZone2.Neighbours.Select(n => n.ToZone).Contains(objZone1))
+                if (!objZone2.Neighbours.Contains(objZone1))
                 {
                     objZone2.AddNeighbour(objZone1);
                     zoneRepository.Update(objZone2);

@@ -62,6 +62,45 @@ namespace DiscordBot.Infrastructure.Repositories
             return zone;
         }
 
+        public List<Alliance> GetPotentialHostiles(long id)
+        {
+            var thisZone = _context.Zones
+                    .Include(z => z.Owner)
+                        .ThenInclude(o => o.AssignedDiplomacy)
+                            .ThenInclude(ad => ad.Related)
+                                .ThenInclude(ada => ada.Zones)
+                    .Include(z => z.ZoneNeighbours)
+                        .ThenInclude(zn => zn.ToZone)
+                            .ThenInclude(tz => tz.Owner)
+                                .ThenInclude(tzo => tzo.Zones)
+                    .Where(z => z.Id == id)
+                    .SingleOrDefault();
+
+            /*
+            var ownerHostiles = thisZone.Owner.AssignedDiplomacy
+                                    .Where(ad =>
+                                        ad.Relationship == DiplomaticRelation.Enemy
+                                        && ad.Related.Zones.Count < 5
+                                    );
+            */
+
+            var ownerFriendlies = thisZone.Owner.AssignedDiplomacy
+                    .Where(ad => ad.Relationship.Id >= DiplomaticRelation.Friendly.Id)
+                    .Select(ad => ad.Related)
+                    .ToList();
+
+            var riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
+                    .Select(n => n.Owner)
+                    .Distinct()
+                    .Where(no =>
+                            !ownerFriendlies.Contains(no)
+                            && no != thisZone.Owner
+                            && no.Group != thisZone.Owner.Group
+                            // && no.Zones.Count < 5
+                        );
+            return riskyNeighbours.ToList();
+        }
+
         public async Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true)
         {
             QueryTrackingBehavior tracking = _context.ChangeTracker.QueryTrackingBehavior;

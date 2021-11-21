@@ -20,7 +20,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             
             var fromZoneNav = neighbourConfiguration.Metadata.FindNavigation(nameof(ZoneNeighbour.FromZone));
             fromZoneNav.SetPropertyAccessMode(PropertyAccessMode.Field);
-            fromZoneNav.SetIsEagerLoaded(true);
+            //fromZoneNav.SetIsEagerLoaded(true);
 
             neighbourConfiguration
                 .Property<long>("_fromZoneId")
@@ -37,7 +37,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
 
             var toZoneNav = neighbourConfiguration.Metadata.FindNavigation(nameof(ZoneNeighbour.ToZone));
             toZoneNav.SetPropertyAccessMode(PropertyAccessMode.Field);
-            toZoneNav.SetIsEagerLoaded(true);
+            //toZoneNav.SetIsEagerLoaded(true);
 
             neighbourConfiguration
                 .Property<long>("_toZoneId")

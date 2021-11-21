@@ -5,8 +5,8 @@ using Discord.Commands;
 /*
 namespace DiscordBot.Modules
 {
-    [Group("test")]
-    public class HelloModule : ModuleBase<SocketCommandContext>
+    [Group("feedback")]
+    public class FeedbackModule : ModuleBase<SocketCommandContext>
     {
         [Command("say")]
         [Summary("Echoes a message")]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Zones
@@ -14,6 +15,8 @@ namespace DiscordBot.Domain.Entities.Zones
         Task<Zone> GetAsync(long id);
 
         Task<Zone> GetByNameAsync(string id);
+
+        List<Alliance> GetPotentialHostiles(long id);
 
         Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true);
 

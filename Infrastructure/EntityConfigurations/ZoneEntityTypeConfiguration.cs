@@ -67,9 +67,11 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .OnDelete(DeleteBehavior.Restrict);
             */
 
-            /*
-            var neighboursNav = zoneConfiguration.Metadata.FindNavigation("_neighbours");
+            
+            var neighboursNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.ZoneNeighbours));
             neighboursNav.SetPropertyAccessMode(PropertyAccessMode.Field);
+            neighboursNav.SetIsEagerLoaded(true);
+            /*
             zoneConfiguration
                 .Property<List<ZoneNeighbour>>("_neighbours")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
@@ -88,7 +90,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .IsRequired(false);
 
             zoneConfiguration.HasOne<Alliance>(z => z.Owner)
-                .WithMany()
+                .WithMany(a => a.Zones)
                 .HasForeignKey("_ownerId")
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
