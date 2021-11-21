@@ -40,6 +40,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
 
             var groupNavigation = allianceConfiguration.Metadata.FindNavigation(nameof(Alliance.Group));
             groupNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+            groupNavigation.SetIsEagerLoaded(true);
 
 
             
