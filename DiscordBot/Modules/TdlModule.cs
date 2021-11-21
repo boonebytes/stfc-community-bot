@@ -488,7 +488,7 @@ namespace DiscordBot.Modules
                                 $"Zone : {thisZone.Name} ({thisZone.Level}^)\n"
                                 + "Current Owner: " + (thisZone.Owner == null ? "Unclaimed" : thisZone.Owner.Acronym) + "\n"
                                 + "Saved Threats: " + (string.IsNullOrEmpty(thisZone.Threats) ? "None" : thisZone.Threats) + "\n"
-                                + "Potential Hostiles: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialHostiles) + "\n"
+                                + "Potential Hostiles: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialThreats) + "\n"
                                 + "Notes: " + (string.IsNullOrEmpty(thisZone.Notes) ? "None" : thisZone.Notes);
                             await ReplyAsync(response);
                         }
