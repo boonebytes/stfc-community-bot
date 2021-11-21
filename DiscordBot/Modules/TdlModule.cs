@@ -316,6 +316,8 @@ namespace DiscordBot.Modules
                     }
                 }
 
+                if (notes == "\"\"") notes = "";
+
                 var zoneExists = await zoneRepository.GetByNameAsync(name);
                 if (zoneExists == null || zoneExists == default)
                 {
