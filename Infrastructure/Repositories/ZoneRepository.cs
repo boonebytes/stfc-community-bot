@@ -111,7 +111,7 @@ namespace DiscordBot.Infrastructure.Repositories
                     .Where(no =>
                             !ownerFriendlies.Contains(no)
                             && no != thisZone.Owner
-                            && no.Group != thisZone.Owner.Group
+                            && (thisZone.Owner.Group != null && no.Group != null && no.Group != thisZone.Owner.Group)
                         // && no.Zones.Count < 5
                         )
                     .ToList();
