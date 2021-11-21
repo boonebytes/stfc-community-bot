@@ -18,7 +18,7 @@ namespace DiscordBot.Modules
     {
         private readonly ILogger<TdlModule> _logger;
         private readonly IServiceProvider _serviceProvider;
-        
+
         public TdlModule(ILogger<TdlModule> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
@@ -299,7 +299,7 @@ namespace DiscordBot.Modules
                     }
                 }
 
-                if (!(new[] { "", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}.Contains(dayOfWeekUtc)))
+                if (!(new[] { "", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" }.Contains(dayOfWeekUtc)))
                 {
                     await Context.Message.ReplyAsync("The day of the week could not be detrmined.");
                     return;
@@ -451,6 +451,55 @@ namespace DiscordBot.Modules
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run Connect for {Context.Guild.Name} in {Context.Channel.Name}.");
+            }
+        }
+
+        [Command("show")]
+        [Summary("Shows current info from the database")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task ShowAsync(string type, string name)
+        {
+            using var serviceScope = _serviceProvider.CreateScope();
+            try
+            {
+                var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+
+                switch (type.ToLower())
+                {
+                    case "zone":
+                        var thisZone = await zoneRepository.GetByNameAsync(name);
+                        if (thisZone == null)
+                        {
+                            await ReplyAsync("Zone not found.");
+                        }
+                        else
+                        {
+                            var potentialHostiles = zoneRepository
+                                .GetPotentialHostiles(thisZone.Id)
+                                .Select(a => a.Acronym)
+                                .OrderBy(a => a);
+                            var potentialThreats = "";
+                            if (potentialHostiles.Count() > 0)
+                            {
+                                potentialThreats = string.Join(", ", potentialHostiles);
+                            }
+                            string response =
+                                $"Zone : {thisZone.Name} ({thisZone.Level}^)\n"
+                                + $"Current Owner: {thisZone.Owner.Acronym}\n"
+                                + "Saved Threats: " + (string.IsNullOrEmpty(thisZone.Threats) ? "None" : thisZone.Threats) + "\n"
+                                + "Potential Hostiles: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialHostiles) + "\n"
+                                + "Notes: " + (string.IsNullOrEmpty(thisZone.Notes) ? "None" : thisZone.Notes);
+                            await ReplyAsync(response);
+                        }
+                        break;
+                    case "alliance":
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run Show for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
         }
     }
