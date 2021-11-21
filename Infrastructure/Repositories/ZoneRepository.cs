@@ -84,21 +84,41 @@ namespace DiscordBot.Infrastructure.Repositories
                                     );
             */
 
-            var ownerFriendlies = thisZone.Owner.AssignedDiplomacy
+            List<Alliance> ownerFriendlies;
+            List<Alliance> riskyNeighbours;
+            if (thisZone.Owner == null)
+            {
+                ownerFriendlies = new();
+                riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
+                    .Select(n => n.Owner)
+                    .Distinct()
+                    .Where(no =>
+                            !ownerFriendlies.Contains(no)
+                        // && no.Zones.Count < 5
+                        )
+                    .ToList();
+            }
+            else
+            {
+                ownerFriendlies = thisZone.Owner.AssignedDiplomacy
                     .Where(ad => ad.Relationship.Id >= DiplomaticRelation.Friendly.Id)
                     .Select(ad => ad.Related)
                     .ToList();
 
-            var riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
+                riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
                     .Select(n => n.Owner)
                     .Distinct()
                     .Where(no =>
                             !ownerFriendlies.Contains(no)
                             && no != thisZone.Owner
                             && no.Group != thisZone.Owner.Group
-                            // && no.Zones.Count < 5
-                        );
-            return riskyNeighbours.ToList();
+                        // && no.Zones.Count < 5
+                        )
+                    .ToList();
+            }
+            
+
+            return riskyNeighbours;
         }
 
         public async Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true)
