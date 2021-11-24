@@ -8,6 +8,7 @@ using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Exceptions;
+using DiscordBot.Domain.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -212,7 +213,7 @@ namespace DiscordBot.Modules
 
         [Command("alliance")]
         [Summary("Create or update an alliance")]
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireOwner]
         public async Task AllianceCreateUpdateAsync(string acronym, string name, string group = "")
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -271,9 +272,9 @@ namespace DiscordBot.Modules
         }
 
 
-        [Command("zone")]
+        [Command("zone set")]
         [Summary("Create or update a zone")]
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireOwner]
         public async Task ZoneCreateUpdateAsync(string name, string owner, int level = 0, string threats = "", string dayOfWeekUtc = "", string timeOfDayUtc = "", [Remainder] string notes = "")
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -401,7 +402,7 @@ namespace DiscordBot.Modules
 
         [Command("connect")]
         [Summary("Register a connection between two zones")]
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireOwner]
         public async Task ConnectAsync(string zone1, string zone2)
         {
             using var serviceScope = _serviceProvider.CreateScope();
@@ -454,10 +455,9 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("show")]
-        [Summary("Shows current info from the database")]
-        [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task ShowAsync(string type, string name)
+        [Command("zone show")]
+        [Summary("Shows current zone info from the database")]
+        public async Task ShowZoneAsync(string name)
         {
             using var serviceScope = _serviceProvider.CreateScope();
             try
@@ -465,41 +465,44 @@ namespace DiscordBot.Modules
                 var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
                 var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
 
-                switch (type.ToLower())
+                var thisZone = await zoneRepository.GetByNameAsync(name);
+                if (thisZone == null)
                 {
-                    case "zone":
-                        var thisZone = await zoneRepository.GetByNameAsync(name);
-                        if (thisZone == null)
-                        {
-                            await ReplyAsync("Zone not found.");
-                        }
-                        else
-                        {
-                            var potentialHostiles = zoneRepository
-                                .GetPotentialHostiles(thisZone.Id)
-                                .Select(a => a.Acronym)
-                                .OrderBy(a => a);
-                            var potentialThreats = "";
-                            if (potentialHostiles.Count() > 0)
-                            {
-                                potentialThreats = string.Join(", ", potentialHostiles);
-                            }
-                            string response =
-                                $"Zone : {thisZone.Name} ({thisZone.Level}^)\n"
-                                + "Current Owner: " + (thisZone.Owner == null ? "Unclaimed" : thisZone.Owner.Acronym) + "\n"
-                                + "Saved Threats: " + (string.IsNullOrEmpty(thisZone.Threats) ? "None" : thisZone.Threats) + "\n"
-                                + "Potential Hostiles: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialThreats) + "\n"
-                                + "Notes: " + (string.IsNullOrEmpty(thisZone.Notes) ? "None" : thisZone.Notes);
-                            await ReplyAsync(response);
-                        }
-                        break;
-                    case "alliance":
-                        break;
+                    await ReplyAsync("Zone not found.");
+                }
+                else
+                {
+                    var potentialHostiles = zoneRepository
+                        .GetPotentialHostiles(thisZone.Id)
+                        .Select(a => a.Acronym)
+                        .OrderBy(a => a);
+                    var potentialThreats = "";
+                    if (potentialHostiles.Any())
+                    {
+                        potentialThreats = string.Join(", ", potentialHostiles);
+                    }
+                    else
+                    {
+                        potentialThreats = "None";
+                    }
+
+                    var owner = (thisZone.Owner == null ? "Unclaimed" : thisZone.Owner.Acronym);
+                    thisZone.SetNextDefend();
+                    string response =
+                        $"Zone: {thisZone.Name} ({thisZone.Level}^)\n"
+                        + $"Current Owner: {owner}\n"
+                        + $"Next Event: <t:{thisZone.NextDefend.Value.ToUnixTimestamp()}> local / {thisZone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")}\n"
+                        + $"Potential Hostiles: {potentialThreats}\n";
+                    if (!string.IsNullOrEmpty(thisZone.Threats))
+                        response += $"Saved Threats: {thisZone.Threats}\n";
+                    if (!string.IsNullOrEmpty(thisZone.Notes))
+                        response += $"Notes: {thisZone.Notes}\n";
+                    await ReplyAsync(response);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An unexpected error has occured while trying to run Show for {Context.Guild.Name} in {Context.Channel.Name}.");
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run Show Zone for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
         }
     }
