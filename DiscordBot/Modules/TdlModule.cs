@@ -493,8 +493,8 @@ namespace DiscordBot.Modules
                         + $"Current Owner: {owner}\n"
                         + $"Next Event: <t:{thisZone.NextDefend.Value.ToUnixTimestamp()}> local / {thisZone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")}\n"
                         + $"Potential Hostiles: {potentialThreats}\n";
-                    if (!string.IsNullOrEmpty(thisZone.Threats))
-                        response += $"Saved Threats: {thisZone.Threats}\n";
+                    //if (!string.IsNullOrEmpty(thisZone.Threats))
+                    //    response += $"Saved Threats: {thisZone.Threats}\n";
                     if (!string.IsNullOrEmpty(thisZone.Notes))
                         response += $"Notes: {thisZone.Notes}\n";
                     await ReplyAsync(response);

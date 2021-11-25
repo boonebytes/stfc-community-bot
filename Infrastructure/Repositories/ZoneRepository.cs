@@ -215,11 +215,25 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task InitZones()
         {
-            var allZones = _context.Zones.AsAsyncEnumerable();
+            var allZones = _context.Zones
+                            .ToList();
                             //.Where(z => !z.NextDefend.HasValue || z.NextDefend.Value < DateTime.UtcNow);
-            await allZones.ForEachAsync(z =>
-                    z.SetNextDefend(true)
-                );
+            foreach (Zone zone in allZones)
+            {
+                var potentialHostiles = GetPotentialHostiles(zone.Id)
+                    .Select(h => h.Acronym)
+                    .Distinct()
+                    .OrderBy(h => h);
+                if (potentialHostiles.Any())
+                {
+                    zone.SetThreats(string.Join(", ", potentialHostiles));
+                }
+                else
+                {
+                    zone.SetThreats(string.Empty);
+                }
+                zone.SetNextDefend(true);
+            }
             await _context.SaveEntitiesAsync();
         }
     }

@@ -84,8 +84,8 @@ namespace DiscordBot.Responses
                 response += ":t> local / "
                             + $"{zone.DefendUtcTime} UTC / "
                             + $"{zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
-                if (!string.IsNullOrEmpty(zone.Threats))
-                    response += "\n**Saved Threats**: " + zone.Threats;
+                //if (!string.IsNullOrEmpty(zone.Threats))
+                //    response += "\n**Saved Threats**: " + zone.Threats;
                 response += "\n**Nearby Threats**: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialThreats);
                 if (!string.IsNullOrEmpty(zone.Notes))
                 {

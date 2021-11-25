@@ -154,6 +154,11 @@ namespace DiscordBot.Domain.Entities.Zones
             this.AddZoneChangedDomainEvent();
         }
 
+        public void SetThreats(string threats)
+        {
+            Threats = threats;
+        }
+
         public void AddStarSystem(StarSystem starSystem)
         {
             if (!_starSystems.Contains(starSystem))
