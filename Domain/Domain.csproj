@@ -20,6 +20,7 @@
     <None Remove="Exceptions\" />
     <None Remove="MediatR" />
     <None Remove="Events\" />
+    <None Remove="Entities\Admin\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
@@ -29,6 +30,7 @@
     <Folder Include="Seedwork\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Events\" />
+    <Folder Include="Entities\Admin\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />

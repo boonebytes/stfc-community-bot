@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
@@ -18,6 +19,7 @@ namespace DiscordBot.Infrastructure
         public DbSet<AllianceGroup> AllianceGroups { get; set; }
         public DbSet<Diplomacy> Diplomacies { get; set; }
         public DbSet<DiplomaticRelation> DiplomaticRelaitons { get; set; }
+        public DbSet<DirectMessage> DirectMessages { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<StarSystem> StarSystems { get; set; }
         public DbSet<Zone> Zones { get; set; }
@@ -50,6 +52,7 @@ namespace DiscordBot.Infrastructure
             modelBuilder.ApplyConfiguration(new AllianceGroupEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomaticRelationEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DirectMessageTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new StarSystemEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ZoneEntityTypeConfiguration());

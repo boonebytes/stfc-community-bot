@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Infrastructure;
@@ -48,19 +49,21 @@ namespace DiscordBot
 
                     services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
 
-                    services.AddScoped<IZoneRepository, ZoneRepository>();
                     services.AddScoped<IAllianceRepository, AllianceRepository>();
-
+                    services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
+                    services.AddScoped<IZoneRepository, ZoneRepository>();
+                    
                     //CommandService commandService = new CommandService();
 
                     services.AddSingleton(discordConfig);
-
                     var clientConfig = new DiscordSocketConfig
                     {
                         ExclusiveBulkDelete = false,
+                        AlwaysDownloadUsers = true
                         //GatewayIntents =  Discord.GatewayIntents.GuildMembers
                         //                & Discord.GatewayIntents.GuildMessages
                     };
+                    clientConfig.GatewayIntents &= Discord.GatewayIntents.GuildMembers;
                     var client = new DiscordSocketClient(clientConfig);
                     services.AddSingleton<DiscordSocketClient>(client);
 
