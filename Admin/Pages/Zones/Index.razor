@@ -49,7 +49,7 @@ else
                             {
                                 @(string.Join("\n",
                                         zone.Neighbours
-                                            .Select(zn => zn.ToZone.Name + " [" + (zn.ToZone.Owner == null ? "Unclaimed" : zn.ToZone.Owner.Name) + "]")
+                                            .Select(zn => zn.Name + " [" + (zn.Owner == null ? "Unclaimed" : zn.Owner.Name) + "]")
                                     ))
                             }
                         </td>

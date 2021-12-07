@@ -19,13 +19,13 @@ namespace DiscordBot
     {
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly Models.Config.Discord _discordConfg;
+        private readonly Models.Config.Discord _discordConfig;
         private readonly DiscordSocketClient _client;
 
         public Worker(ILogger<Worker> logger, Models.Config.Discord discordConfig, IServiceProvider serviceProvider, DiscordSocketClient discordSocketClient)
         {
             _logger = logger;
-            _discordConfg = discordConfig;
+            _discordConfig = discordConfig;
             _serviceProvider = serviceProvider;
             _client = discordSocketClient;
             
@@ -56,25 +56,26 @@ namespace DiscordBot
 
             //_client.MessageReceived += ClientOnMessageReceived;
 
-            await _client.LoginAsync(TokenType.Bot, _discordConfg.Token);
+            await _client.LoginAsync(TokenType.Bot, _discordConfig.Token);
             await _client.StartAsync();
 
             //_client.MessageUpdated += MessageUpdated;
             _client.Ready += () =>
             {
                 _logger.LogInformation("Bot is connected");
+
                 Task.Run(async () =>
                     {
                         var cmdScheduler = _serviceProvider.GetService<Scheduler>();
-                        await cmdScheduler.Run(stoppingToken, _discordConfg.SchedulePollSeconds);
+                        await cmdScheduler.Run(stoppingToken, _discordConfig.SchedulePollSeconds);
                     }
                 );
 
-                if (!string.IsNullOrEmpty(_discordConfg.WatchingStatus))
+                if (!string.IsNullOrEmpty(_discordConfig.WatchingStatus))
                 {
                     Task.Run(async () =>
                         {
-                            await _client.SetGameAsync(name: _discordConfg.WatchingStatus, type: ActivityType.Watching);
+                            await _client.SetGameAsync(name: _discordConfig.WatchingStatus, type: ActivityType.Watching);
                         }
                     );
                 }

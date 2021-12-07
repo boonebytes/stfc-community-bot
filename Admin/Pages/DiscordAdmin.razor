@@ -80,10 +80,15 @@
 
     protected async void SetMessage()
     {
-        Discord.Rest.RestUserMessage originalMessage = (Discord.Rest.RestUserMessage)await discordClient.GetGuild((ulong)editMessage.GuildId).GetTextChannel((ulong)editMessage.ChannelId).GetMessageAsync((ulong)editMessage.MessageId);
-
-        await originalMessage.ModifyAsync(msg => msg.Content = editMessage.MessageText);
-
+        if (editMessage.MessageId == 0)
+        {
+            await discordClient.GetGuild((ulong)editMessage.GuildId).GetTextChannel((ulong)editMessage.ChannelId).SendMessageAsync(editMessage.MessageText);
+        }
+        else
+        {
+            Discord.Rest.RestUserMessage originalMessage = (Discord.Rest.RestUserMessage)await discordClient.GetGuild((ulong)editMessage.GuildId).GetTextChannel((ulong)editMessage.ChannelId).GetMessageAsync((ulong)editMessage.MessageId);
+            await originalMessage.ModifyAsync(msg => msg.Content = editMessage.MessageText);
+        }
         _ = InvokeAsync(StateHasChanged);
     }
 
