@@ -12,13 +12,7 @@ namespace DiscordBot.Infrastructure.Repositories
 {
     public class ZoneRepository : BaseRepository, IZoneRepository
     {
-        public IUnitOfWork UnitOfWork
-        {
-            get
-            {
-                return _context;
-            }
-        }
+        public IUnitOfWork UnitOfWork => _context;
 
         public ZoneRepository(ILogger<ZoneRepository> logger, BotContext context) : base(logger, context)
         { }
@@ -73,9 +67,9 @@ namespace DiscordBot.Infrastructure.Repositories
                         .ThenInclude(zn => zn.ToZone)
                             .ThenInclude(tz => tz.Owner)
                                 .ThenInclude(tzo => tzo.Zones)
-                    .Where(z => z.Id == id)
-                    .SingleOrDefault();
+                    .SingleOrDefault(z => z.Id == id);
 
+            if (thisZone == null) return default;
             /*
             var ownerHostiles = thisZone.Owner.AssignedDiplomacy
                                     .Where(ad =>
@@ -153,7 +147,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public Zone GetNextDefend(long? allianceId = null)
         {
-            List<long> interestedAlliances = GetInterestedAlliances(allianceId);
+            var interestedAlliances = GetInterestedAlliances(allianceId);
             var next = _context.Zones
                             .Include(z => z.Owner)
                             .Include(z => z.ZoneNeighbours)
@@ -162,15 +156,12 @@ namespace DiscordBot.Infrastructure.Repositories
                             .Where(z => interestedAlliances.Contains(z.Owner.Id))
                             .OrderBy(z => z.NextDefend)
                             .ToList();
-            if (next == null)
-                return null;
-            else
-                return next.First();
+            return !next.Any() ? null : next.First();
         }
 
         public List<Zone> GetFromDayOfWeek(DayOfWeek dayOfWeek, long? allianceId = null)
         {
-            List<long> interestedAlliances = GetInterestedAlliances(allianceId);
+            var interestedAlliances = GetInterestedAlliances(allianceId);
 
             var results = _context.Zones
                 .Include(z => z.Owner)
@@ -195,7 +186,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 fromDate = DateTime.UtcNow;
             }
 
-            List<long> interestedAlliances = GetInterestedAlliances(allianceId);
+            var interestedAlliances = GetInterestedAlliances(allianceId);
 
             var nextDefends = _context.Zones
                 .Include(z => z.Owner)
@@ -213,17 +204,21 @@ namespace DiscordBot.Infrastructure.Repositories
             return nextDefends;
         }
 
-        public async Task InitZones()
+        public async Task InitZones(bool softUpdate = false)
         {
             var allZones = _context.Zones
-                            .ToList();
-                            //.Where(z => !z.NextDefend.HasValue || z.NextDefend.Value < DateTime.UtcNow);
-            foreach (Zone zone in allZones)
+                    .ToList();
+            if (softUpdate)
+                allZones = allZones.Where(z =>
+                    !z.NextDefend.HasValue || z.NextDefend.Value < DateTime.UtcNow)
+                    .ToList();
+            foreach (var zone in allZones)
             {
                 var potentialHostiles = GetPotentialHostiles(zone.Id)
                     .Select(h => h.Acronym)
                     .Distinct()
-                    .OrderBy(h => h);
+                    .OrderBy(h => h)
+                    .ToList();
                 if (potentialHostiles.Any())
                 {
                     zone.SetThreats(string.Join(", ", potentialHostiles));

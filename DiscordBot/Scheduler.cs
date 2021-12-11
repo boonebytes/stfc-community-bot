@@ -20,9 +20,9 @@ namespace DiscordBot
         private readonly DiscordSocketClient _client;
         private readonly IServiceProvider _serviceProvider;
 
-        private IAllianceRepository allianceRepository;
-        private IZoneRepository zoneRepository;
-        private Responses.Schedule scheduleResponse;
+        private IAllianceRepository _allianceRepository;
+        private IZoneRepository _zoneRepository;
+        private Responses.Schedule _scheduleResponse;
 
         public Scheduler(
                 ILogger<Scheduler> logger,
@@ -49,11 +49,11 @@ namespace DiscordBot
                 {
                     using (var thisServiceScope = _serviceProvider.CreateScope())
                     {
-                        allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
-                        zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
+                        _allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+                        _zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
 
-                        await allianceRepository.InitPostSchedule();
-                        await zoneRepository.InitZones();
+                        await _allianceRepository.InitPostSchedule();
+                        await _zoneRepository.InitZones();
                     }
                 }
             }
@@ -66,10 +66,10 @@ namespace DiscordBot
             {
                 using (var thisServiceScope = _serviceProvider.CreateScope())
                 {
-                    allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
-                    zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
-                    scheduleResponse = thisServiceScope.ServiceProvider.GetService<Responses.Schedule>();
-                    var nextAllianceToPost = allianceRepository.GetNextOnPostSchedule();
+                    _allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+                    _zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
+                    _scheduleResponse = thisServiceScope.ServiceProvider.GetService<Responses.Schedule>();
+                    var nextAllianceToPost = _allianceRepository.GetNextOnPostSchedule();
 
                     if (nextAllianceToPost.NextScheduledPost.Value > DateTime.UtcNow)
                     {
@@ -88,8 +88,8 @@ namespace DiscordBot
                             if (guild == null)
                             {
                                 _logger.LogError($"Unable to post schedule to guild {nextAllianceToPost.GuildId.Value} channel {nextAllianceToPost.DefendSchedulePostChannel.Value} for {nextAllianceToPost.Acronym} - Guild not found");
-                                allianceRepository.FlagSchedulePosted(nextAllianceToPost);
-                                await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                                _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
+                                await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
                             }
                             else
                             {
@@ -97,30 +97,30 @@ namespace DiscordBot
                                 if (channel == null)
                                 {
                                     _logger.LogError($"Unable to post schedule to guild {nextAllianceToPost.GuildId.Value} channel {nextAllianceToPost.DefendSchedulePostChannel.Value} for {nextAllianceToPost.Acronym} - Guild or channel not found");
-                                    allianceRepository.FlagSchedulePosted(nextAllianceToPost);
-                                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                                    _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
+                                    await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
                                 }
                                 else
                                 {
                                     var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
 
-                                    await scheduleResponse.TryCleanMessages(channel, channelMessages, nextAllianceToPost);
-                                    await scheduleResponse.TryUpdateWeeklyMessages(channelMessages, nextAllianceToPost);
+                                    await _scheduleResponse.TryCleanMessages(channel, channelMessages, nextAllianceToPost);
+                                    await _scheduleResponse.TryUpdateWeeklyMessages(channelMessages, nextAllianceToPost);
                                     await TryPinToday(channelMessages, nextAllianceToPost);
                                     
-                                    var embedMsg = scheduleResponse.GetForDate(DateTime.UtcNow, nextAllianceToPost.Id);
+                                    var embedMsg = _scheduleResponse.GetForDate(DateTime.UtcNow, nextAllianceToPost.Id);
                                     await channel.SendMessageAsync(embed: embedMsg.Build());
 
-                                    allianceRepository.FlagSchedulePosted(nextAllianceToPost);
-                                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                                    _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
+                                    await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
                                 }
                             }
                         }
                         catch (Exception ex)
                         {
                             _logger.LogError(ex, $"An unexpected error occurred while trying to post the schedule to guild {nextAllianceToPost.Acronym} ({nextAllianceToPost.GuildId}), channel {nextAllianceToPost.DefendSchedulePostChannel}");
-                            allianceRepository.FlagSchedulePosted(nextAllianceToPost);
-                            await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                            _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
+                            await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
                         }
                     }
                 }

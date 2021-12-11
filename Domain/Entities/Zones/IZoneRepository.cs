@@ -26,6 +26,6 @@ namespace DiscordBot.Domain.Entities.Zones
 
         List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null);
 
-        Task InitZones();
+        Task InitZones(bool softUpdate = false);
     }
 }

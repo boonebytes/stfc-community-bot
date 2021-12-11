@@ -45,7 +45,7 @@ namespace DiscordBot
 
                 Task.WaitAll(initSchedule, initZones);
             }
-
+            
             var _config = new DiscordSocketConfig { MessageCacheSize = 100 };
             var cmdService = _serviceProvider.GetRequiredService<CommandService>();
 

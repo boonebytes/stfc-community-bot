@@ -65,9 +65,8 @@ namespace DiscordBot.Modules
 
                 var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
-                var shortVersion = false;
-                if (extra.Trim().ToLower() == "short")
-                    shortVersion = true;
+                bool shortVersion = extra.Trim().ToLower() == "short";
+                
                 var embedMsg = schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
                 await this.ReplyAsync(embed: embedMsg.Build());
@@ -96,9 +95,7 @@ namespace DiscordBot.Modules
 
                 var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
-                var shortVersion = false;
-                if (extra.Trim().ToLower() == "short")
-                    shortVersion = true;
+                bool shortVersion = extra.Trim().ToLower() == "short";
 
                 var embedMsg = schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id, shortVersion);
                 _ = TryDeleteMessage(Context.Message);
@@ -156,9 +153,7 @@ namespace DiscordBot.Modules
 
                 var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
-                var shortVersion = false;
-                if (extra.Trim().ToLower() == "short")
-                    shortVersion = true;
+                bool shortVersion = extra.Trim().ToLower() == "short";
 
                 var targetGuild = Context.Guild.Id;
                 var targetChannel = Context.Channel.Id;
@@ -187,16 +182,19 @@ namespace DiscordBot.Modules
             using var serviceScope = _serviceProvider.CreateScope();
             try
             {
+                var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
                 var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
                 var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
                 var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
+                await zoneRepository.InitZones();
                 if (Context.Channel is SocketTextChannel channel)
                 {
                     var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
 
-                    await schedule.TryCleanMessages(channel, channelMessages, thisAlliance);
+                    await zoneRepository.InitZones(true);
+                    //await schedule.TryCleanMessages(channel, channelMessages, thisAlliance);
                     await schedule.TryUpdateWeeklyMessages(channelMessages, thisAlliance);
                     await TryDeleteMessage(Context.Message);
                 }
@@ -211,7 +209,7 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("alliance")]
+        [Command("alliance set")]
         [Summary("Create or update an alliance")]
         [RequireOwner]
         public async Task AllianceCreateUpdateAsync(string acronym, string name, string group = "")
@@ -271,6 +269,55 @@ namespace DiscordBot.Modules
             }
         }
 
+        [Command("alliance rename")]
+        [Summary("Rename an alliance")]
+        [RequireOwner]
+        public async Task AllianceRenameAsync(string oldNameOrAcronym, string newAcronym, string newName = "",
+            string newGroup = "")
+        {
+            using var serviceScope = _serviceProvider.CreateScope();
+            try
+            {
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+
+                var allianceExists = await allianceRepository.GetByNameOrAcronymAsync(oldNameOrAcronym);
+                if (allianceExists == null)
+                {
+                    await this.ReplyAsync(("Unable to find old alliance by provided acronym"));
+                }
+                else
+                {
+                    AllianceGroup allianceGroup = allianceExists.Group;
+
+                    if (newGroup == "-1")
+                    {
+                        allianceGroup = null;
+                    }
+                    else if (newGroup != "" && newGroup != "0")
+                    {
+                        var allianceGroups = allianceRepository.GetAllianceGroups();
+                        allianceGroup = allianceGroups.FirstOrDefault(g => g.Name == newGroup);
+                    }
+
+                    // Edit alliance
+                    allianceExists.Update(
+                        newName,
+                        newAcronym,
+                        allianceGroup,
+                        allianceExists.GuildId,
+                        allianceExists.DefendSchedulePostChannel,
+                        allianceExists.DefendSchedulePostTime);
+                    allianceRepository.Update(allianceExists);
+                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                    await Context.Message.ReplyAsync("Alliance updated");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    $"An unexpected error has occured while trying to rename the {oldNameOrAcronym} alliance.");
+            }
+        }
 
         [Command("zone set")]
         [Summary("Create or update a zone")]
@@ -412,12 +459,12 @@ namespace DiscordBot.Modules
                 var objZone1 = await zoneRepository.GetByNameAsync(zone1);
                 var objZone2 = await zoneRepository.GetByNameAsync(zone2);
 
-                if (objZone1 == null || objZone1 == default)
+                if (objZone1 == null)
                 {
                     await Context.Message.ReplyAsync($"I'm sorry, I couldn't find a zone called {zone1}");
                     return;
                 }
-                if (objZone2 == null || objZone2 == default)
+                if (objZone2 == null)
                 {
                     await Context.Message.ReplyAsync($"I'm sorry, I couldn't find a zone called {zone2}");
                     return;

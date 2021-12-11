@@ -102,7 +102,8 @@ namespace DiscordBot.Responses
             string indent = "";
             string response = "";
 
-            var dayZones = zones.Where(z => z.DefendEasternDay == day);
+            var dayZones = zones.Where(z => z.DefendEasternDay == day)
+                .ToList();
 
             if (includeDayHeader)
             {
@@ -110,7 +111,7 @@ namespace DiscordBot.Responses
                 indent = "> ";
             }
 
-            if (dayZones.Count() == 0)
+            if (!dayZones.Any())
             {
                 response += indent + "(empty)\n";
                 return response;
@@ -118,11 +119,11 @@ namespace DiscordBot.Responses
 
             foreach (Zone zone in dayZones)
             {
-                bool useNextWeek = false;
-                if (includeDayHeader && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek && zone.DefendEasternDay != DayOfWeek.Sunday)
-                    useNextWeek = true;
+                //bool useNextWeek = false;
+                //if (includeDayHeader && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek && zone.DefendEasternDay != DayOfWeek.Sunday)
+                //    useNextWeek = true;
 
-                response += indent + GetDiscordEmbedValue(zone, true, useNextWeek) + "\n";
+                response += indent + GetDiscordEmbedValue(zone, true) + "\n";
             }
             return response;
         }
@@ -419,14 +420,14 @@ namespace DiscordBot.Responses
                     if (dayShortPost.IsPinned && dayOfWeek != DateTime.Now.ToEasternTime().DayOfWeek)
                         await dayShortPost.UnpinAsync();
 
-                    var yesterdayDefends = _zoneRepository.GetFromDayOfWeek(
+                    var dayDefends = _zoneRepository.GetFromDayOfWeek(
                                                     dayOfWeek,
                                                     alliance.Id)
                                                 .OrderBy(z => z.DefendEasternTime)
                                                 .ToList();
                     await dayShortPost.ModifyAsync(msg =>
                             msg.Content =
-                                this.GetDayScheduleAsString(yesterdayDefends, dayOfWeek, true)
+                                this.GetDayScheduleAsString(dayDefends, dayOfWeek, true)
                                 + $"*_Last Updated: <t:{DateTime.UtcNow.ToUnixTimestamp()}:R>_*" + "\n\u200b"
                         );
 

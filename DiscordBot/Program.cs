@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace DiscordBot
 {
@@ -37,10 +38,11 @@ namespace DiscordBot
                     /*
                     services.AddLogging(opt =>
                     {
-                        opt.AddConsole(c =>
+                        opt.AddSimpleConsole(c =>
                         {
-                            c.TimestampFormat = "[HH:mm:ss]";
-                        });
+                            c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+                            c.UseUtcTimestamp = true;
+                        })
                     });
                     */
 
