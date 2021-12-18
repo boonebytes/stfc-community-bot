@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 namespace DiscordBot.Modules
 {
     [Group("tdl")]
-    public class TdlModule : ModuleBase<SocketCommandContext>
+    public partial class TdlModule : ModuleBase<SocketCommandContext>
     {
         private readonly ILogger<TdlModule> _logger;
         private readonly IServiceProvider _serviceProvider;
@@ -34,7 +34,7 @@ namespace DiscordBot.Modules
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, $"Unable to delete source message.");
+                _logger.LogWarning(ex, "Unable to delete source message");
             }
         }
 
@@ -43,13 +43,57 @@ namespace DiscordBot.Modules
         [RequireUserPermission(GuildPermission.Administrator)]
         public async Task HelpAsync()
         {
-            await this.ReplyAsync("For support purposes, please conact Boonebytes.\n"
+            //TODO: Add new commands here
+            await this.ReplyAsync("For support purposes, please contact Boonebytes.\n"
                             + "\n"
                             + "Accepted Commands:\n"
                             + "help - Displays this message\n"
                             + "today - Prints the defends scheduled for the remainder of today\n"
                             + "tomorrow - Prints the defend schedule for tomorrow\n"
                             + "next - Prints the next defend on the schedule");
+        }
+
+        [Command("echo")]
+        [Summary("Repeats the message verbatim and then removes the original")]
+        [RequireOwner]
+        public async Task EchoAsync([Remainder] string message)
+        {
+            try
+            {
+                _ = TryDeleteMessage(Context.Message);
+                await this.ReplyAsync(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run ECHO.");
+            }
+            
+        }
+        
+        [Command("say")]
+        [Summary("Posts the message verbatim to the specified channel and then removes the original")]
+        [RequireOwner]
+        public async Task SayAsync(ulong channelId, [Remainder] string message)
+        {
+            using var serviceScope = _serviceProvider.CreateScope();
+            try
+            {
+                var client = serviceScope.ServiceProvider.GetService<DiscordSocketClient>();
+                var channel = client.GetChannel(channelId);
+                if (channel is Discord.ITextChannel textChannel)
+                {
+                    await textChannel.SendMessageAsync(message);
+                    await TryDeleteMessage(Context.Message);
+                }
+                else
+                {
+                    await this.ReplyAsync("Unable to send message. Channel couldn't be resolved.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error has occured while trying to run SAY for {channelId}.");
+            }
         }
 
         [Command("today")]
@@ -206,350 +250,6 @@ namespace DiscordBot.Modules
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run REFRESH for {Context.Guild.Name} in {Context.Channel.Name}.");
-            }
-        }
-
-        [Command("alliance set")]
-        [Summary("Create or update an alliance")]
-        [RequireOwner]
-        public async Task AllianceCreateUpdateAsync(string acronym, string name, string group = "")
-        {
-            using var serviceScope = _serviceProvider.CreateScope();
-            try
-            {
-                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
-                var allianceExists = await allianceRepository.GetByNameOrAcronymAsync(acronym);
-                if (allianceExists == null || allianceExists == default)
-                {
-                    allianceExists = await allianceRepository.GetByNameOrAcronymAsync(name);
-                }
-
-
-                AllianceGroup allianceGroup = null;
-                if (group != "" && group != "0")
-                {
-                    var allianceGroups = allianceRepository.GetAllianceGroups();
-                    allianceGroup = allianceGroups.FirstOrDefault(g => g.Name == group);
-                }
-
-                if (allianceExists == null || allianceExists == default)
-                {
-                    // Create alliance
-                    Alliance newAlliance = new(
-                        0,
-                        name,
-                        acronym,
-                        allianceGroup,
-                        null,
-                        null,
-                        null);
-                    allianceRepository.Add(newAlliance);
-                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                    await Context.Message.ReplyAsync("Alliance created");
-                }
-                else
-                {
-                    // Edit alliance
-                    allianceExists.Update(
-                        name,
-                        acronym,
-                        allianceGroup,
-                        allianceExists.GuildId,
-                        allianceExists.DefendSchedulePostChannel,
-                        allianceExists.DefendSchedulePostTime);
-                    allianceRepository.Update(allianceExists);
-                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                    await Context.Message.ReplyAsync("Alliance updated");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An unexpected error has occured while trying to run Connect for {Context.Guild.Name} in {Context.Channel.Name}.");
-            }
-        }
-
-        [Command("alliance rename")]
-        [Summary("Rename an alliance")]
-        [RequireOwner]
-        public async Task AllianceRenameAsync(string oldNameOrAcronym, string newAcronym, string newName = "",
-            string newGroup = "")
-        {
-            using var serviceScope = _serviceProvider.CreateScope();
-            try
-            {
-                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
-                var allianceExists = await allianceRepository.GetByNameOrAcronymAsync(oldNameOrAcronym);
-                if (allianceExists == null)
-                {
-                    await this.ReplyAsync(("Unable to find old alliance by provided acronym"));
-                }
-                else
-                {
-                    AllianceGroup allianceGroup = allianceExists.Group;
-
-                    if (newGroup == "-1")
-                    {
-                        allianceGroup = null;
-                    }
-                    else if (newGroup != "" && newGroup != "0")
-                    {
-                        var allianceGroups = allianceRepository.GetAllianceGroups();
-                        allianceGroup = allianceGroups.FirstOrDefault(g => g.Name == newGroup);
-                    }
-
-                    // Edit alliance
-                    allianceExists.Update(
-                        newName,
-                        newAcronym,
-                        allianceGroup,
-                        allianceExists.GuildId,
-                        allianceExists.DefendSchedulePostChannel,
-                        allianceExists.DefendSchedulePostTime);
-                    allianceRepository.Update(allianceExists);
-                    await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                    await Context.Message.ReplyAsync("Alliance updated");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    $"An unexpected error has occured while trying to rename the {oldNameOrAcronym} alliance.");
-            }
-        }
-
-        [Command("zone set")]
-        [Summary("Create or update a zone")]
-        [RequireOwner]
-        public async Task ZoneCreateUpdateAsync(string name, string owner, int level = 0, string threats = "", string dayOfWeekUtc = "", string timeOfDayUtc = "", [Remainder] string notes = "")
-        {
-            using var serviceScope = _serviceProvider.CreateScope();
-            try
-            {
-                var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
-                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
-                if (level < 0 || level > 3)
-                {
-                    await Context.Message.ReplyAsync("Level must be between 1 and 3. Specify 0 if you do not wish to change an existing value.");
-                    return;
-                }
-
-                Alliance ownerAlliance = null;
-                if (owner != "" && owner != "0")
-                {
-                    ownerAlliance = await allianceRepository.GetByNameOrAcronymAsync(owner);
-                    if (ownerAlliance == null || ownerAlliance == default)
-                    {
-                        await Context.Message.ReplyAsync("The owner could not be found. Please check it and try again.");
-                        return;
-                    }
-                }
-
-                if (!(new[] { "", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" }.Contains(dayOfWeekUtc)))
-                {
-                    await Context.Message.ReplyAsync("The day of the week could not be detrmined.");
-                    return;
-                }
-                if (timeOfDayUtc != "")
-                {
-                    DateTime verifyTimeOfDay;
-                    CultureInfo culture = new CultureInfo("en-US");
-
-                    if (!DateTime.TryParseExact(timeOfDayUtc, "h:mm tt", culture, DateTimeStyles.AssumeUniversal, out verifyTimeOfDay))
-                    {
-                        await Context.Message.ReplyAsync("The time of day could not be understood.");
-                        return;
-                    }
-                }
-
-                var zoneExists = await zoneRepository.GetByNameAsync(name);
-                if (zoneExists == null || zoneExists == default)
-                {
-                    // Create zone
-                    if (level == 0)
-                    {
-                        await Context.Message.ReplyAsync("Level cannot be 0 for a new record.");
-                        return;
-                    }
-                    if (dayOfWeekUtc == "")
-                    {
-                        await Context.Message.ReplyAsync("The day of the week cannot be blank for a new record.");
-                        return;
-                    }
-                    if (timeOfDayUtc == "")
-                    {
-                        await Context.Message.ReplyAsync("The time of day cannot be blank for a new record.");
-                        return;
-                    }
-
-                    Zone newZone = new(
-                        0,
-                        name,
-                        level,
-                        ownerAlliance,
-                        threats,
-                        dayOfWeekUtc,
-                        timeOfDayUtc,
-                        notes
-                        );
-                    zoneRepository.Add(newZone);
-                    await zoneRepository.UnitOfWork.SaveEntitiesAsync();
-                    await zoneRepository.InitZones();
-                    await Context.Message.ReplyAsync("Zone created");
-                }
-                else
-                {
-                    // Update zone
-                    var newLevel = (level == 0 ? zoneExists.Level : level);
-                    var newDayOfWeek = (dayOfWeekUtc == "" || dayOfWeekUtc == "0" ? zoneExists.DefendUtcDayOfWeek : dayOfWeekUtc);
-                    var newTimeOfDay = (timeOfDayUtc == "" || timeOfDayUtc == "0" ? zoneExists.DefendUtcTime : timeOfDayUtc);
-
-                    string newThreats = zoneExists.Threats;
-                    if (threats == "null")
-                    {
-                        newThreats = "";
-                    }
-                    else if (threats != "" && threats != "0")
-                    {
-                        newThreats = threats;
-                    }
-
-                    string newNotes = zoneExists.Notes;
-                    if (notes == "null")
-                    {
-                        newNotes = "";
-                    }
-                    else if (notes != "" && notes != "0")
-                    {
-                        newNotes = notes;
-                    }
-
-                    zoneExists.Update(
-                        zoneExists.Name,
-                        level,
-                        ownerAlliance,
-                        newThreats,
-                        newDayOfWeek,
-                        newTimeOfDay,
-                        newNotes
-                        );
-                    zoneRepository.Update(zoneExists);
-                    await zoneRepository.UnitOfWork.SaveEntitiesAsync();
-                    await zoneRepository.InitZones();
-                    await Context.Message.ReplyAsync("Zone updated");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An unexpected error has occured while trying to run Zone Create Update for {Context.Guild.Name} in {Context.Channel.Name}.");
-            }
-        }
-
-        [Command("connect")]
-        [Summary("Register a connection between two zones")]
-        [RequireOwner]
-        public async Task ConnectAsync(string zone1, string zone2)
-        {
-            using var serviceScope = _serviceProvider.CreateScope();
-            try
-            {
-                var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
-                var objZone1 = await zoneRepository.GetByNameAsync(zone1);
-                var objZone2 = await zoneRepository.GetByNameAsync(zone2);
-
-                if (objZone1 == null)
-                {
-                    await Context.Message.ReplyAsync($"I'm sorry, I couldn't find a zone called {zone1}");
-                    return;
-                }
-                if (objZone2 == null)
-                {
-                    await Context.Message.ReplyAsync($"I'm sorry, I couldn't find a zone called {zone2}");
-                    return;
-                }
-
-                string results = "";
-                if (!objZone1.Neighbours.Contains(objZone2))
-                {
-                    objZone1.AddNeighbour(objZone2);
-                    zoneRepository.Update(objZone1);
-                    results += $"Added {objZone1.Name} -> {objZone2.Name}\n";
-                }
-                if (!objZone2.Neighbours.Contains(objZone1))
-                {
-                    objZone2.AddNeighbour(objZone1);
-                    zoneRepository.Update(objZone2);
-                    results += $"Added {objZone1.Name} <- {objZone2.Name}\n";
-                }
-                results = results.TrimEnd();
-
-                if (results == "")
-                {
-                    results = "No changes made.";
-                }
-                else
-                {
-                    await zoneRepository.UnitOfWork.SaveEntitiesAsync();
-                }
-
-                await Context.Message.ReplyAsync(results);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An unexpected error has occured while trying to run Connect for {Context.Guild.Name} in {Context.Channel.Name}.");
-            }
-        }
-
-        [Command("zone show")]
-        [Summary("Shows current zone info from the database")]
-        public async Task ShowZoneAsync(string name)
-        {
-            using var serviceScope = _serviceProvider.CreateScope();
-            try
-            {
-                var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
-                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
-                var thisZone = await zoneRepository.GetByNameAsync(name);
-                if (thisZone == null)
-                {
-                    await ReplyAsync("Zone not found.");
-                }
-                else
-                {
-                    var potentialHostiles = zoneRepository
-                        .GetPotentialHostiles(thisZone.Id)
-                        .Select(a => a.Acronym)
-                        .OrderBy(a => a);
-                    var potentialThreats = "";
-                    if (potentialHostiles.Any())
-                    {
-                        potentialThreats = string.Join(", ", potentialHostiles);
-                    }
-                    else
-                    {
-                        potentialThreats = "None";
-                    }
-
-                    var owner = (thisZone.Owner == null ? "Unclaimed" : thisZone.Owner.Acronym);
-                    thisZone.SetNextDefend();
-                    string response =
-                        $"Zone: {thisZone.Name} ({thisZone.Level}^)\n"
-                        + $"Current Owner: {owner}\n"
-                        + $"Next Event: <t:{thisZone.NextDefend.Value.ToUnixTimestamp()}> local / {thisZone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")}\n"
-                        + $"Potential Hostiles: {potentialThreats}\n";
-                    //if (!string.IsNullOrEmpty(thisZone.Threats))
-                    //    response += $"Saved Threats: {thisZone.Threats}\n";
-                    if (!string.IsNullOrEmpty(thisZone.Notes))
-                        response += $"Notes: {thisZone.Notes}\n";
-                    await ReplyAsync(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An unexpected error has occured while trying to run Show Zone for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
         }
     }

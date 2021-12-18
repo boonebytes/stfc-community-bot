@@ -14,7 +14,6 @@ namespace DiscordBot.Services
         private readonly ILogger<CommandHandler> _logger;
         private readonly Models.Config.Discord _discordConfig;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IServiceScope _serviceScope;
         private readonly IServiceProvider _scopedProvider;
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
@@ -28,11 +27,8 @@ namespace DiscordBot.Services
             _discordConfig = discordConfig;
             _serviceProvider = serviceProvider;
 
-            _serviceScope = _serviceProvider.CreateScope();
-            _scopedProvider = _serviceScope.ServiceProvider;
-
-            //_commands.CommandExecuted += CommandExecutedAsync;
-            //_client.MessageReceived += MessageReceivedAsync;
+            var serviceScope = _serviceProvider.CreateScope();
+            _scopedProvider = serviceScope.ServiceProvider;
         }
 
         public async Task InstallCommandsAsync()
@@ -82,6 +78,14 @@ namespace DiscordBot.Services
 
                 // Execute the command with the command context we just
                 // created, along with the service provider for precondition checks.
+                
+                // Initially developed to create the scope before calling the
+                // Discord modules. Some commands needed to run async due
+                // to the Discord gateway's response timeout. This caused
+                // issues with the scope closing before the threads finished,
+                // which would then release the EFCore contexts, throw errors,
+                // etc. Because of this, the scope was moved from outside the
+                // thread to inside the thread.
                 /*
                 using (var scope = _serviceProvider.CreateScope())
                 {
@@ -98,9 +102,9 @@ namespace DiscordBot.Services
             }
             else
             {
-                var dmChannel = message.Channel as SocketDMChannel;
-                if (dmChannel != null)
+                if (message.Channel is SocketDMChannel dmChannel)
                 {
+                    // Log any direct messages to the database.
                     try
                     {
 

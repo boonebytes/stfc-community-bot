@@ -28,8 +28,7 @@ namespace DiscordBot.Infrastructure.Repositories
                         .ThenInclude(ag => ag.Alliances)
                     .Include(a => a.AssignedDiplomacy)
                         .ThenInclude(ad => ad.Related)
-                    .Where(a => a.Id == allianceId)
-                    .FirstOrDefault();
+                    .FirstOrDefault(a => a.Id == allianceId);
 
 
                 List<long> thisAllianceGroupMembers;

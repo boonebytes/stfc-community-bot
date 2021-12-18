@@ -16,11 +16,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             diplomacyConfiguration.Property(a => a.Id)
                 .ValueGeneratedOnAdd();
 
-            //diplomacyConfiguration
-            //    .Ignore("AllianceId");
-
-
-
+            
             diplomacyConfiguration
                 .Property<long>("_ownerId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)

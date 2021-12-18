@@ -21,9 +21,6 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .HasMaxLength(200)
                 .IsRequired(true);
 
-            //starSystemConfiguration.Property<long>("ZoneId")
-            //    .IsRequired();
-
             starSystemConfiguration
                 .Property<long?>("_zoneId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)

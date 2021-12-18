@@ -28,9 +28,6 @@ namespace DiscordBot
             _discordConfig = discordConfig;
             _serviceProvider = serviceProvider;
             _client = discordSocketClient;
-            
-            //Console.WriteLine(defendTimes.Zones.Count);
-            //Console.WriteLine(defendTimes.Zones.First().NextDefend);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,28 +35,21 @@ namespace DiscordBot
             using (var thisServiceScope = _serviceProvider.CreateScope())
             {
                 IAllianceRepository allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
-                var initSchedule = allianceRepository.InitPostSchedule();
+                await allianceRepository.InitPostSchedule();
 
                 IZoneRepository zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
-                var initZones = zoneRepository.InitZones();
-
-                Task.WaitAll(initSchedule, initZones);
+                await zoneRepository.InitZones();
             }
             
-            var _config = new DiscordSocketConfig { MessageCacheSize = 100 };
+            var config = new DiscordSocketConfig { MessageCacheSize = 100 };
             var cmdService = _serviceProvider.GetRequiredService<CommandService>();
-
-            //_client = new DiscordSocketClient();
 
             _client.Log += LogAsync;
             cmdService.Log += LogAsync;
 
-            //_client.MessageReceived += ClientOnMessageReceived;
-
             await _client.LoginAsync(TokenType.Bot, _discordConfig.Token);
             await _client.StartAsync();
 
-            //_client.MessageUpdated += MessageUpdated;
             _client.Ready += () =>
             {
                 _logger.LogInformation("Bot is connected");
@@ -76,68 +66,35 @@ namespace DiscordBot
                     Task.Run(async () =>
                         {
                             await _client.SetGameAsync(name: _discordConfig.WatchingStatus, type: ActivityType.Watching);
-                        }
-                    );
+                        }, stoppingToken);
                 }
-                // await _client.SetGameAsync(name: "Star Trek Fleet Command", type: ActivityType.Watching);
 
                 return Task.CompletedTask;
             };
 
             var cmdHandler = _serviceProvider.GetRequiredService<Services.CommandHandler>();
             await cmdHandler.InstallCommandsAsync();
-
-            //await Task.Delay(1000, stoppingToken);
+            
             await Task.Delay(-1, stoppingToken);
 
             await _client.StopAsync();
             await _client.LogoutAsync();
-
-            //}
         }
 
         private Task LogAsync(LogMessage logMessage)
         {
-            LogLevel level = LogLevel.Warning;
-            switch (logMessage.Severity)
+            var level = logMessage.Severity switch
             {
-                case LogSeverity.Critical:
-                    level = LogLevel.Critical;
-                    break;
-                case LogSeverity.Error:
-                    level = LogLevel.Error;
-                    break;
-                case LogSeverity.Warning:
-                    level = LogLevel.Warning;
-                    break;
-                case LogSeverity.Info:
-                    level = LogLevel.Information;
-                    break;
-                case LogSeverity.Verbose:
-                    level = LogLevel.Debug;
-                    break;
-                case LogSeverity.Debug:
-                    level = LogLevel.Trace;
-                    break;
-            }
+                LogSeverity.Critical => LogLevel.Critical,
+                LogSeverity.Error => LogLevel.Error,
+                LogSeverity.Warning => LogLevel.Warning,
+                LogSeverity.Info => LogLevel.Information,
+                LogSeverity.Verbose => LogLevel.Debug,
+                LogSeverity.Debug => LogLevel.Trace,
+                _ => LogLevel.Warning
+            };
             _logger.Log(level, logMessage.ToString());
             return Task.CompletedTask;
-        }
-
-        private Task ClientOnMessageReceived(SocketMessage arg)
-        {
-            if (arg.Content.StartsWith("!helloworld"))
-            {
-                arg.Channel.SendMessageAsync($"User '{arg.Author.Username}' successfully ran helloworld!");
-            }
-            return Task.CompletedTask;
-        }
-
-        private async Task MessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
-        {
-            // If the message was not in the cache, downloading it will result in getting a copy of `after`.
-            var message = await before.GetOrDownloadAsync();
-            _logger.LogDebug($"{message} -> {after}");
         }
     }
 }

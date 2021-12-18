@@ -119,10 +119,6 @@ namespace DiscordBot.Responses
 
             foreach (Zone zone in dayZones)
             {
-                //bool useNextWeek = false;
-                //if (includeDayHeader && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek && zone.DefendEasternDay != DayOfWeek.Sunday)
-                //    useNextWeek = true;
-
                 response += indent + GetDiscordEmbedValue(zone, true) + "\n";
             }
             return response;
@@ -132,9 +128,7 @@ namespace DiscordBot.Responses
         {
             //string nextMessage = "";
 
-            bool includeDayHeaders = false;
-            if (zones.Select(z => z.DefendEasternDay).Distinct().Count() > 1)
-                includeDayHeaders = true;
+            bool includeDayHeaders = zones.Select(z => z.DefendEasternDay).Distinct().Count() > 1;
 
             for (var i = 0; i < 7; i++)
             {
@@ -146,7 +140,7 @@ namespace DiscordBot.Responses
 
         protected async Task PostDefendsViaEmbedsAsync(SocketCommandContext context, string title, List<Zone> zones)
         {
-            if (zones.Count() == 0)
+            if (!zones.Any())
             {
                 var embedMsg = new EmbedBuilder
                 {
@@ -164,9 +158,7 @@ namespace DiscordBot.Responses
             }
             else
             {
-                bool includeDayHeaders = false;
-                if (zones.Select(z => z.DefendEasternDay).Distinct().Count() > 1)
-                    includeDayHeaders = true;
+                bool includeDayHeaders = zones.Select(z => z.DefendEasternDay).Distinct().Count() > 1;
 
                 var embedMsg = new EmbedBuilder
                 {
@@ -174,12 +166,12 @@ namespace DiscordBot.Responses
                     //Description = ""
                 };
                 DayOfWeek? lastDay = null;
-                int currentLine = 0;
                 foreach (Zone zone in zones)
                 {
-                    bool useNextWeek = false;
-                    if (includeDayHeaders && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek && zone.DefendEasternDay != DayOfWeek.Sunday)
-                        useNextWeek = true;
+                    bool useNextWeek =
+                        includeDayHeaders
+                        && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek
+                        && zone.DefendEasternDay != DayOfWeek.Sunday;
 
                     if (includeDayHeaders && (!lastDay.HasValue || lastDay.Value != zone.DefendEasternDay))
                     {
@@ -198,8 +190,6 @@ namespace DiscordBot.Responses
                         Value = GetDiscordEmbedValue(zone, false, useNextWeek) + "\n\u200b"
                     };
                     embedMsg.AddField(thisField);
-                    
-                    currentLine++;
                 }
             }
 
@@ -207,7 +197,7 @@ namespace DiscordBot.Responses
 
         protected void AddDefendsToEmbed(List<Zone> zones, ref EmbedBuilder embedMsg, bool shortVersion = false)
         {
-            if (zones.Count() == 0)
+            if (!zones.Any())
             {
                 var thisField = new EmbedFieldBuilder
                 {
@@ -218,17 +208,16 @@ namespace DiscordBot.Responses
             }
             else
             {
-                bool includeDayHeaders = false;
-                if (zones.Select(z => z.DefendEasternDay).Distinct().Count() > 1)
-                    includeDayHeaders = true;
+                bool includeDayHeaders = zones.Select(z => z.DefendEasternDay).Distinct().Count() > 1;
 
                 DayOfWeek? lastDay = null;
                 int currentLine = 0;
                 foreach (Zone zone in zones)
                 {
-                    bool useNextWeek = false;
-                    if (includeDayHeaders && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek && zone.DefendEasternDay != DayOfWeek.Sunday)
-                        useNextWeek = true;
+                    bool useNextWeek =
+                        includeDayHeaders
+                        && zone.DefendEasternDay >= DateTime.Now.ToEasternTime().DayOfWeek
+                        && zone.DefendEasternDay != DayOfWeek.Sunday;
 
                     if (shortVersion)
                     {
@@ -274,7 +263,6 @@ namespace DiscordBot.Responses
             var embedMsg = new EmbedBuilder
             {
                 Title = "Defend Schedule for " + date.ToString("dddd, MMM d")
-                //Description = ""
             };
 
             var fromDate = date.ToUniversalTime();
@@ -296,7 +284,6 @@ namespace DiscordBot.Responses
             var embedMsg = new EmbedBuilder
             {
                 Title = "Next Defense"
-                //Description = ""
             };
             var nextDefend = _zoneRepository.GetNextDefend(allianceId);
             if (nextDefend == null)
@@ -318,14 +305,6 @@ namespace DiscordBot.Responses
 
         public async Task PostAllAsync(ulong guildId, ulong channelId, long? allianceId = null, bool shortVersion = false)
         {
-            /*
-            var embedMsg = new EmbedBuilder
-            {
-                Title = "Full Defend Schedule"
-                //Description = ""
-            };
-            */
-
             try
             {
                 var allDefends = (await _zoneRepository.GetAllAsync(allianceId, false))
@@ -341,8 +320,6 @@ namespace DiscordBot.Responses
             {
                 _logger.LogError(ex, $"Unexpected error occured while trying to write all to {guildId} {channelId}");
             }
-            
-            //AddDefendsToEmbed(allDefends, ref embedMsg, shortVersion);
         }
 
 
@@ -370,8 +347,9 @@ namespace DiscordBot.Responses
                             m.Author.Id == _client.CurrentUser.Id
                             && m.Type == MessageType.ChannelPinnedMessage
                             && m.Timestamp > DateTime.Now.AddDays(-10)
-                        );
-                if (pinnedNotifications.Count() > 0)
+                        )
+                        .ToList();
+                if (pinnedNotifications.Any())
                 {
                     foreach (Discord.Rest.RestSystemMessage msg in pinnedNotifications)
                     {
@@ -409,7 +387,6 @@ namespace DiscordBot.Responses
                 var dayShortPosts = channelMessages.Where(m =>
                         m.Author.Id == _client.CurrentUser.Id
                         && m.Embeds.Count == 0
-                        //&& m.Content.StartsWith("**__" + DateTime.Now.ToEasternTime().AddDays(-1).DayOfWeek.ToString() + "__**")
                         && m.Content.StartsWith("**__" + dayOfWeek.ToString() + "__**")
                     )
                     .ToList();

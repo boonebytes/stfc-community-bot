@@ -35,27 +35,14 @@ namespace DiscordBot
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    /*
-                    services.AddLogging(opt =>
-                    {
-                        opt.AddSimpleConsole(c =>
-                        {
-                            c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-                            c.UseUtcTimestamp = true;
-                        })
-                    });
-                    */
-
                     IConfiguration configuration = hostContext.Configuration;
-                    Models.Config.Discord discordConfig = configuration.GetSection(Models.Config.Discord.SECTION).Get<Models.Config.Discord>();
+                    Models.Config.Discord discordConfig = configuration.GetSection(Models.Config.Discord.Section).Get<Models.Config.Discord>();
 
                     services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
 
                     services.AddScoped<IAllianceRepository, AllianceRepository>();
                     services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
                     services.AddScoped<IZoneRepository, ZoneRepository>();
-                    
-                    //CommandService commandService = new CommandService();
 
                     services.AddSingleton(discordConfig);
                     var clientConfig = new DiscordSocketConfig
@@ -73,7 +60,6 @@ namespace DiscordBot
                     services.AddSingleton<Services.CommandHandler>();
 
                     services.AddTransient<Responses.Schedule>();
-                    services.AddTransient<Responses.Broadcast>();
 
                     services.AddSingleton<Scheduler>();
                     services.AddHostedService<Worker>();

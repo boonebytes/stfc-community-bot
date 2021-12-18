@@ -39,8 +39,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
                         .ThenInclude(tz => tz.Owner)
-                .Where(z => z.Id == id)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(z => z.Id == id);
             return zone;
         }
 
@@ -51,8 +50,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
                         .ThenInclude(tz => tz.Owner)
-                .Where(z => z.Name.ToUpper() == name.ToUpper())
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(z => z.Name.ToUpper() == name.ToUpper());
             return zone;
         }
 
@@ -88,7 +86,7 @@ namespace DiscordBot.Infrastructure.Repositories
                     .Distinct()
                     .Where(no =>
                             !ownerFriendlies.Contains(no)
-                        // && no.Zones.Count < 5
+                            // && no.Zones.Count < 5
                         )
                     .ToList();
             }
@@ -132,7 +130,6 @@ namespace DiscordBot.Infrastructure.Repositories
                                     .ThenInclude(tz => tz.Owner)
                             .AsTracking(tracking)
                             .Where(z => interestedAlliances.Contains(z.Owner.Id))
-                            //.OrderBy(z => z.NextDefend)
                             .OrderBy(z => z.DefendEasternDay)
                             .ThenBy(z => z.DefendEasternTime)
                             .ToListAsync();

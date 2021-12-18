@@ -33,24 +33,14 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .HasMaxLength(10)
                 .IsRequired(true);
 
-            //zoneConfiguration
-            //    .Ignore("Owner");
-
             zoneConfiguration.Property(z => z.NextDefend)
                 .IsRequired(false);
-
-            //zoneConfiguration
-            //    .Ignore("_nextDefend");
-
+            
             var starSystemNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.StarSystems));
             starSystemNav.SetPropertyAccessMode(PropertyAccessMode.Field);
             
             zoneConfiguration
                 .Ignore(z => z.Neighbours);
-
-            //zoneConfiguration
-            //    .Ignore(z => z.ZoneNeighbours);
-
 
             zoneConfiguration
                 .HasMany<ZoneNeighbour>(z => z.ZoneNeighbours)
@@ -59,26 +49,10 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .OnDelete(DeleteBehavior.Restrict);
             
 
-            /*
-            zoneConfiguration
-                .HasMany<ZoneNeighbour>("_zoneNeighboursIn")
-                .WithOne(zn => zn.ToZone)
-                .HasForeignKey("_toZoneId")
-                .OnDelete(DeleteBehavior.Restrict);
-            */
-
-            
             var neighboursNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.ZoneNeighbours));
             neighboursNav.SetPropertyAccessMode(PropertyAccessMode.Field);
             neighboursNav.SetIsEagerLoaded(true);
-            /*
-            zoneConfiguration
-                .Property<List<ZoneNeighbour>>("_neighbours")
-                .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .IsRequired(false);
-            */
-
-
+            
             var ownerNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.Owner));
             ownerNav.SetPropertyAccessMode(PropertyAccessMode.Field);
             ownerNav.SetIsEagerLoaded(true);

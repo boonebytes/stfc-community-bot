@@ -12,13 +12,7 @@ namespace DiscordBot.Infrastructure.Repositories
 {
     public class AllianceRepository : BaseRepository, IAllianceRepository
     {
-        public IUnitOfWork UnitOfWork
-        {
-            get
-            {
-                return _context;
-            }
-        }
+        public IUnitOfWork UnitOfWork => _context;
 
         public AllianceRepository(ILogger<AllianceRepository> logger, BotContext context) : base(logger, context)
         { }
@@ -49,10 +43,12 @@ namespace DiscordBot.Infrastructure.Repositories
         public async Task<Alliance> GetByNameOrAcronymAsync(string value)
         {
             var alliance = await _context.Alliances.AsQueryable()
-                    .Where(a => a.Acronym.ToUpper() == value.ToUpper())
-                    .SingleOrDefaultAsync();
+                .Include(a => a.Group)
+                .Include(a => a.Zones)
+                .Where(a => a.Acronym.ToUpper() == value.ToUpper())
+                .SingleOrDefaultAsync();
 
-            if (alliance == null || alliance == default)
+            if (alliance == null)
             {
                 alliance = await _context.Alliances.AsQueryable()
                     .Where(a => a.Name.ToUpper() == value.ToUpper())
@@ -109,7 +105,7 @@ namespace DiscordBot.Infrastructure.Repositories
                     .ThenInclude(ad => ad.Related)
                 .Where(a => a.GuildId == id);
 
-            if (result == null || result.Count() == 0)
+            if (!result.Any())
                 throw new BotDomainException("I'm not able to determine the alliance from this Discord server. Please contact support.");
             else
                 return result.First();

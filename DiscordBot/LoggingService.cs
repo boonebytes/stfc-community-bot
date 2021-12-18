@@ -54,7 +54,6 @@ namespace DiscordBot
                 }
                 _logger.Log(level, message.ToString());
                 return Task.CompletedTask;
-                //Console.WriteLine($"[General/{message.Severity}] {message}");
             }
             return Task.CompletedTask;
         }
