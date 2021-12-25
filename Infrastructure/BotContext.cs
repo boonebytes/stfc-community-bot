@@ -24,6 +24,7 @@ namespace DiscordBot.Infrastructure
         public DbSet<StarSystem> StarSystems { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<ZoneNeighbour> ZoneNeighbours { get; set; }
+        public DbSet<Service> Services { get; set; }
 
         private readonly IMediator _mediator;
         //private IDbContextTransaction _currentTransaction;
@@ -54,6 +55,8 @@ namespace DiscordBot.Infrastructure
             modelBuilder.ApplyConfiguration(new DiplomaticRelationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DirectMessageTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceCostEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new StarSystemEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ZoneEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ZoneNeighbourEntityTypeConfiguration());

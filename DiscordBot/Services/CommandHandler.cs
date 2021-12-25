@@ -53,7 +53,7 @@ namespace DiscordBot.Services
             }
             */
             
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
+            var loadedModules = await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)

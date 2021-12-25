@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
+    <Folder Include="Entities\Services" />
     <Folder Include="Shared\" />
     <Folder Include="Entities\Zones\" />
     <Folder Include="Entities\Alliances\" />

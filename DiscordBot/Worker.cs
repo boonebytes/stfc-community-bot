@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+//using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
@@ -43,6 +44,8 @@ namespace DiscordBot
             
             var config = new DiscordSocketConfig { MessageCacheSize = 100 };
             var cmdService = _serviceProvider.GetRequiredService<CommandService>();
+            var cmdHandler = _serviceProvider.GetRequiredService<Services.CommandHandler>();
+            var intHandler = _serviceProvider.GetRequiredService<Services.InteractionHandler>();
 
             _client.Log += LogAsync;
             cmdService.Log += LogAsync;
@@ -58,8 +61,14 @@ namespace DiscordBot
                     {
                         var cmdScheduler = _serviceProvider.GetService<Scheduler>();
                         await cmdScheduler.Run(stoppingToken, _discordConfig.SchedulePollSeconds);
-                    }
-                );
+                    }, stoppingToken);
+
+                Task.Run(async () =>
+                {
+                    await cmdHandler.InstallCommandsAsync();
+                    await intHandler.InstallCommandsAsync();
+                    
+                }, stoppingToken);
 
                 if (!string.IsNullOrEmpty(_discordConfig.WatchingStatus))
                 {
@@ -68,13 +77,10 @@ namespace DiscordBot
                             await _client.SetGameAsync(name: _discordConfig.WatchingStatus, type: ActivityType.Watching);
                         }, stoppingToken);
                 }
-
+                
                 return Task.CompletedTask;
             };
 
-            var cmdHandler = _serviceProvider.GetRequiredService<Services.CommandHandler>();
-            await cmdHandler.InstallCommandsAsync();
-            
             await Task.Delay(-1, stoppingToken);
 
             await _client.StopAsync();

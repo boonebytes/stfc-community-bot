@@ -24,6 +24,15 @@ namespace DiscordBot.Domain.Entities.Zones
         public static Resource CrystalTier4 = new(34, nameof(CrystalTier4), "Crystal Tier 4");
         public static Resource OreTier3 = new(43, nameof(OreTier3), "Ore Tier 3");
         public static Resource OreTier4 = new(44, nameof(OreTier4), "Ore Tier 4");
+        
+        public static Resource RefinedIsogenTier1 = new(51, nameof(RefinedIsogenTier1), "Refined Isogen Tier 1");
+        public static Resource RefinedIsogenTier2 = new(52, nameof(RefinedIsogenTier2), "Refined Isogen Tier 2");
+        public static Resource RefinedIsogenTier3 = new(53, nameof(RefinedIsogenTier3), "Refined Isogen Tier 3");
+
+        public static Resource ProgenitorEmitters = new(61, nameof(ProgenitorEmitters), "Progenitor Emitters");
+        public static Resource ProgenitorDiodes = new(62, nameof(ProgenitorDiodes), "Progenitor Diodes");
+        public static Resource ProgenitorCores = new(63, nameof(ProgenitorCores), "Progenitor Cores");
+        public static Resource ProgenitorReactors = new(64, nameof(ProgenitorReactors), "ProgenitorReactors");
 
         public virtual string Label { get; private set; }
 
@@ -38,7 +47,10 @@ namespace DiscordBot.Domain.Entities.Zones
                     IsogenTier1, IsogenTier2, IsogenTier3,
                     GasTier3, GasTier4,
                     CrystalTier3, CrystalTier4,
-                    OreTier3, OreTier4 };
+                    OreTier3, OreTier4,
+                    RefinedIsogenTier1, RefinedIsogenTier2, RefinedIsogenTier3,
+                    ProgenitorEmitters, ProgenitorDiodes, ProgenitorCores, ProgenitorReactors
+            };
 
         public static Resource FromName(string name)
         {

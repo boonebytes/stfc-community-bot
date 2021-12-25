@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
+using Discord.Interactions;
+//using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
@@ -47,18 +50,26 @@ namespace DiscordBot
                     services.AddSingleton(discordConfig);
                     var clientConfig = new DiscordSocketConfig
                     {
-                        ExclusiveBulkDelete = false,
-                        AlwaysDownloadUsers = true
-                        //GatewayIntents =  Discord.GatewayIntents.GuildMembers
-                        //                & Discord.GatewayIntents.GuildMessages
+                        //ExclusiveBulkDelete = false,
+                        AlwaysDownloadUsers = true,
+                        GatewayIntents =  GatewayIntents.AllUnprivileged
+                                        | GatewayIntents.GuildMembers
+                                        | GatewayIntents.GuildMessages
+                                        | GatewayIntents.DirectMessages
                     };
-                    clientConfig.GatewayIntents &= Discord.GatewayIntents.GuildMembers;
+                    //clientConfig.GatewayIntents &= Discord.GatewayIntents.GuildMembers;
                     var client = new DiscordSocketClient(clientConfig);
                     services.AddSingleton<DiscordSocketClient>(client);
 
+                    
+                    var interactionService = new InteractionService(client.Rest);
+                    services.AddSingleton<InteractionService>(interactionService);
+                    services.AddSingleton<Services.InteractionHandler>();
+                    
+
                     services.AddSingleton<CommandService>();
                     services.AddSingleton<Services.CommandHandler>();
-
+                    
                     services.AddTransient<Responses.Schedule>();
 
                     services.AddSingleton<Scheduler>();

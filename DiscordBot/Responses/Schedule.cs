@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -35,7 +36,7 @@ namespace DiscordBot.Responses
 
         public string GetDiscordEmbedValue(Zone zone, bool shortVersion = false, bool useNextWeek = false)
         {
-            string response = "";
+            var response = new StringBuilder();
             //var tz = TimeZoneInfo.ConvertTime(NextDefend.Value, )
 
             string potentialThreats = "";
@@ -48,80 +49,79 @@ namespace DiscordBot.Responses
 
             if (shortVersion)
             {
-                response = $"{zone.Owner.Acronym}/{zone.Name}({zone.Level}^): <t:";
+                response.Append($"{zone.Owner.Acronym}/{zone.Name}({zone.Level}^): <t:");
                 if (useNextWeek)
                 {
-                    response += zone.NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
+                    response.Append(zone.NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp());
                 }
                 else
                 {
-                    response += zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
+                    response.Append(zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp());
                 }
-                response += $":t> local / {zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
+                response.Append($":t> local / {zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET");
 
                 //if (!string.IsNullOrEmpty(zone.Threats))
                 //    response += " [*_" + zone.Threats + "_*]";
                 if (!string.IsNullOrEmpty(potentialThreats))
-                    response += " [*_" + potentialThreats + "_*]";
+                    response.Append(" [*_" + potentialThreats + "_*]");
                 else if (zone.LowRisk)
-                    response += " [*_Low Risk_*]";
+                    response.Append(" [*_Low Risk_*]");
             }
             else
             {
                 if (string.IsNullOrEmpty(potentialThreats) && string.IsNullOrEmpty(zone.Threats) && zone.LowRisk)
-                    response += "*_Low Risk_*\n";
+                    response.Append("*_Low Risk_*\n");
 
-                response += $"**When**: "
-                            + $"<t:"; //
+                response.Append($"**When**: <t:");
                 if (useNextWeek)
                 {
-                    response += zone.NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp();
+                    response.Append(zone.NextDefend.Value.ToUniversalTime().AddDays(7).ToUnixTimestamp());
                 }
                 else
                 {
-                    response += zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp();
+                    response.Append(zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp());
                 }
-                response += ":t> local / "
+                response.Append(":t> local / "
                             + $"{zone.DefendUtcTime} UTC / "
-                            + $"{zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET";
+                            + $"{zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET");
                 //if (!string.IsNullOrEmpty(zone.Threats))
                 //    response += "\n**Saved Threats**: " + zone.Threats;
-                response += "\n**Nearby Threats**: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialThreats);
+                response.Append("\n**Nearby Threats**: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialThreats));
                 if (!string.IsNullOrEmpty(zone.Notes))
                 {
-                    response += $"\n**Notes**: {zone.Notes}";
+                    response.Append($"\n**Notes**: {zone.Notes}");
                 }
             }
 
-            return response;
+            return response.ToString();
         }
 
 
         public string GetDayScheduleAsString(List<Zone> zones, DayOfWeek day, bool includeDayHeader = true)
         {
             string indent = "";
-            string response = "";
+            var response = new StringBuilder();
 
             var dayZones = zones.Where(z => z.DefendEasternDay == day)
                 .ToList();
 
             if (includeDayHeader)
             {
-                response = "**__" + day.ToString() + "__**" + "\n";
+                response.AppendLine("**__" + day.ToString() + "__**");
                 indent = "> ";
             }
 
             if (!dayZones.Any())
             {
-                response += indent + "(empty)\n";
-                return response;
+                response.AppendLine(indent + "(empty)");
+                return response.ToString();
             }
 
             foreach (Zone zone in dayZones)
             {
-                response += indent + GetDiscordEmbedValue(zone, true) + "\n";
+                response.AppendLine(indent + GetDiscordEmbedValue(zone, true));
             }
-            return response;
+            return response.ToString();
         }
         
         protected async Task PostDefendsViaTextAsync(IMessageChannel channel, List<Zone> zones)

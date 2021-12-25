@@ -14,6 +14,7 @@ namespace DiscordBot.Domain.Entities.Zones
         public Zone()
         {
             _starSystems = new List<StarSystem>();
+            _services = new List<Service>();
         }
 
         public virtual string Name { get; private set; }
@@ -38,6 +39,9 @@ namespace DiscordBot.Domain.Entities.Zones
         //public IReadOnlyCollection<ZoneNeighbour> ZoneNeighboursIn => _zoneNeighboursIn;
 
         public IReadOnlyCollection<Zone> Neighbours => _zoneNeighbours.Select(zn => zn.ToZone).ToList();
+
+        private readonly List<Service> _services;
+        public IReadOnlyCollection<Service> Services => _services;
 
         public bool LowRisk
         {
@@ -163,6 +167,18 @@ namespace DiscordBot.Domain.Entities.Zones
         {
             if (!_starSystems.Contains(starSystem))
                 _starSystems.Add(starSystem);
+        }
+
+        public void AddService(Service service)
+        {
+            if (!_services.Contains(service))
+                _services.Add(service);
+        }
+
+        public void RemoveService(Service service)
+        {
+            if (_services.Contains(service))
+                _services.Remove(service);
         }
 
         public void AddZoneChangedDomainEvent()
