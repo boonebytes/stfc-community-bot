@@ -60,7 +60,7 @@ namespace DiscordBot
                 Task.Run(async () =>
                     {
                         var cmdScheduler = _serviceProvider.GetService<Scheduler>();
-                        await cmdScheduler.Run(stoppingToken, _discordConfig.SchedulePollSeconds);
+                        await cmdScheduler.Run(_discordConfig.SchedulePollSeconds, stoppingToken);
                     }, stoppingToken);
 
                 Task.Run(async () =>

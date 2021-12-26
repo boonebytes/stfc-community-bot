@@ -337,11 +337,12 @@ namespace DiscordBot.Responses
                         && m.Embeds.Count == 1
                         && m.Embeds.First().Title.StartsWith("Defend Schedule for ")
                         && (DateTimeOffset.UtcNow - m.Timestamp).TotalDays <= 14
-                    )
-                    .ToList();
-                await channel.DeleteMessagesAsync(myMessages);
-
-
+                    );
+                if (myMessages.Any())
+                {
+                    await channel.DeleteMessagesAsync(myMessages.ToList());
+                }
+                
                 // Delete pinned notifications
                 var pinnedNotifications = channelMessages.Where(m =>
                             m.Author.Id == _client.CurrentUser.Id

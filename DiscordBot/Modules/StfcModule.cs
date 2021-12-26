@@ -12,12 +12,12 @@ using Microsoft.Extensions.Logging;
 namespace DiscordBot.Modules
 {
     [Discord.Interactions.Group("stfc", "Star Trek Fleet Command - Community Bot")]
-    public class TdlInteractionModule : InteractionModuleBase
+    public partial class StfcModule : InteractionModuleBase
     {
-        private readonly ILogger<TdlInteractionModule> _logger;
+        private readonly ILogger<StfcModule> _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public TdlInteractionModule(ILogger<TdlInteractionModule> logger, IServiceProvider serviceProvider)
+        public StfcModule(ILogger<StfcModule> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
@@ -25,7 +25,8 @@ namespace DiscordBot.Modules
         
         [RequireOwner]
         [SlashCommand("echo", "Echo text back to this channel")]
-        public async Task EchoAsync(string input)
+        public async Task EchoAsync(
+            [Summary("Input", "Text to repeat")] string input)
         {
             if (Context.Channel is ISocketMessageChannel channel)
             {
@@ -40,7 +41,7 @@ namespace DiscordBot.Modules
         
         [SlashCommand("today", "Prints the defense times for the rest of today")]
         [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task TodayAsync(string extra = "")
+        public async Task TodayAsync(bool shortVersion = false)
         {
             using var serviceScope = _serviceProvider.CreateScope();
             try
@@ -50,8 +51,6 @@ namespace DiscordBot.Modules
 
                 var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
-                bool shortVersion = extra.Trim().ToLower() == "short";
-                
                 var embedMsg = schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id, shortVersion);
                 //_ = TryDeleteMessage(Context.Message);
                 await this.RespondAsync(embed: embedMsg.Build());
@@ -69,7 +68,7 @@ namespace DiscordBot.Modules
         
         [SlashCommand("tomorrow","Prints the defense times for tomorrow")]
         [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task TomorrowAsync(string extra = "")
+        public async Task TomorrowAsync(bool shortVersion = false)
         {
             using var serviceScope = _serviceProvider.CreateScope();
             try
@@ -78,8 +77,6 @@ namespace DiscordBot.Modules
                 var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
                 var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-
-                bool shortVersion = extra.Trim().ToLower() == "short";
 
                 var embedMsg = schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id, shortVersion);
                 //_ = TryDeleteMessage(Context.Message);
@@ -124,7 +121,7 @@ namespace DiscordBot.Modules
 
         [SlashCommand("all", "Prints the full defense schedule", runMode: RunMode.Async)]
         [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task AllAsync(string extra = "")
+        public async Task AllAsync(bool shortVersion = false)
         {
             using var serviceScope = _serviceProvider.CreateScope();
             try
@@ -133,8 +130,6 @@ namespace DiscordBot.Modules
                 var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
                 var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-
-                bool shortVersion = extra.Trim().ToLower() == "short";
 
                 var targetGuild = Context.Guild.Id;
                 var targetChannel = Context.Channel.Id;

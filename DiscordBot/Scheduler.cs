@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace DiscordBot
             }
         }
 
-        public async Task Run(CancellationToken stoppingToken, int pollingIntervalSeconds)
+        public async Task Run(int pollingIntervalSeconds, CancellationToken stoppingToken)
         {
             _ = Monitor(stoppingToken);
             while (!stoppingToken.IsCancellationRequested)
@@ -66,6 +67,13 @@ namespace DiscordBot
                 _allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
                 _zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
                 _scheduleResponse = thisServiceScope.ServiceProvider.GetService<Responses.Schedule>();
+
+#if DEBUG && false
+                var testCase = await _allianceRepository.GetByNameOrAcronymAsync("BBT");
+                await ProcessNextSchedule(testCase, stoppingToken);
+                await Task.Delay(new TimeSpan(0, 30, 0), stoppingToken);
+#endif
+                
                 var nextAllianceToPost = _allianceRepository.GetNextOnPostSchedule();
 
                 if (nextAllianceToPost.NextScheduledPost.Value > DateTime.UtcNow)
@@ -78,48 +86,56 @@ namespace DiscordBot
 
                 if (!stoppingToken.IsCancellationRequested && DateTime.UtcNow >= nextAllianceToPost.NextScheduledPost)
                 {
-                    _logger.LogInformation($"Preparing to post schedule for {nextAllianceToPost.Acronym}");
-                    try
+                    await ProcessNextSchedule(nextAllianceToPost, stoppingToken);
+                }
+            }
+        }
+
+        private async Task ProcessNextSchedule(Alliance nextAllianceToPost, CancellationToken stoppingToken)
+        {
+            _logger.LogInformation($"Preparing to post schedule for {nextAllianceToPost.Acronym}");
+            try
+            {
+                var guild = _client.GetGuild(nextAllianceToPost.GuildId.Value);
+                if (guild == null)
+                {
+                    _logger.LogError(
+                        $"Unable to post schedule to guild {nextAllianceToPost.GuildId.Value} channel {nextAllianceToPost.DefendSchedulePostChannel.Value} for {nextAllianceToPost.Acronym} - Guild not found");
+                    _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
+                    await _allianceRepository.UnitOfWork.SaveEntitiesAsync(stoppingToken);
+                }
+                else
+                {
+                    var channel = guild.GetTextChannel(nextAllianceToPost.DefendSchedulePostChannel.Value);
+                    if (channel == null)
                     {
-                        var guild = _client.GetGuild(nextAllianceToPost.GuildId.Value);
-                        if (guild == null)
-                        {
-                            _logger.LogError($"Unable to post schedule to guild {nextAllianceToPost.GuildId.Value} channel {nextAllianceToPost.DefendSchedulePostChannel.Value} for {nextAllianceToPost.Acronym} - Guild not found");
-                            _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
-                            await _allianceRepository.UnitOfWork.SaveEntitiesAsync(stoppingToken);
-                        }
-                        else
-                        {
-                            var channel = guild.GetTextChannel(nextAllianceToPost.DefendSchedulePostChannel.Value);
-                            if (channel == null)
-                            {
-                                _logger.LogError($"Unable to post schedule to guild {nextAllianceToPost.GuildId.Value} channel {nextAllianceToPost.DefendSchedulePostChannel.Value} for {nextAllianceToPost.Acronym} - Guild or channel not found");
-                                _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
-                                await _allianceRepository.UnitOfWork.SaveEntitiesAsync(stoppingToken);
-                            }
-                            else
-                            {
-                                var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
-
-                                await _scheduleResponse.TryCleanMessages(channel, channelMessages, nextAllianceToPost);
-                                await _scheduleResponse.TryUpdateWeeklyMessages(channelMessages, nextAllianceToPost);
-                                await TryPinToday(channelMessages, nextAllianceToPost);
-                                    
-                                var embedMsg = _scheduleResponse.GetForDate(DateTime.UtcNow, nextAllianceToPost.Id);
-                                await channel.SendMessageAsync(embed: embedMsg.Build());
-
-                                _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
-                                await _allianceRepository.UnitOfWork.SaveEntitiesAsync(stoppingToken);
-                            }
-                        }
+                        _logger.LogError(
+                            $"Unable to post schedule to guild {nextAllianceToPost.GuildId.Value} channel {nextAllianceToPost.DefendSchedulePostChannel.Value} for {nextAllianceToPost.Acronym} - Guild or channel not found");
+                        _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
+                        await _allianceRepository.UnitOfWork.SaveEntitiesAsync(stoppingToken);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        _logger.LogError(ex, $"An unexpected error occurred while trying to post the schedule to guild {nextAllianceToPost.Acronym} ({nextAllianceToPost.GuildId}), channel {nextAllianceToPost.DefendSchedulePostChannel}");
+                        var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
+
+                        await _scheduleResponse.TryCleanMessages(channel, channelMessages, nextAllianceToPost);
+                        await _scheduleResponse.TryUpdateWeeklyMessages(channelMessages, nextAllianceToPost);
+                        await TryPinToday(channelMessages, nextAllianceToPost);
+
+                        var embedMsg = _scheduleResponse.GetForDate(DateTime.UtcNow, nextAllianceToPost.Id);
+                        await channel.SendMessageAsync(embed: embedMsg.Build());
+
                         _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
                         await _allianceRepository.UnitOfWork.SaveEntitiesAsync(stoppingToken);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    $"An unexpected error occurred while trying to post the schedule to guild {nextAllianceToPost.Acronym} ({nextAllianceToPost.GuildId}), channel {nextAllianceToPost.DefendSchedulePostChannel}");
+                _allianceRepository.FlagSchedulePosted(nextAllianceToPost);
+                await _allianceRepository.UnitOfWork.SaveEntitiesAsync(stoppingToken);
             }
         }
 

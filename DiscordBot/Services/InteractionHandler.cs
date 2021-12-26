@@ -37,7 +37,8 @@ namespace DiscordBot.Services
             // Hook the event into our command handler
             //_client.MessageReceived += HandleCommandAsync;
             ////_client.SlashCommandExecuted += SlashCommandHandlerAsync;
-            _client.SlashCommandExecuted += SlashCommandHandlerAsync;
+            //_client.SlashCommandExecuted += SlashCommandHandlerAsync;
+            _client.InteractionCreated += InteractionCreatedAsync;
             //_client.SlashCommandExecuted += HandleSlashCommandAsync;
             _interactionService.SlashCommandExecuted += SlashCommandExecutedAsync;
 
@@ -59,7 +60,7 @@ namespace DiscordBot.Services
             }
             */
             
-            await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
+            var modules = await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
 #if DEBUG
             await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
 #else
@@ -67,11 +68,17 @@ namespace DiscordBot.Services
 #endif
         }
 
-        private async Task SlashCommandHandlerAsync(SocketSlashCommand command)
+        private async Task InteractionCreatedAsync(SocketInteraction arg)
         {
-            var commandContext = new SocketInteractionContext(_client, command);
-            await _interactionService.ExecuteCommandAsync(commandContext, _serviceProvider);
+            var context = new SocketInteractionContext(_client, arg);
+            await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
         }
+
+        //private async Task SlashCommandHandlerAsync(SocketSlashCommand command)
+        //{
+        //    var commandContext = new SocketInteractionContext(_client, command);
+        //    await _interactionService.ExecuteCommandAsync(commandContext, _serviceProvider);
+        //}
         
         private async Task SlashCommandExecutedAsync(SlashCommandInfo slashCommandInfo,
             Discord.IInteractionContext interactionContext, Discord.Interactions.IResult result)
