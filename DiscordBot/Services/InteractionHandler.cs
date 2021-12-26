@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using IResult = Discord.Commands.IResult;
@@ -61,11 +63,18 @@ namespace DiscordBot.Services
             */
             
             var modules = await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
-#if DEBUG
-            await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
-#else
-            await _interactionService.RegisterCommandsGloballyAsync();
-#endif
+//#if DEBUG
+//            await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
+//#else
+            var allianceRepository = _serviceProvider.GetService<IAllianceRepository>();
+            var allDiscordServers = allianceRepository.GetAllWithServers();
+            foreach (var alliance in allDiscordServers)
+            {
+                if (alliance.GuildId.HasValue)
+                    await _interactionService.RegisterCommandsToGuildAsync(alliance.GuildId.Value);
+            }
+            //await _interactionService.RegisterCommandsGloballyAsync();
+//#endif
         }
 
         private async Task InteractionCreatedAsync(SocketInteraction arg)
