@@ -31,11 +31,15 @@ namespace DiscordBot.Modules
             if (Context.Channel is ISocketMessageChannel channel)
             {
                 await channel.SendMessageAsync(input);
-                await RespondAsync("Done!", ephemeral: true);
+                await RespondAsync(
+                    "Done!",
+                    ephemeral: true);
             }
             else
             {
-                await RespondAsync("I can't do that; this doesn't look like a message channel.", ephemeral: true);
+                await RespondAsync(
+                    "I can't do that; this doesn't look like a message channel.",
+                    ephemeral: true);
             }
         }
         
@@ -63,6 +67,9 @@ namespace DiscordBot.Modules
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run TODAY for {Context.Guild.Name} in {Context.Channel.Name}.");
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
             }
         }
         
@@ -84,12 +91,17 @@ namespace DiscordBot.Modules
             }
             catch (BotDomainException ex)
             {
-                await this.RespondAsync(ex.Message, ephemeral: true);
+                await this.RespondAsync(
+                    ex.Message,
+                    ephemeral: true);
                 _logger.LogError(ex, $"Exception when trying to run TOMORROW for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run TOMORROW for {Context.Guild.Name} in {Context.Channel.Name}.");
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
             }
         }
 
@@ -116,6 +128,9 @@ namespace DiscordBot.Modules
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run NEXT for {Context.Guild.Name} in {Context.Channel.Name}.");
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
             }
         }
 
@@ -126,6 +141,7 @@ namespace DiscordBot.Modules
             using var serviceScope = _serviceProvider.CreateScope();
             try
             {
+                await this.DeferAsync(ephemeral: true);
                 var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
                 var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
@@ -142,11 +158,16 @@ namespace DiscordBot.Modules
             }
             catch (BotDomainException ex)
             {
-                await this.RespondAsync(ex.Message, ephemeral: true);
+                await this.RespondAsync(
+                    ex.Message,
+                    ephemeral: true);
                 _logger.LogError(ex, $"Exception when trying to run ALL for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
             catch (Exception ex)
             {
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run ALL for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
         }
@@ -158,6 +179,7 @@ namespace DiscordBot.Modules
             using var serviceScope = _serviceProvider.CreateScope();
             try
             {
+                await this.DeferAsync(ephemeral: true);
                 var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
                 var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
                 var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
@@ -173,16 +195,25 @@ namespace DiscordBot.Modules
                     //await schedule.TryCleanMessages(channel, channelMessages, thisAlliance);
                     await schedule.TryUpdateWeeklyMessages(channelMessages, thisAlliance);
                     //await TryDeleteMessage(Context.Message);
-                    await DeleteOriginalResponseAsync();
+                    //await DeleteOriginalResponseAsync();
+                    await RespondAsync(
+                        "Done!",
+                        ephemeral: true);
                 }
                 else
                 {
                     _logger.LogError($"Unable to cast context channel to text channel for {Context.Guild.Name} in {Context.Channel.Name}.");
+                    await RespondAsync(
+                        "An unexpected error has occured.",
+                        ephemeral: true);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error has occured while trying to run REFRESH for {Context.Guild.Name} in {Context.Channel.Name}.");
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
             }
         }
     }

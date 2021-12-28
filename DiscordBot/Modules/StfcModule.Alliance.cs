@@ -28,7 +28,9 @@ namespace DiscordBot.Modules
                 var alliance = await allianceRepository.GetByNameOrAcronymAsync(name);
                 if (alliance == null)
                 {
-                    await this.ReplyAsync("The alliance could not be found.");
+                    await this.RespondAsync(
+                        "The alliance could not be found.",
+                        ephemeral: true);
                 }
                 else
                 {
@@ -43,6 +45,9 @@ namespace DiscordBot.Modules
             }
             catch (Exception ex)
             {
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
                 _logger.LogError(ex, "An unexpected error has occured while trying to run AllianceShowAsync");
             }
         }
@@ -86,7 +91,9 @@ namespace DiscordBot.Modules
                         null);
                     allianceRepository.Add(newAlliance);
                     await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                    await RespondAsync("Alliance created", ephemeral: true);
+                    await RespondAsync(
+                        "Alliance created",
+                        ephemeral: true);
                 }
                 else
                 {
@@ -100,11 +107,16 @@ namespace DiscordBot.Modules
                         allianceExists.DefendSchedulePostTime);
                     allianceRepository.Update(allianceExists);
                     await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                    await RespondAsync("Alliance updated", ephemeral: true);
+                    await RespondAsync(
+                        "Alliance updated",
+                        ephemeral: true);
                 }
             }
             catch (Exception ex)
             {
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
                 _logger.LogError(ex, "An unexpected error has occured while trying to run AllianceCreateUpdateAsync");
             }
         }
@@ -125,7 +137,9 @@ namespace DiscordBot.Modules
                 var allianceExists = await allianceRepository.GetByNameOrAcronymAsync(oldNameOrAcronym);
                 if (allianceExists == null)
                 {
-                    await RespondAsync("Unable to find old alliance by provided acronym", ephemeral: true);
+                    await RespondAsync(
+                        "Unable to find old alliance by provided acronym",
+                        ephemeral: true);
                 }
                 else
                 {
@@ -151,11 +165,16 @@ namespace DiscordBot.Modules
                         allianceExists.DefendSchedulePostTime);
                     allianceRepository.Update(allianceExists);
                     await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                    await RespondAsync("Alliance updated", ephemeral: true);
+                    await RespondAsync(
+                        "Alliance updated",
+                        ephemeral: true);
                 }
             }
             catch (Exception ex)
             {
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
                 _logger.LogError(ex,
                     $"An unexpected error has occured while trying to rename the {oldNameOrAcronym} alliance.");
             }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Admin;
@@ -17,6 +19,8 @@ namespace DiscordBot.Services
         private readonly IServiceProvider _scopedProvider;
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
+
+        private IDMChannel _ownerChannel;
 
         // Retrieve client and CommandService instance via ctor
         public CommandHandler(ILogger<CommandHandler> logger, DiscordSocketClient client, CommandService commands, Models.Config.Discord discordConfig, IServiceProvider serviceProvider)
@@ -54,6 +58,9 @@ namespace DiscordBot.Services
             */
             
             var loadedModules = await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
+            
+            var owner = (await _client.GetApplicationInfoAsync().ConfigureAwait(false)).Owner;
+            _ownerChannel = await owner.CreateDMChannelAsync();
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -105,27 +112,38 @@ namespace DiscordBot.Services
                 if (message.Channel is SocketDMChannel dmChannel)
                 {
                     // Log any direct messages to the database.
-                    try
-                    {
-
-                        using var scope = _serviceProvider.CreateScope();
-                        var dmRepository = scope.ServiceProvider.GetService<IDirectMessageRepository>();
-                        var localClient = scope.ServiceProvider.GetService<DiscordSocketClient>();
-                        var submittedBy = localClient.GetUser(message.Author.Id);
-
-                        var dm = new DirectMessage(message.Author.Id, message.Content);
-                        foreach (var commonServer in submittedBy.MutualGuilds)
+                    _ = Task.Run(async() => {
+                        try
                         {
-                            dm.AddServer(commonServer.Id, commonServer.Name);
+                            using var scope = _serviceProvider.CreateScope();
+                            var dmRepository = scope.ServiceProvider.GetService<IDirectMessageRepository>();
+                            var localClient = scope.ServiceProvider.GetService<DiscordSocketClient>();
+                            var submittedBy = localClient.GetUser(message.Author.Id);
+
+                            var dm = new DirectMessage(message.Author.Id, message.Content);
+                            foreach (var commonServer in submittedBy.MutualGuilds)
+                            {
+                                dm.AddServer(commonServer.Id, commonServer.Name);
+                            }
+
+                            dmRepository.Add(dm);
+                            await dmRepository.UnitOfWork.SaveEntitiesAsync();
+                            await dmChannel.SendMessageAsync("Thank you; your message has been received!");
+
+                            await _ownerChannel.SendMessageAsync(
+                                "------------------------\n"
+                                + "New private message received\n"
+                                + "Servers: " + dm.CommonServers + "\n"
+                                + "------------------------\n"
+                                );
+                            await _ownerChannel.SendMessageAsync(message.Content);
                         }
-                        dmRepository.Add(dm);
-                        await dmRepository.UnitOfWork.SaveEntitiesAsync();
-                        await dmChannel.SendMessageAsync("Thank you; your message has been received!");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Unable to process DM");
-                    }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Unable to process DM");
+                        }
+                    });
+                    await Task.Delay(500);
                 }
             }
         }

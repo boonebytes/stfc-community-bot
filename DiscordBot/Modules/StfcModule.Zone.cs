@@ -21,7 +21,7 @@ namespace DiscordBot.Modules
         [Discord.Interactions.RequireOwner]
         public async Task ZoneCreateUpdateAsync(
             [Summary("Zone", "Zone Name")][Autocomplete(typeof(ZoneNames))] string name,
-            [Summary("Owner", "Current owner, or empty-string if unclaimed")] string owner,
+            [Summary("Owner", "Current owner, or None if unclaimed")] string owner,
             [Summary("Level", "Zone level, or 0 if unchanged")][MinValue(0)][MaxValue(3)] int level = 0,
             string dayOfWeekUtc = "",
             string timeOfDayUtc = "",
@@ -42,7 +42,7 @@ namespace DiscordBot.Modules
                 }
 
                 Alliance ownerAlliance = null;
-                if (owner != "" && owner != "0")
+                if (owner != "" && owner != "0" && owner.ToLower() != "none")
                 {
                     ownerAlliance = await allianceRepository.GetByNameOrAcronymAsync(owner);
                     if (ownerAlliance == null)
@@ -165,6 +165,9 @@ namespace DiscordBot.Modules
             }
             catch (Exception ex)
             {
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
                 _logger.LogError(ex,
                     $"An unexpected error has occured while trying to run Zone Create Update for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
@@ -185,13 +188,17 @@ namespace DiscordBot.Modules
 
                 if (objZone1 == null)
                 {
-                    await RespondAsync($"I'm sorry, I couldn't find a zone called {zone1}", ephemeral: true);
+                    await RespondAsync(
+                        $"I'm sorry, I couldn't find a zone called {zone1}",
+                        ephemeral: true);
                     return;
                 }
 
                 if (objZone2 == null)
                 {
-                    await RespondAsync($"I'm sorry, I couldn't find a zone called {zone2}", ephemeral: true);
+                    await RespondAsync(
+                        $"I'm sorry, I couldn't find a zone called {zone2}",
+                        ephemeral: true);
                     return;
                 }
 
@@ -221,7 +228,9 @@ namespace DiscordBot.Modules
                     await zoneRepository.UnitOfWork.SaveEntitiesAsync();
                 }
 
-                await RespondAsync(results, ephemeral: true);
+                await RespondAsync(
+                    results,
+                    ephemeral: true);
             }
             catch (Exception ex)
             {
@@ -242,7 +251,9 @@ namespace DiscordBot.Modules
                 var thisZone = await zoneRepository.GetByNameAsync(name);
                 if (thisZone == null)
                 {
-                    await RespondAsync("Zone not found.", ephemeral: true);
+                    await RespondAsync(
+                        "Zone not found.",
+                        ephemeral: true);
                 }
                 else
                 {
@@ -270,6 +281,9 @@ namespace DiscordBot.Modules
             }
             catch (Exception ex)
             {
+                await RespondAsync(
+                    "An unexpected error has occured.",
+                    ephemeral: true);
                 _logger.LogError(ex,
                     $"An unexpected error has occured while trying to run Show Zone for {Context.Guild.Name} in {Context.Channel.Name}.");
             }
