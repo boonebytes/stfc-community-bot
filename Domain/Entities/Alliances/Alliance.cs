@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Alliances
@@ -27,6 +28,13 @@ namespace DiscordBot.Domain.Entities.Alliances
         public virtual ulong? GuildId { get; protected set; }
         public virtual ulong? DefendSchedulePostChannel { get; protected set; }
         public virtual string DefendSchedulePostTime { get; protected set; }
+        public virtual int? DefendBroadcastLeadTime { get; protected set; }
+
+        public void SetDefendBroadcastLeadTime(int? value)
+        {
+            DefendBroadcastLeadTime = value;
+            AddAllianceChangedDomainEvent();
+        }
 
         private readonly List<Zone> _zones;
         public IReadOnlyCollection<Zone> Zones => _zones;
@@ -51,6 +59,11 @@ namespace DiscordBot.Domain.Entities.Alliances
         public void FlagPosted()
         {
             SetNextScheduledPost();
+        }
+        
+        public void AddAllianceChangedDomainEvent()
+        {
+            this.AddDomainEvent(new AllianceUpdatedDomainEvent(this));
         }
     }
 }

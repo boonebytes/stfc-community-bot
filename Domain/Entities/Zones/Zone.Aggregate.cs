@@ -1,5 +1,6 @@
 ﻿using System;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Zones
@@ -50,6 +51,8 @@ namespace DiscordBot.Domain.Entities.Zones
             DefendUtcDayOfWeek = defendUtcDayOfWeek;
             DefendUtcTime = defendUtcTime;
             Notes = notes;
+
+            AddZoneChangedDomainEvent();
         }
     }
 }

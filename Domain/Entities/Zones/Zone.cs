@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
 using DiscordBot.Domain.Shared;

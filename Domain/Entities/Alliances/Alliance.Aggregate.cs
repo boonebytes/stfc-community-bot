@@ -12,7 +12,8 @@ namespace DiscordBot.Domain.Entities.Alliances
                 AllianceGroup group,
                 ulong? guildId,
                 ulong? defendSchedulePostChannelId,
-                string defendSchedulePostTime
+                string defendSchedulePostTime,
+                int? defendBroadcastLeadTime
             )
         {
             Id = id;
@@ -22,17 +23,19 @@ namespace DiscordBot.Domain.Entities.Alliances
                 group,
                 guildId,
                 defendSchedulePostChannelId,
-                defendSchedulePostTime
+                defendSchedulePostTime,
+                defendBroadcastLeadTime
                 );
         }
-
+        
         public void Update(
                 string name,
                 string acronym,
                 AllianceGroup group,
                 ulong? guildId,
                 ulong? defendSchedulePostChannelId,
-                string defendSchedulePostTime
+                string defendSchedulePostTime,
+                int? defendBroadcastLeadTime
             )
         {
             Name = name;
@@ -41,6 +44,9 @@ namespace DiscordBot.Domain.Entities.Alliances
             GuildId = guildId;
             DefendSchedulePostChannel = defendSchedulePostChannelId;
             DefendSchedulePostTime = defendSchedulePostTime;
+            DefendBroadcastLeadTime = defendBroadcastLeadTime;
+
+            this.AddAllianceChangedDomainEvent();
         }
 
     }

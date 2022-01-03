@@ -73,6 +73,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             return _context.Alliances
                 .AsQueryable()
+                .Include(a => a.Zones)
                 .Where(a => a.GuildId.HasValue)
                 .Where(a => a.DefendSchedulePostChannel.HasValue)
                 .ToList();

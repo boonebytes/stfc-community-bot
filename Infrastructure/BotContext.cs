@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
 using DiscordBot.Infrastructure.EntityConfigurations;
 using MediatR;
@@ -49,6 +51,7 @@ namespace DiscordBot.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Ignore<DomainEvent>();
             modelBuilder.ApplyConfiguration(new AllianceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceGroupEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
@@ -98,12 +101,14 @@ namespace DiscordBot.Infrastructure
             // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
             // B) Right AFTER committing data (EF SaveChanges) into the DB will make multiple transactions. 
             // You will need to handle eventual consistency and compensatory actions in case of failures in any of the Handlers. 
-            await _mediator.DispatchDomainEventsAsync(this);
+            await _mediator.DispatchDomainEventsAsync(this, DomainEventType.PreCommit);
 
             // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
             // performed through the DbContext will be committed
             var result = await base.SaveChangesAsync(cancellationToken);
 
+            await _mediator.DispatchDomainEventsAsync(this, DomainEventType.PostCommit);
+            
             return true;
         }
     }

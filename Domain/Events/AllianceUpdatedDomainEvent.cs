@@ -1,19 +1,20 @@
 ﻿using System;
+using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 using MediatR;
 
 namespace DiscordBot.Domain.Events
 {
-    public class ZoneUpdatedDomainEvent : DomainEvent
+    public class AllianceUpdatedDomainEvent : DomainEvent
     {
         public override DomainEventType EventType => DomainEventType.PostCommit;
 
-        public Zone Zone { get; }
+        public Alliance Alliance { get; }
 
-        public ZoneUpdatedDomainEvent(Zone zone)
+        public AllianceUpdatedDomainEvent(Alliance alliance)
         {
-            this.Zone = zone;
+            this.Alliance = alliance;
         }
     }
 }
