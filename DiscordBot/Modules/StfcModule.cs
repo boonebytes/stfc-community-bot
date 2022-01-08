@@ -214,4 +214,16 @@ public partial class StfcModule : InteractionModuleBase
                 ephemeral: true);
         }
     }
+
+    private async Task ModifyResponseAsync(string content, bool ephemeral = false)
+    {
+        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+        {
+            properties.Content = content;
+            if (ephemeral)
+                properties.Flags = MessageFlags.Ephemeral;
+            else
+                properties.Flags = MessageFlags.None;
+        });
+    }
 }

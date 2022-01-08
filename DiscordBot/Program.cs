@@ -8,8 +8,10 @@ using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Infrastructure;
 using DiscordBot.Infrastructure.Repositories;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Quartz;
 
 namespace DiscordBot;
 
@@ -68,6 +70,21 @@ public class Program
 
                 services.AddSingleton<Scheduler>();
                 services.AddHostedService<Worker>();
+
+                services.AddMediatR(
+                    typeof(Scheduler).Assembly,
+                    typeof(Domain.Events.AllianceUpdatedDomainEvent).Assembly);
+
+                
+                services.AddQuartz(q =>
+                {
+                    q.UseMicrosoftDependencyInjectionJobFactory();
+                });
+                
+                services.AddQuartzHostedService(q =>
+                {
+                    q.WaitForJobsToComplete = true;
+                });
 
                 services.BuildServiceProvider();
             });

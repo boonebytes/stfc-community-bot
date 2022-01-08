@@ -44,12 +44,14 @@ namespace DiscordBot.AutocompleteHandlers
                 
                 var data = autocompleteInteraction.Data.Current.Value as string;
                 if (string.IsNullOrEmpty(data))
-                    return AutocompletionResult.FromSuccess();
+                    return AutocompletionResult.FromSuccess(
+                        _variables.Select(v => new AutocompleteResult(v.Key, v.Key))
+                        );
                 
                 var matches = _variables
                     .Where(kbp => kbp.Key.ToUpper().Contains(data.ToUpper()));
                 return AutocompletionResult.FromSuccess(
-                            matches.Select(m => new AutocompleteResult(m.Key, m.Value))
+                            matches.Select(m => new AutocompleteResult(m.Key, m.Key))
                         );
             }
             catch (Exception ex)

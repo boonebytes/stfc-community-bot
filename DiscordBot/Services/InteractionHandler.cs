@@ -35,7 +35,7 @@ public class InteractionHandler
         //_client.SlashCommandExecuted += SlashCommandHandlerAsync;
         _client.InteractionCreated += InteractionCreatedAsync;
         //_client.SlashCommandExecuted += HandleSlashCommandAsync;
-        _interactionService.SlashCommandExecuted += SlashCommandExecutedAsync;
+        //_interactionService.SlashCommandExecuted += SlashCommandExecutedAsync;
 
 
         // Here we discover all of the command modules in the entry 
@@ -59,7 +59,7 @@ public class InteractionHandler
 //#if DEBUG
 //            await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
 //#else
-        var allianceRepository = _serviceProvider.GetService<IAllianceRepository>();
+        var allianceRepository = _scopedProvider.GetService<IAllianceRepository>();
         var allDiscordServers = allianceRepository.GetAllWithServers();
         foreach (var alliance in allDiscordServers)
         {

@@ -26,6 +26,51 @@ public partial class Scheduler
         _serviceProvider = serviceProvider;
     }
 
+    public async Task HandleZoneUpdatedAsync(long zoneId)
+    {
+        using var initServiceScope = _serviceProvider.CreateScope();
+        //var allianceRepository = initServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+        var zoneRepository = initServiceScope.ServiceProvider.GetService<IZoneRepository>();
+
+        var zone = await zoneRepository.GetAsync(zoneId);
+        
+        using var thisServiceScope = _serviceProvider.CreateScope();
+        
+        bool acquiredLock = false;
+        try
+        {
+            await _scheduledJobsSemaphore.WaitAsync();
+            acquiredLock = true;
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Operation Cancelled");
+        }
+
+        if (acquiredLock)
+        {
+            try
+            {
+                StopScheduler(CancellationToken.None);
+                await AddOrUpdateZoneDefend(thisServiceScope, zone);
+                StartScheduler();
+            }
+            catch (AbandonedMutexException ex)
+            {
+                _logger.LogError(ex, "Abandoned mutex");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occured while attempting to update the job");
+            }
+            finally
+            {
+                _scheduledJobsSemaphore.Release(1);
+            }
+        }
+    }
+    
     /// <summary>
     /// Update the scheduler for the given zone. Obtain the Mutex before calling this!
     /// </summary>

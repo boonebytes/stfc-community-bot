@@ -59,7 +59,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Alliance>> GetAllAsync()
         {
-            return await _context.Alliances.ToAsyncEnumerable().ToListAsync();
+            return await _context.Alliances.ToListAsync();
         }
 
         public Alliance Update(Alliance alliance)

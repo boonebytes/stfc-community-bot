@@ -8,7 +8,8 @@ namespace DiscordBot.Modules;
 public partial class StfcModule
 {
     [SlashCommand("config", "Show or set a configuration variable for this Discord server")]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    //[RequireUserPermission(GuildPermission.Administrator)]
+    [RequireOwner]
     public async Task ConfigAsync(
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
@@ -22,22 +23,32 @@ public partial class StfcModule
             await RespondAsync("Unable to determine alliance from this channel", ephemeral: true);
             return;
         }
-        
+
+        await DeferAsync(ephemeral: true);
         switch (name)
         {
             case VariableNames.VariableNameKeys.BroadcastLeadTime:
                 var response = await ConfigDefendBroadcastTimeAsync(value, thisAlliance, allianceRepository);
                 if (response == "")
                 {
-                    await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
+                    await ModifyResponseAsync(
+                        "No response was returned. Please check the current value or contact the developer.",
+                        true);
+                    //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
                 }
                 else
                 {
-                    await RespondAsync(response, ephemeral: true);
+                    await ModifyResponseAsync(
+                        response,
+                        true);
+                    //await RespondAsync(response, ephemeral: true);
                 }
                 break;
             default:
-                await RespondAsync("The variable could not be identified.", ephemeral: true);
+                await ModifyResponseAsync(
+                    "The variable could not be identified.",
+                    true);
+                //await RespondAsync("The variable could not be identified.", ephemeral: true);
                 break;
         }
     }

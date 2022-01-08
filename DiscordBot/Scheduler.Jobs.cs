@@ -8,47 +8,70 @@ public partial class Scheduler
 {
     private async Task LoadJobs(CancellationToken cancellationToken)
     {
-        _scheduledJobsMutex.WaitOne();
+        bool acquiredLock = false;
         try
         {
-            _scheduledJobs.Clear();
+            await _scheduledJobsSemaphore.WaitAsync(cancellationToken);
+            acquiredLock = true;
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Operation Cancelled");
+        }
 
-            using var thisServiceScope = _serviceProvider.CreateScope();
-            var allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
-            var zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
-
-            await allianceRepository.InitPostSchedule();
-            await zoneRepository.InitZones();
-
-            var alliancesWithSchedule = allianceRepository.GetAllWithServers()
-                .Where(a =>
-                    a.GuildId.HasValue
-                    && a.DefendSchedulePostChannel.HasValue
-                    && a.NextScheduledPost.HasValue);
-
-            foreach (var alliance in alliancesWithSchedule)
+        if (acquiredLock)
+        {
+            try
             {
-                if (alliance.NextScheduledPost.HasValue)
-                {
-                    var newJob = new PostDailySchedule(_serviceProvider, alliance.Id)
-                    {
-                        NextExecutionTime = alliance.NextScheduledPost.Value
-                    };
-                    AddOrUpdateJob(newJob);
-                }
+                _scheduledJobs.Clear();
 
-                if (alliance.DefendBroadcastLeadTime.HasValue)
+                using var thisServiceScope = _serviceProvider.CreateScope();
+                var allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
+
+                await allianceRepository.InitPostSchedule();
+                await zoneRepository.InitZones();
+
+                var alliancesWithSchedule = allianceRepository.GetAllWithServers()
+                    .Where(a =>
+                        a.GuildId.HasValue
+                        && a.DefendSchedulePostChannel.HasValue
+                        && a.NextScheduledPost.HasValue);
+
+                foreach (var alliance in alliancesWithSchedule)
                 {
-                    foreach (var zone in alliance.Zones)
+                    if (alliance.NextScheduledPost.HasValue)
                     {
-                        await AddOrUpdateZoneDefend(thisServiceScope, zone);
+                        var newJob = new PostDailySchedule(_serviceProvider, alliance.Id)
+                        {
+                            NextExecutionTime = alliance.NextScheduledPost.Value
+                        };
+                        AddOrUpdateJob(newJob);
+                    }
+
+                    if (alliance.DefendBroadcastLeadTime.HasValue)
+                    {
+                        foreach (var zone in alliance.Zones)
+                        {
+                            await AddOrUpdateZoneDefend(thisServiceScope, zone);
+                        }
                     }
                 }
             }
-        }
-        finally
-        {
-            _scheduledJobsMutex.ReleaseMutex();
+            catch (AbandonedMutexException ex)
+            {
+                _logger.LogError(ex, "Abandoned mutex");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while loading jobs");
+                throw;
+            }
+            finally
+            {
+                _scheduledJobsSemaphore.Release(1);
+            }
         }
     }
 

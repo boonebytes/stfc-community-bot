@@ -55,6 +55,8 @@ public class PostDefendReminder : BaseJob
         }
     }
 
+    // TODO: Schedule currently printing twice (ie. at startup, esp if defense is within configured buffer)
+    // TODO: The next execution isn't getting scheduled correctly.
     public override async Task DoWork(CancellationToken cancellationToken)
     {
         if (ZoneId == 0) throw new NullReferenceException("Zone has not been set.");
@@ -109,7 +111,7 @@ public class PostDefendReminder : BaseJob
                 
                 var everyoneId = guild.EveryoneRole.Id;
                 var reminder =
-                    $"<@{everyoneId}> Reminder: Defend for {zone.Name} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
+                    $"@everyone Reminder: Defend for {zone.Name} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
                 
                 await channel.SendMessageAsync(reminder, allowedMentions: AllowedMentions.All);
             }

@@ -32,30 +32,53 @@ public class CommandHandler
 
     public async Task InstallCommandsAsync()
     {
-        _ownerChannel = await Common.DiscordOwner.CreateDMChannelAsync();
-            
-        // Hook the MessageReceived event into our command handler
-        _client.MessageReceived += HandleCommandAsync;
-
-        // Here we discover all of the command modules in the entry 
-        // assembly and load them. Starting from Discord.NET 2.0, a
-        // service provider is required to be passed into the
-        // module registration method to inject the 
-        // required dependencies.
-        //
-        // If you do not use Dependency Injection, pass null.
-        // See Dependency Injection guide for more information.
-
-        /*
-        using (var scope = _serviceProvider.CreateScope())
+        try
         {
-            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
-                                            services: scope.ServiceProvider);
+            _commands.Log += LogCommandMessage;
+            _ownerChannel = await Common.DiscordOwner.CreateDMChannelAsync();
+
+            // Hook the MessageReceived event into our command handler
+            _client.MessageReceived += HandleCommandAsync;
+
+            // Here we discover all of the command modules in the entry 
+            // assembly and load them. Starting from Discord.NET 2.0, a
+            // service provider is required to be passed into the
+            // module registration method to inject the 
+            // required dependencies.
+            //
+            // If you do not use Dependency Injection, pass null.
+            // See Dependency Injection guide for more information.
+
+            /*
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
+                                                services: scope.ServiceProvider);
+            }
+            */
+            
+            var loadedModules = await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
         }
-        */
-            
-        var loadedModules = await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
-            
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occured while starting the command handler");
+        }
+    }
+
+    private Task LogCommandMessage(LogMessage logMessage)
+    {
+        var level = logMessage.Severity switch
+        {
+            LogSeverity.Critical => LogLevel.Critical,
+            LogSeverity.Error => LogLevel.Error,
+            LogSeverity.Warning => LogLevel.Warning,
+            LogSeverity.Info => LogLevel.Information,
+            LogSeverity.Verbose => LogLevel.Debug,
+            LogSeverity.Debug => LogLevel.Trace,
+            _ => LogLevel.Warning
+        };
+        _logger.Log(level, logMessage.ToString());
+        return Task.CompletedTask;
     }
 
     private async Task HandleCommandAsync(SocketMessage messageParam)

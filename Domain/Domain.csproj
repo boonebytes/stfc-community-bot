@@ -33,6 +33,6 @@
     <Folder Include="Entities\Admin\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR" Version="10.0.0" />
   </ItemGroup>
 </Project>

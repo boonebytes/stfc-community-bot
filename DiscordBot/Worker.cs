@@ -50,26 +50,28 @@ public class Worker : BackgroundService
 
             Task.Run(async () =>
             {
-                Common.DiscordOwner = (await _client.GetApplicationInfoAsync().ConfigureAwait(false)).Owner;
-                var cmdScheduler = _serviceProvider.GetService<Scheduler>();
-                await cmdScheduler.Run(_discordConfig.SchedulePollSeconds, stoppingToken);
-            }, stoppingToken);
-
-            Task.Run(async () =>
-            {
-                await cmdHandler.InstallCommandsAsync();
-                await intHandler.InstallCommandsAsync();
-                    
-            }, stoppingToken);
-
-            if (!string.IsNullOrEmpty(_discordConfig.WatchingStatus))
-            {
-                Task.Run(async () =>
+                try
                 {
-                    await _client.SetGameAsync(name: _discordConfig.WatchingStatus, type: ActivityType.Watching);
-                }, stoppingToken);
-            }
-                
+                    Common.DiscordOwner = (await _client.GetApplicationInfoAsync().ConfigureAwait(false)).Owner;
+                    var cmdScheduler = _serviceProvider.GetService<Scheduler>();
+                    _ = Task.Run(async () =>
+                    {
+                        cmdScheduler.Run(_discordConfig.SchedulePollSeconds, stoppingToken);
+                    }, stoppingToken);
+                    await cmdHandler.InstallCommandsAsync();
+                    _logger.LogInformation("Command Handler started");
+                    await intHandler.InstallCommandsAsync();
+                    _logger.LogInformation("Interaction Handler started");
+                    if (!string.IsNullOrEmpty(_discordConfig.WatchingStatus))
+                        await _client.SetGameAsync(name: _discordConfig.WatchingStatus, type: ActivityType.Watching);
+                    _logger.LogInformation("Bot startup complete");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Exception on startup");
+                }
+            }, stoppingToken);
+            
             return Task.CompletedTask;
         };
 
