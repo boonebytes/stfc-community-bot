@@ -9,7 +9,7 @@
     <LangVersion>10</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Entities\" />
