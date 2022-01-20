@@ -32,7 +32,10 @@ public partial class Scheduler
             {
                 if (alliance.NextScheduledPost.HasValue)
                 {
-                    await AddOrUpdateJob<PostDailySchedule>(alliance.NextScheduledPost.Value.ToUniversalTime(), alliance.Id);
+                    var nextPost = alliance.NextScheduledPost.Value.ToUniversalTime();
+                    //if (nextPost < DateTime.Now.AddMinutes(5).ToUniversalTime())
+                    //    nextPost = DateTime.Now.AddMinutes(5).ToUniversalTime();
+                    await AddOrUpdateJob<PostDailySchedule>(nextPost, alliance.Id);
                 }
 
                 if (alliance.DefendBroadcastLeadTime.HasValue)
