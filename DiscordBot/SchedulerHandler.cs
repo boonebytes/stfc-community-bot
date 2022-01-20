@@ -19,7 +19,7 @@ public class SchedulerHandler :
     
     public async Task Handle(AllianceUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        _ = _scheduler.RestartSchedulerAsync(CancellationToken.None);
+        _ = _scheduler.ReloadJobsAsync(CancellationToken.None);
     }
     
     public async Task Handle(ZoneUpdatedDomainEvent notification, CancellationToken cancellationToken)

@@ -56,7 +56,7 @@ public class Worker : BackgroundService
                     var cmdScheduler = _serviceProvider.GetService<Scheduler>();
                     _ = Task.Run(async () =>
                     {
-                        cmdScheduler.Run(_discordConfig.SchedulePollSeconds, stoppingToken);
+                        cmdScheduler.Run(stoppingToken);
                     }, stoppingToken);
                     await cmdHandler.InstallCommandsAsync();
                     _logger.LogInformation("Command Handler started");

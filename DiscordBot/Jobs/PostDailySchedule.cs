@@ -3,55 +3,41 @@ using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
+using Quartz;
 
-namespace DiscordBot.Models.Scheduler;
+namespace DiscordBot.Jobs;
 
+[DisallowConcurrentExecution]
 public class PostDailySchedule : BaseJob
 {
-    public long AllianceId { get; init; } = 0;
-
-    public override string Id
-    {
-        get { return nameof(PostDailySchedule) + "-" + AllianceId; }
-    }
-
-    private readonly ILogger<PostDailySchedule> _logger;
     private readonly DiscordSocketClient _client;
-
+    
     private IAllianceRepository _allianceRepository;
     private IZoneRepository _zoneRepository;
     private Responses.Schedule _scheduleResponse;
 
-    public PostDailySchedule(IServiceProvider serviceProvider, long allianceId) : base(serviceProvider)
+    public PostDailySchedule(
+        ILogger<PostDailySchedule> logger,
+        DiscordSocketClient client,
+        IAllianceRepository allianceRepository,
+        IZoneRepository zoneRepository,
+        Responses.Schedule scheduleResponse
+        ) : base(logger)
     {
-        AllianceId = allianceId;
-        _logger = _serviceProvider.GetService<ILogger<PostDailySchedule>>();
-        _client = _serviceProvider.GetService<DiscordSocketClient>();
+        _client = client;
+        _allianceRepository = allianceRepository;
+        _zoneRepository = zoneRepository;
+        _scheduleResponse = scheduleResponse;
     }
     
-    public override async Task SetNextExecutionTime(IServiceScope serviceScope)
+    protected override async Task DoWork(IJobExecutionContext context)
     {
-        var alliance = await _allianceRepository.GetAsync(AllianceId);
-        if (alliance.NextScheduledPost.HasValue && alliance.NextScheduledPost.Value > DateTime.Now)
-        {
-            NextExecutionTime = alliance.NextScheduledPost.Value;
-        }
-        else
-        {
-            NextExecutionTime = null;
-        }
-    }
+        var data = context.JobDetail.JobDataMap;
+        var allianceId = data.GetLong("allianceId");
 
-    public override async Task DoWork(CancellationToken cancellationToken)
-    {
-        if (AllianceId == 0) throw new NullReferenceException("Alliance has not been set.");
-            
-        using var thisServiceScope = _serviceProvider.CreateScope();
-        _allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
-        _zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
-        _scheduleResponse = thisServiceScope.ServiceProvider.GetService<Responses.Schedule>();
+        if (allianceId == 0) throw new NullReferenceException("Alliance has not been set.");
 
-        var alliance = await _allianceRepository.GetAsync(AllianceId);
+        var alliance = await _allianceRepository.GetAsync(allianceId);
         _logger.LogInformation($"Preparing to post schedule for {alliance.Acronym}");
 
         if (!alliance.GuildId.HasValue || !alliance.DefendSchedulePostChannel.HasValue)
@@ -59,7 +45,7 @@ public class PostDailySchedule : BaseJob
             _logger.LogWarning($"Unable to post for {alliance.Acronym} - Guild or channel cannot be blank");
             return;
         }
-            
+
         try
         {
             var guild = _client.GetGuild(alliance.GuildId.Value);
@@ -68,7 +54,7 @@ public class PostDailySchedule : BaseJob
                 _logger.LogError(
                     $"Unable to post schedule to guild {alliance.GuildId.Value} for {alliance.Acronym} - Guild not found");
                 _allianceRepository.FlagSchedulePosted(alliance);
-                await _allianceRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+                await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
             }
             else
             {
@@ -78,7 +64,7 @@ public class PostDailySchedule : BaseJob
                     _logger.LogError(
                         $"Unable to post schedule to guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value} for {alliance.Acronym} - Guild or channel not found");
                     _allianceRepository.FlagSchedulePosted(alliance);
-                    await _allianceRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+                    await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
                 }
                 else
                 {
@@ -92,7 +78,7 @@ public class PostDailySchedule : BaseJob
                     await channel.SendMessageAsync(embed: embedMsg.Build());
 
                     _allianceRepository.FlagSchedulePosted(alliance);
-                    await _allianceRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+                    await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
                 }
             }
         }
@@ -101,12 +87,10 @@ public class PostDailySchedule : BaseJob
             _logger.LogError(ex,
                 $"An unexpected error occurred while trying to post the schedule to guild {alliance.Acronym} ({alliance.GuildId.Value}), channel {alliance.DefendSchedulePostChannel.Value}");
             _allianceRepository.FlagSchedulePosted(alliance);
-            await _allianceRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+            await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
         }
-        
-        await SetNextExecutionTime(thisServiceScope);
     }
-
+    
     protected async Task TryPinToday(IEnumerable<IMessage> channelMessages, Alliance alliance)
     {
         try

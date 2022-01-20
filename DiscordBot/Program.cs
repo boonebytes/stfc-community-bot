@@ -12,6 +12,7 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Quartz;
+using Quartz.Logging;
 
 namespace DiscordBot;
 
@@ -75,7 +76,6 @@ public class Program
                     typeof(Scheduler).Assembly,
                     typeof(Domain.Events.AllianceUpdatedDomainEvent).Assembly);
 
-                
                 services.AddQuartz(q =>
                 {
                     q.UseMicrosoftDependencyInjectionJobFactory();
