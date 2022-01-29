@@ -155,9 +155,11 @@ public partial class Scheduler
             .UsingJobData("itemId", itemId)
             .Build();
 
+        
         var jobTriggerBuilder = TriggerBuilder.Create()
             .WithIdentity(triggerKey)
-            .StartAt(triggerTime);
+            .StartAt(triggerTime)
+            .ForJob(jobKey);
 
         if (isDaily)
         {
@@ -166,16 +168,22 @@ public partial class Scheduler
                 s.InTimeZone(TimeZoneInfo.Utc);
                 s.OnEveryDay();
                 s.StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(triggerTime.Hour, triggerTime.Minute));
-                s.WithRepeatCount(0);
+                s.WithRepeatCount(-1);
             });
         }
         else
         {
+            jobTriggerBuilder.WithSchedule(CronScheduleBuilder
+                .WeeklyOnDayAndHourAndMinute(triggerTime.DayOfWeek, triggerTime.Hour, triggerTime.Minute)
+                .InTimeZone(TimeZoneInfo.Utc)
+            );
+            /*
             jobTriggerBuilder.WithCalendarIntervalSchedule(s =>
             {
                 s.InTimeZone(TimeZoneInfo.Utc);
                 s.WithIntervalInWeeks(1);
             });
+            */
         }
         
 

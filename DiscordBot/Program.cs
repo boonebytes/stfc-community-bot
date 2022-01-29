@@ -25,6 +25,17 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(builder =>
+            {
+                builder.AddFilter((provider, category, logLevel) =>
+                {
+                    if (category.Contains("Microsoft.EntityFrameworkCore.Model.Validation"))
+                    {
+                        return false;
+                    }
+                    return true;
+                });
+            })
             .ConfigureAppConfiguration((hostContext, builder) =>
             {
                 if (hostContext.HostingEnvironment.IsDevelopment())
@@ -80,7 +91,7 @@ public class Program
                 {
                     q.UseMicrosoftDependencyInjectionJobFactory();
                 });
-                
+
                 services.AddQuartzHostedService(q =>
                 {
                     q.WaitForJobsToComplete = true;
