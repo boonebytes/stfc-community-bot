@@ -163,6 +163,11 @@ public partial class Scheduler
 
         if (isDaily)
         {
+            jobTriggerBuilder.WithSchedule(CronScheduleBuilder
+                .DailyAtHourAndMinute(triggerTime.Hour, triggerTime.Minute)
+                .InTimeZone(TimeZoneInfo.Utc)
+            );
+            /*
             jobTriggerBuilder.WithDailyTimeIntervalSchedule(s =>
             {
                 s.InTimeZone(TimeZoneInfo.Utc);
@@ -170,6 +175,7 @@ public partial class Scheduler
                 s.StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(triggerTime.Hour, triggerTime.Minute));
                 s.WithRepeatCount(-1);
             });
+            */
         }
         else
         {
