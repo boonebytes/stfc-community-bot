@@ -65,13 +65,10 @@ public partial class Scheduler
 
         var jobTriggerBuilder = TriggerBuilder.Create()
             .WithIdentity(triggerKey)
-            .WithDailyTimeIntervalSchedule(s =>
-            {
-                s.InTimeZone(TimeZoneInfo.Utc);
-                s.OnEveryDay();
-                s.StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(6, 0));
-                s.WithRepeatCount(0);
-            })
+            .WithSchedule(CronScheduleBuilder
+                .DailyAtHourAndMinute(6,0)
+                .InTimeZone(TimeZoneInfo.Utc)
+            )
             .StartNow();
         
         var jobTrigger = jobTriggerBuilder.Build();
