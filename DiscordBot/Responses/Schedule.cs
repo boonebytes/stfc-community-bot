@@ -329,9 +329,17 @@ public class Schedule
             var myMessages = channelMessages.Where(m =>
                 !m.IsPinned
                 && m.Author.Id == _client.CurrentUser.Id
-                && m.Embeds.Count == 1
-                && m.Embeds.First().Title.StartsWith("Defend Schedule for ")
                 && (DateTimeOffset.UtcNow - m.Timestamp).TotalDays <= 14
+                && (
+                    (
+                        m.Embeds.Count == 1
+                        && m.Embeds.First().Title.StartsWith("Defend Schedule for ")
+                    )
+                    || (
+                        m.Embeds.Count == 0
+                        && m.MentionedEveryone == true
+                    )
+                )
             );
             if (myMessages.Any())
             {
