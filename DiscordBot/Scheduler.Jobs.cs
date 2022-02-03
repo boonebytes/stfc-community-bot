@@ -105,7 +105,7 @@ public partial class Scheduler
                         var nextExecutionTime = nextDefend.AddMinutes(-1 * zone.Owner.DefendBroadcastLeadTime.Value);
                         if (nextExecutionTime < DateTime.Now)
                             nextExecutionTime = nextExecutionTime.AddDays(7);
-                        await AddOrUpdateJob<PostDefendReminder>(nextExecutionTime.ToUniversalTime(), zone.Owner.Id, zone.Id);
+                        await AddOrUpdateJob<PostDefendReminder>(nextExecutionTime.ToUniversalTime(), zone.Owner.Id, zone.Id, false);
                     }
                 }
             }
