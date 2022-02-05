@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using DiscordBot.Domain.Events;
 using MediatR;
 
 namespace DiscordBot.Domain.Seedwork
@@ -10,8 +12,8 @@ namespace DiscordBot.Domain.Seedwork
         // instead of private, for NHibernate support
         public virtual long Id { get; protected set; }
 
-        private List<INotification> _domainEvents;
-        public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
+        private List<DomainEvent> _domainEvents;
+        public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents?.AsReadOnly();
 
         protected Entity()
         {
@@ -27,20 +29,24 @@ namespace DiscordBot.Domain.Seedwork
             return this.Id == default(long);
         }
 
-        public void AddDomainEvent(INotification eventItem)
+        public void AddDomainEvent(DomainEvent eventItem)
         {
-            _domainEvents = _domainEvents ?? new List<INotification>();
+            _domainEvents = _domainEvents ?? new List<DomainEvent>();
             _domainEvents.Add(eventItem);
         }
 
-        public void RemoveDomainEvent(INotification eventItem)
+        public void RemoveDomainEvent(DomainEvent eventItem)
         {
             _domainEvents?.Remove(eventItem);
         }
 
-        public void ClearDomainEvents()
+        public void ClearDomainEvents(DomainEventType domainEventType)
         {
-            _domainEvents?.Clear();
+            if (_domainEvents != null && _domainEvents.Count > 0)
+            {
+                _domainEvents.RemoveAll(e => e.EventType == domainEventType);
+            }
+            //_domainEvents?.Clear();
         }
 
         public override bool Equals(object obj)

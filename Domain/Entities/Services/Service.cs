@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 
-namespace DiscordBot.Domain.Entities.Zones
+namespace DiscordBot.Domain.Entities.Services
 {
-    public class Service : Entity
+    public partial class Service : Entity
     {
         public Service()
         {

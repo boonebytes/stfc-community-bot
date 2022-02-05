@@ -3,13 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
 using DiscordBot.Infrastructure.EntityConfigurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Infrastructure
 {
@@ -27,15 +30,21 @@ namespace DiscordBot.Infrastructure
         public DbSet<Service> Services { get; set; }
 
         private readonly IMediator _mediator;
+        private readonly ILogger<BotContext> _logger;
         //private IDbContextTransaction _currentTransaction;
         //public bool HasActiveTransaction => _currentTransaction != null;
 
         //public BotContext() : base(GetBuilderOptions()) {}
 
-        public BotContext(DbContextOptions<BotContext> options) : base(options) { }
-        public BotContext(DbContextOptions<BotContext> options, IMediator mediator) : base(options)
+        public BotContext(DbContextOptions<BotContext> options, ILogger<BotContext> logger) : base(options)
+        {
+            _logger = logger;
+        }
+        
+        public BotContext(DbContextOptions<BotContext> options, IMediator mediator, ILogger<BotContext> logger) : base(options)
         {
             _mediator = mediator;
+            _logger = logger;
         }
         /*
         public static DbContextOptions<BotContext> GetBuilderOptions()
@@ -49,6 +58,7 @@ namespace DiscordBot.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Ignore<DomainEvent>();
             modelBuilder.ApplyConfiguration(new AllianceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceGroupEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
@@ -92,19 +102,29 @@ namespace DiscordBot.Infrastructure
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Dispatch Domain Events collection. 
-            // Choices:
-            // A) Right BEFORE committing data (EF SaveChanges) into the DB will make a single transaction including  
-            // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
-            // B) Right AFTER committing data (EF SaveChanges) into the DB will make multiple transactions. 
-            // You will need to handle eventual consistency and compensatory actions in case of failures in any of the Handlers. 
-            await _mediator.DispatchDomainEventsAsync(this);
+            try
+            {
+                // Dispatch Domain Events collection. 
+                // Choices:
+                // A) Right BEFORE committing data (EF SaveChanges) into the DB will make a single transaction including  
+                // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
+                // B) Right AFTER committing data (EF SaveChanges) into the DB will make multiple transactions. 
+                // You will need to handle eventual consistency and compensatory actions in case of failures in any of the Handlers. 
+                await _mediator.DispatchDomainEventsAsync(this, _logger, DomainEventType.PreCommit);
 
-            // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
-            // performed through the DbContext will be committed
-            var result = await base.SaveChangesAsync(cancellationToken);
+                // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
+                // performed through the DbContext will be committed
+                var result = await base.SaveChangesAsync(cancellationToken);
 
-            return true;
+                await _mediator.DispatchDomainEventsAsync(this, _logger, DomainEventType.PostCommit);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Exception thrown when saving entities");
+                return false;
+            }
         }
     }
 }

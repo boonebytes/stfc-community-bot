@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 
-namespace DiscordBot.Domain.Entities.Zones
+namespace DiscordBot.Domain.Entities.Services
 {
     public class ServiceCost : Entity
     {

@@ -25,6 +25,8 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             allianceConfiguration.Property(a => a.DefendSchedulePostTime)
                 .HasMaxLength(10);
 
+            allianceConfiguration.Property(a => a.DefendBroadcastLeadTime)
+                .IsRequired(false);
 
             allianceConfiguration
                 .Property<long?>("_allianceGroupId")

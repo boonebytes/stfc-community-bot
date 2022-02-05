@@ -11,7 +11,7 @@ namespace DiscordBot.Infrastructure
             var optionsBuilder = new DbContextOptionsBuilder<BotContext>();
             optionsBuilder.UseMySql("server=localhost; port=3306; database=discord_tdl; user=tdlbot; password=Pa$$w0rd; Persist Security Info=False; Connect Timeout=300");
 
-            return new BotContext(optionsBuilder.Options);
+            return new BotContext(optionsBuilder.Options, null);
         }
     }
 }

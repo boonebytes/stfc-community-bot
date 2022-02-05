@@ -59,7 +59,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Alliance>> GetAllAsync()
         {
-            return await _context.Alliances.ToAsyncEnumerable().ToListAsync();
+            return await _context.Alliances.ToListAsync();
         }
 
         public Alliance Update(Alliance alliance)
@@ -73,6 +73,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             return _context.Alliances
                 .AsQueryable()
+                .Include(a => a.Zones)
                 .Where(a => a.GuildId.HasValue)
                 .Where(a => a.DefendSchedulePostChannel.HasValue)
                 .ToList();

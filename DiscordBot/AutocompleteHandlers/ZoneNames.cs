@@ -13,8 +13,9 @@ namespace DiscordBot.AutocompleteHandlers
 {
     public class ZoneNames : AutocompleteHandler
     {
-        protected static List<string> Zones;
+        private static List<string> Zones = null;
 
+        /*
         static ZoneNames()
         {
             Zones = new();
@@ -73,6 +74,7 @@ namespace DiscordBot.AutocompleteHandlers
             AddZone("Zamaro");
             AddZone("Zhian");
         }
+        */
 
         private static void AddZone(string name)
         {
@@ -88,8 +90,18 @@ namespace DiscordBot.AutocompleteHandlers
             var logger = services.GetRequiredService<ILogger<ZoneNames>>();
             try
             {
-                //var zoneRepository = services.GetRequiredService<IZoneRepository>();
-                
+                if (Zones == null)
+                {
+                    Zones = new List<string>();
+                    using var thisServiceScope = services.CreateScope();
+                    var zoneRepository = thisServiceScope.ServiceProvider.GetRequiredService<IZoneRepository>();
+                    var allZones = await zoneRepository.GetAllAsync();
+                    foreach (var z in allZones)
+                    {
+                        AddZone(z.Name);
+                    }
+                }
+
                 var data = autocompleteInteraction.Data.Current.Value as string;
                 if (string.IsNullOrEmpty(data))
                     return AutocompletionResult.FromSuccess();

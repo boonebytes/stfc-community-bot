@@ -50,6 +50,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
                         .ThenInclude(tz => tz.Owner)
+                .Include(z => z.Services)
                 .SingleOrDefaultAsync(z => z.Name.ToUpper() == name.ToUpper());
             return zone;
         }
