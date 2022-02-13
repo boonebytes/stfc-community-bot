@@ -34,5 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="10.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>
