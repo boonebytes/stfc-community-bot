@@ -89,80 +89,81 @@ public class CommandHandler
 
         if (message.Author.IsBot) return;
 
-        // Create a number to track where the prefix ends and the command begins
-        int argPos = 0;
-
-        // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-        if (
-            message.HasStringPrefix(_discordConfig.Prefix, ref argPos)
-            || message.HasMentionPrefix(_client.CurrentUser, ref argPos)
-        )
+        
+        //// Create a number to track where the prefix ends and the command begins
+        //int argPos = 0;
+        //
+        //// Determine if the message is a command based on the prefix and make sure no bots trigger commands
+        //if (
+        //    message.HasStringPrefix(_discordConfig.Prefix, ref argPos)
+        //    || message.HasMentionPrefix(_client.CurrentUser, ref argPos)
+        //)
+        //{
+        //    // Create a WebSocket-based command context based on the message
+        //    var context = new SocketCommandContext(_client, message);
+        //
+        //    // Execute the command with the command context we just
+        //    // created, along with the service provider for precondition checks.
+        //        
+        //    // Initially developed to create the scope before calling the
+        //    // Discord modules. Some commands needed to run async due
+        //    // to the Discord gateway's response timeout. This caused
+        //    // issues with the scope closing before the threads finished,
+        //    // which would then release the EFCore contexts, throw errors,
+        //    // etc. Because of this, the scope was moved from outside the
+        //    // thread to inside the thread.
+        //    /*
+        //    using (var scope = _serviceProvider.CreateScope())
+        //    {
+        //        await _commands.ExecuteAsync(
+        //            context: context,
+        //            argPos: argPos,
+        //            services: scope.ServiceProvider);
+        //    }
+        //    */
+        //    await _commands.ExecuteAsync(
+        //        context: context,
+        //        argPos: argPos,
+        //        services: _scopedProvider);
+        //}
+        //else
+        //{
+        if (message.Channel is SocketDMChannel dmChannel)
         {
-            // Create a WebSocket-based command context based on the message
-            var context = new SocketCommandContext(_client, message);
+            // Log any direct messages to the database.
+            _ = Task.Run(async() => {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var dmRepository = scope.ServiceProvider.GetService<IDirectMessageRepository>();
+                    var localClient = scope.ServiceProvider.GetService<DiscordSocketClient>();
+                    var submittedBy = localClient.GetUser(message.Author.Id);
 
-            // Execute the command with the command context we just
-            // created, along with the service provider for precondition checks.
-                
-            // Initially developed to create the scope before calling the
-            // Discord modules. Some commands needed to run async due
-            // to the Discord gateway's response timeout. This caused
-            // issues with the scope closing before the threads finished,
-            // which would then release the EFCore contexts, throw errors,
-            // etc. Because of this, the scope was moved from outside the
-            // thread to inside the thread.
-            /*
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                await _commands.ExecuteAsync(
-                    context: context,
-                    argPos: argPos,
-                    services: scope.ServiceProvider);
-            }
-            */
-            await _commands.ExecuteAsync(
-                context: context,
-                argPos: argPos,
-                services: _scopedProvider);
-        }
-        else
-        {
-            if (message.Channel is SocketDMChannel dmChannel)
-            {
-                // Log any direct messages to the database.
-                _ = Task.Run(async() => {
-                    try
+                    var dm = new DirectMessage(message.Author.Id, message.Content);
+                    foreach (var commonServer in submittedBy.MutualGuilds)
                     {
-                        using var scope = _serviceProvider.CreateScope();
-                        var dmRepository = scope.ServiceProvider.GetService<IDirectMessageRepository>();
-                        var localClient = scope.ServiceProvider.GetService<DiscordSocketClient>();
-                        var submittedBy = localClient.GetUser(message.Author.Id);
-
-                        var dm = new DirectMessage(message.Author.Id, message.Content);
-                        foreach (var commonServer in submittedBy.MutualGuilds)
-                        {
-                            dm.AddServer(commonServer.Id, commonServer.Name);
-                        }
-
-                        dmRepository.Add(dm);
-                        await dmRepository.UnitOfWork.SaveEntitiesAsync();
-                        await dmChannel.SendMessageAsync("Thank you; your message has been received!");
-
-                        await _ownerChannel.SendMessageAsync(
-                            "------------------------\n"
-                            + "New private message received\n"
-                            + "Servers: " + dm.CommonServers + "\n"
-                            + "------------------------\n"
-                        );
-                        await _ownerChannel.SendMessageAsync(message.Content);
+                        dm.AddServer(commonServer.Id, commonServer.Name);
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Unable to process DM");
-                    }
-                });
-                await Task.Delay(500);
-            }
+
+                    dmRepository.Add(dm);
+                    await dmRepository.UnitOfWork.SaveEntitiesAsync();
+                    await dmChannel.SendMessageAsync("Thank you; your message has been received!");
+
+                    await _ownerChannel.SendMessageAsync(
+                        "------------------------\n"
+                        + "New private message received\n"
+                        + "Servers: " + dm.CommonServers + "\n"
+                        + "------------------------\n"
+                    );
+                    await _ownerChannel.SendMessageAsync(message.Content);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unable to process DM");
+                }
+            });
+            await Task.Delay(500);
+            //}
         }
     }
 }

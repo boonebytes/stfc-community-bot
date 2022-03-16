@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Admin;
@@ -7,6 +8,8 @@ using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
+using DiscordBot.Infrastructure.DTOs;
+using DiscordBot.Infrastructure.Entities;
 using DiscordBot.Infrastructure.EntityConfigurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +21,7 @@ namespace DiscordBot.Infrastructure
 {
     public class BotContext : DbContext, IUnitOfWork
     {
+        public DbSet<Audit> AuditLogs { get; set; }
         public DbSet<Alliance> Alliances { get; set; }
         public DbSet<AllianceGroup> AllianceGroups { get; set; }
         public DbSet<Diplomacy> Diplomacies { get; set; }
@@ -59,6 +63,7 @@ namespace DiscordBot.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Ignore<DomainEvent>();
+            modelBuilder.ApplyConfiguration(new AuditEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceGroupEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
@@ -114,6 +119,7 @@ namespace DiscordBot.Infrastructure
 
                 // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
                 // performed through the DbContext will be committed
+                PrepAuditLogs();
                 var result = await base.SaveChangesAsync(cancellationToken);
 
                 await _mediator.DispatchDomainEventsAsync(this, _logger, DomainEventType.PostCommit);
@@ -124,6 +130,54 @@ namespace DiscordBot.Infrastructure
             {
                 _logger?.LogError(ex, "Exception thrown when saving entities");
                 return false;
+            }
+        }
+
+        protected void PrepAuditLogs()
+        {
+            ChangeTracker.DetectChanges();
+            var auditEntries = new List<AuditEntry>();
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.Entity is Audit || entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
+                    continue;
+                var auditEntry = new AuditEntry(entry);
+                auditEntry.TableName = entry.Entity.GetType().Name;
+                //auditEntry.UserId = userId;
+                auditEntries.Add(auditEntry);
+                foreach (var property in entry.Properties)
+                {
+                    string propertyName = property.Metadata.Name;
+                    if (property.Metadata.IsPrimaryKey())
+                    {
+                        auditEntry.KeyValues[propertyName] = property.CurrentValue;
+                        continue;
+                    }
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            auditEntry.AuditType = AuditType.Create;
+                            auditEntry.NewValues[propertyName] = property.CurrentValue;
+                            break;
+                        case EntityState.Deleted:
+                            auditEntry.AuditType = AuditType.Delete;
+                            auditEntry.OldValues[propertyName] = property.OriginalValue;
+                            break;
+                        case EntityState.Modified:
+                            if (property.IsModified && property.OriginalValue != property.CurrentValue)
+                            {
+                                auditEntry.ChangedColumns.Add(propertyName);
+                                auditEntry.AuditType = AuditType.Update;
+                                auditEntry.OldValues[propertyName] = property.OriginalValue;
+                                auditEntry.NewValues[propertyName] = property.CurrentValue;
+                            }
+                            break;
+                    }
+                }
+            }
+            foreach (var auditEntry in auditEntries)
+            {
+                AuditLogs.Add(auditEntry.ToAudit());
             }
         }
     }

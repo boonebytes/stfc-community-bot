@@ -10,7 +10,7 @@ namespace DiscordBot.Modules;
 public partial class StfcModule
 {
     [SlashCommand("zone-set", "Create or update a zone")]
-    [Discord.Interactions.RequireOwner]
+    [RequireOwner]
     public async Task ZoneCreateUpdateAsync(
         [Summary("Zone", "Zone Name")][Autocomplete(typeof(ZoneNames))] string name,
         [Summary("Owner", "Current owner, or None if unclaimed")] string owner,
@@ -166,7 +166,7 @@ public partial class StfcModule
     }
 
     [SlashCommand("connect","Register a connection between two zones")]
-    [Discord.Interactions.RequireOwner]
+    [RequireOwner]
     public async Task ConnectAsync(
         [Autocomplete(typeof(ZoneNames))] string zone1,
         [Autocomplete(typeof(ZoneNames))] string zone2)
@@ -263,7 +263,7 @@ public partial class StfcModule
                     $"Zone: {thisZone.Name} ({thisZone.Level}^)\n"
                     + $"Current Owner: {owner}\n"
                     + $"Next Event: <t:{thisZone.NextDefend.Value.ToUnixTimestamp()}> local / {thisZone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")}\n"
-                    + $"Potential Hostiles: {potentialThreats}\n";
+                    + $"Contenders: {potentialThreats}\n";
                 //if (!string.IsNullOrEmpty(thisZone.Threats))
                 //    response += $"Saved Threats: {thisZone.Threats}\n";
                 if (!string.IsNullOrEmpty(thisZone.Notes))

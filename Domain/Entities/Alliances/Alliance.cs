@@ -36,6 +36,24 @@ namespace DiscordBot.Domain.Entities.Alliances
             AddAllianceChangedDomainEvent();
         }
 
+        public void SetDefendSchedulePostChannel(ulong? value)
+        {
+            if (value == DefendSchedulePostChannel) return;
+            
+            AddAllianceChangedDomainEvent();
+            DefendSchedulePostChannel = value;
+            if (!value.HasValue)
+            {
+                DefendSchedulePostTime = "";
+                NextScheduledPost = null;
+            }
+            else if (DefendSchedulePostTime == "")
+            {
+                DefendSchedulePostTime = "8:00 AM";
+                SetNextScheduledPost();
+            }
+        }
+        
         private readonly List<Zone> _zones;
         public IReadOnlyCollection<Zone> Zones => _zones;
 

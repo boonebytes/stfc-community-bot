@@ -467,6 +467,44 @@ namespace DiscordBot.Infrastructure.Migrations
                     b.ToTable("zone_neighbours");
                 });
 
+            modelBuilder.Entity("DiscordBot.Infrastructure.Entities.Audit", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("AffectedColumns")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("OldValues")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("PrimaryKey")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("TableName")
+                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Type")
+                        .HasColumnType("varchar(50) CHARACTER SET utf8mb4")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("audit");
+                });
+
             modelBuilder.Entity("DiscordBot.Domain.Entities.Alliances.Alliance", b =>
                 {
                     b.HasOne("DiscordBot.Domain.Entities.Alliances.AllianceGroup", "Group")

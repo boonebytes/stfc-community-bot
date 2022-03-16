@@ -30,13 +30,9 @@ public class InteractionHandler
     public async Task InstallCommandsAsync()
     {
         // Hook the event into our command handler
-        //_client.MessageReceived += HandleCommandAsync;
-        ////_client.SlashCommandExecuted += SlashCommandHandlerAsync;
-        //_client.SlashCommandExecuted += SlashCommandHandlerAsync;
         _client.InteractionCreated += InteractionCreatedAsync;
-        //_client.SlashCommandExecuted += HandleSlashCommandAsync;
-        //_interactionService.SlashCommandExecuted += SlashCommandExecutedAsync;
-
+        _client.JoinedGuild += OnJoinedGuild;
+        
 
         // Here we discover all of the command modules in the entry 
         // assembly and load them. Starting from Discord.NET 2.0, a
@@ -61,19 +57,71 @@ public class InteractionHandler
 //#else
         var allianceRepository = _scopedProvider.GetService<IAllianceRepository>();
         var allDiscordServers = allianceRepository.GetAllWithServers();
-        foreach (var alliance in allDiscordServers)
+
+        var recognizedGuilds = _client.Guilds.Select(g => g.Id).ToArray();
+        
+        foreach (var guildId in recognizedGuilds)
         {
-            if (alliance.GuildId.HasValue)
-                await _interactionService.RegisterCommandsToGuildAsync(alliance.GuildId.Value);
+            await RegisterInteractionsWithGuild(guildId);
         }
+        
+        //foreach (var alliance in allDiscordServers)
+        //{
+        //    if (alliance.GuildId.HasValue && recognizedGuilds.Contains(alliance.GuildId.Value))
+        //        await RegisterInteractionsWithGuild(alliance.GuildId.Value);
+        //}
+        
         //await _interactionService.RegisterCommandsGloballyAsync();
 //#endif
     }
 
+    private async Task OnJoinedGuild(SocketGuild guild)
+    {
+        _logger.LogInformation($"Joined guild {guild.Name} ({guild.Id})");  
+        await RegisterInteractionsWithGuild(guild.Id);
+    }
+
+    private async Task RegisterInteractionsWithGuild(ulong guildId)
+    {
+        await _interactionService.RegisterCommandsToGuildAsync(guildId);
+        _logger.LogInformation($"Registered interaction commands to {guildId}");
+    }
+
     private async Task InteractionCreatedAsync(SocketInteraction arg)
     {
-        var context = new SocketInteractionContext(_client, arg);
-        await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
+        _ = Task.Run(async () =>
+        {
+            _logger.LogInformation("Interaction started");
+            var context = new SocketInteractionContext(_client, arg);
+            var result = await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
+
+            if (!result.IsSuccess)
+            {
+                switch (result.Error)
+                {
+                    case InteractionCommandError.UnmetPrecondition:
+                        _logger.LogError($"Unmet Precondition: {result.ErrorReason}");
+                        break;
+                    case InteractionCommandError.UnknownCommand:
+                        _logger.LogError("Unknown command");
+                        break;
+                    case InteractionCommandError.BadArgs:
+                        _logger.LogError("Invalid number or arguments");
+                        break;
+                    case InteractionCommandError.Exception:
+                        _logger.LogError($"Command exception:{result.ErrorReason}");
+                        break;
+                    case InteractionCommandError.Unsuccessful:
+                        _logger.LogError("Command could not be executed");
+                        break;
+                    default:
+                        break;
+                }
+                //await interactionContext.Interaction.RespondAsync("An unexpected error has occured.", ephemeral: true);
+            }
+
+            _logger.LogInformation("Interaction finished");
+        });
     }
 
     //private async Task SlashCommandHandlerAsync(SocketSlashCommand command)
