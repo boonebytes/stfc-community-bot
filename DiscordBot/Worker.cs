@@ -58,10 +58,13 @@ public class Worker : BackgroundService
                     {
                         cmdScheduler.Run(stoppingToken);
                     }, stoppingToken);
+                    
                     await cmdHandler.InstallCommandsAsync();
                     _logger.LogInformation("Command Handler started");
+                    
                     await intHandler.InstallCommandsAsync();
                     _logger.LogInformation("Interaction Handler started");
+                    
                     if (!string.IsNullOrEmpty(_discordConfig.WatchingStatus))
                         await _client.SetGameAsync(name: _discordConfig.WatchingStatus, type: ActivityType.Watching);
                     _logger.LogInformation("Bot startup complete");

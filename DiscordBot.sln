@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminWeb", "Admin\AdminWeb.
 EndProject
 Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "docker-compose", "docker-compose.dcproj", "{8167BB90-E7AB-49EB-BF2A-73D9A13ECDCE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{01E98429-B5B7-4CFC-AC73-740AC9BD56A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8167BB90-E7AB-49EB-BF2A-73D9A13ECDCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8167BB90-E7AB-49EB-BF2A-73D9A13ECDCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8167BB90-E7AB-49EB-BF2A-73D9A13ECDCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01E98429-B5B7-4CFC-AC73-740AC9BD56A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01E98429-B5B7-4CFC-AC73-740AC9BD56A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01E98429-B5B7-4CFC-AC73-740AC9BD56A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01E98429-B5B7-4CFC-AC73-740AC9BD56A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
