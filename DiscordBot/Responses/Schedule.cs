@@ -81,7 +81,24 @@ public class Schedule
                             + $"{zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET");
             //if (!string.IsNullOrEmpty(zone.Threats))
             //    response += "\n**Saved Threats**: " + zone.Threats;
-            response.Append("\n**Contenders**: " + (string.IsNullOrEmpty(potentialThreats) ? "None" : potentialThreats));
+            var contenders = "**Contenders**: ";
+            if (string.IsNullOrEmpty(potentialThreats))
+            {
+                if (zone.LowRisk)
+                {
+                    contenders += "None";
+                }
+                else
+                {
+                    contenders += "Anyone (1^)";
+                }
+            }
+            else
+            {
+                contenders += potentialThreats;
+            }
+
+            response.Append("\n" + contenders);
             if (!string.IsNullOrEmpty(zone.Notes))
             {
                 response.Append($"\n**Notes**: {zone.Notes}");
