@@ -83,9 +83,23 @@ namespace DiscordBot.Infrastructure
             var nullableDateTimeConverter = new ValueConverter<DateTime?, DateTime?>(
                 v => v.HasValue ? v.Value.ToUniversalTime() : v,
                 v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+            
+            var timespanConverter = new ValueConverter<TimeSpan, string>(
+                v => v.ToString(),
+                v => TimeSpan.Parse(v));
+
+            var nullableTimespanConverter = new ValueConverter<TimeSpan?, string>(
+                v => v.HasValue ? v.ToString() : string.Empty,
+                v => string.IsNullOrEmpty(v) ? new TimeSpan?() : TimeSpan.Parse(v));
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
+                entityType.SetTableName(entityType.GetTableName().ToUpper());
+                foreach(var property in entityType.GetProperties())
+                {
+                    property.SetColumnName(property.GetColumnName().ToUpper());
+                }
+                
                 if (entityType.IsKeyless)
                 {
                     continue;
@@ -100,6 +114,27 @@ namespace DiscordBot.Infrastructure
                     else if (property.ClrType == typeof(DateTime?))
                     {
                         property.SetValueConverter(nullableDateTimeConverter);
+                    }
+                    else if (property.ClrType == typeof(TimeSpan))
+                    {
+                        property.SetValueConverter(timespanConverter);
+                        property.SetMaxLength(50);
+                    }
+                    else if (property.ClrType == typeof(TimeSpan?))
+                    {
+                        property.SetValueConverter(nullableTimespanConverter);
+                        property.SetMaxLength(50);
+                    }
+
+                    switch (property.Name.ToUpper())
+                    {
+                        case "MODIFIEDBY":
+                            property.SetColumnName("MODIFIED_BY");
+                            property.SetMaxLength(500);
+                            break;
+                        case "MODIFIEDDATE":
+                            property.SetColumnName("MODIFIED_DATE");
+                            break;
                     }
                 }
             }

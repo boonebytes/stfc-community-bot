@@ -26,15 +26,23 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .HasMaxLength(2000);
 
             zoneConfiguration.Property(z => z.DefendUtcDayOfWeek)
+                .HasColumnName("defend_day_of_week")
                 .HasMaxLength(15)
                 .IsRequired(true);
 
             zoneConfiguration.Property(z => z.DefendUtcTime)
+                .HasColumnName("defend_utc_time")
                 .HasMaxLength(10)
                 .IsRequired(true);
 
             zoneConfiguration.Property(z => z.NextDefend)
+                .HasColumnName("next_defend")
                 .IsRequired(false);
+
+            zoneConfiguration.Property(z => z.DefendEasternDay)
+                .HasColumnName("defend_eastern_day");
+            zoneConfiguration.Property(z => z.DefendEasternTime)
+                .HasColumnName("defend_eastern_time");
             
             var starSystemNav = zoneConfiguration.Metadata.FindNavigation(nameof(Zone.StarSystems));
             starSystemNav.SetPropertyAccessMode(PropertyAccessMode.Field);
@@ -60,7 +68,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             zoneConfiguration
                 .Property<long?>("_ownerId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("OwnerId")
+                .HasColumnName("owner_id")
                 .IsRequired(false);
 
             zoneConfiguration.HasOne<Alliance>(z => z.Owner)

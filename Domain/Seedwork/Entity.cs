@@ -11,7 +11,10 @@ namespace DiscordBot.Domain.Seedwork
         // Property is set as Virtual, and setter is protected
         // instead of private, for NHibernate support
         public virtual long Id { get; protected set; }
-
+        
+        public virtual string ModifiedBy { get; protected set; }
+        public virtual DateTime ModifiedDate { get; protected set; }
+        
         private List<DomainEvent> _domainEvents;
         public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents?.AsReadOnly();
 

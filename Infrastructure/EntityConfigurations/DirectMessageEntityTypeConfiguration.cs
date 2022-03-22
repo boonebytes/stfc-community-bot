@@ -16,7 +16,13 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .ValueGeneratedOnAdd();
 
             directMessageConfiguration.Property(dm => dm.CommonServers)
+                .HasColumnName("common_servers")
                 .HasMaxLength(4000);
+
+            directMessageConfiguration.Property(dm => dm.ReceivedTimestamp)
+                .HasColumnName("received_timestamp");
+            directMessageConfiguration.Property(dm => dm.FromUser)
+                .HasColumnName("from_user");
         }
     }
 }

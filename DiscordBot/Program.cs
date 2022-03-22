@@ -49,7 +49,8 @@ public class Program
                 IConfiguration configuration = hostContext.Configuration;
                 Models.Config.Discord discordConfig = configuration.GetSection(Models.Config.Discord.Section).Get<Models.Config.Discord>();
 
-                services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
+                //services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
+                services.ConfigureBotInfrastructure(configuration.GetSection("Oracle").GetValue<string>("ConnectionString"));
 
                 services.AddScoped<IAllianceRepository, AllianceRepository>();
                 services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
