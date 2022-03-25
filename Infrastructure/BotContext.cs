@@ -134,6 +134,7 @@ namespace DiscordBot.Infrastructure
                             break;
                         case "MODIFIEDDATE":
                             property.SetColumnName("MODIFIED_DATE");
+                            property.SetDefaultValueSql("SYSDATE");
                             break;
                     }
                 }
