@@ -24,7 +24,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             neighbourConfiguration
                 .Property<long>("_fromZoneId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("FromZoneId")
+                .HasColumnName("from_zone_id")
                 .IsRequired(true);
 
             neighbourConfiguration.HasOne<Zone>(zn => zn.FromZone)
@@ -40,7 +40,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             neighbourConfiguration
                 .Property<long>("_toZoneId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("ToZoneId")
+                .HasColumnName("to_zone_id")
                 .IsRequired(true);
 
             neighbourConfiguration.HasOne<Zone>(zn => zn.ToZone)

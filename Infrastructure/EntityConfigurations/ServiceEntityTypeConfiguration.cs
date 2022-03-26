@@ -25,7 +25,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             serviceConfiguration
                 .Property<long?>("_zoneId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("ZoneId")
+                .HasColumnName("zone_id")
                 .IsRequired(true);
 
             serviceConfiguration.HasOne<Zone>(s => s.Zone)

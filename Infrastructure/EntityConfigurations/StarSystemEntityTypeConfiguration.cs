@@ -24,7 +24,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             starSystemConfiguration
                 .Property<long?>("_zoneId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("ZoneId")
+                .HasColumnName("zone_id")
                 .IsRequired(true);
 
             starSystemConfiguration.HasOne<Zone>(ss => ss.Zone)
@@ -36,7 +36,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             starSystemConfiguration
                 .Property<int?>("_resourceId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("ResourceId")
+                .HasColumnName("resource_id")
                 .IsRequired(false);
 
             starSystemConfiguration.HasOne<Resource>()

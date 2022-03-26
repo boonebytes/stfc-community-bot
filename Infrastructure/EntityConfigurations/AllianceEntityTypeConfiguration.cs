@@ -17,21 +17,23 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .ValueGeneratedOnAdd();
 
             allianceConfiguration.Property(a => a.Name)
-                .HasMaxLength(200);
+                .HasMaxLength(2000);
 
             allianceConfiguration.Property(a => a.Acronym)
-                .HasMaxLength(5);
+                .HasMaxLength(10);
 
             allianceConfiguration.Property(a => a.DefendSchedulePostTime)
+                .HasColumnName("defend_schedule_post_time")
                 .HasMaxLength(10);
 
             allianceConfiguration.Property(a => a.DefendBroadcastLeadTime)
+                .HasColumnName("defend_broadcast_lead_time")
                 .IsRequired(false);
 
             allianceConfiguration
                 .Property<long?>("_allianceGroupId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("AllianceGroupId")
+                .HasColumnName("alliance_group_id")
                 .IsRequired(false);
 
             allianceConfiguration.HasOne<AllianceGroup>(a => a.Group)
@@ -44,6 +46,12 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             groupNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
             groupNavigation.SetIsEagerLoaded(true);
 
+            allianceConfiguration.Property(a => a.GuildId)
+                .HasColumnName("guild_id");
+            allianceConfiguration.Property(a => a.DefendSchedulePostChannel)
+                .HasColumnName("defend_schedule_post_channel");
+            allianceConfiguration.Property(a => a.NextScheduledPost)
+                .HasColumnName("next_scheduled_post");
 
             
             allianceConfiguration.HasMany<Diplomacy>(a => a.AssignedDiplomacy)

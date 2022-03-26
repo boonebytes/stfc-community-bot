@@ -12,7 +12,8 @@ namespace DiscordBot.Infrastructure
         {
             serviceCollection.AddDbContext<BotContext>(options =>
                     {
-                        options.UseMySql(connectionString);
+                        //options.UseMySql(connectionString);
+                        options.UseOracle(connectionString);
                     },
                     ServiceLifetime.Scoped
                 );

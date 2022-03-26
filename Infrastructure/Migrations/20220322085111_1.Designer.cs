@@ -5,114 +5,139 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Oracle.EntityFrameworkCore.Metadata;
 
 namespace DiscordBot.Infrastructure.Migrations
 {
     [DbContext(typeof(BotContext))]
-    [Migration("20211219181523_9")]
-    partial class _9
+    [Migration("20220322085111_1")]
+    partial class _1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.20")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn)
+                .HasAnnotation("ProductVersion", "3.1.21")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Admin.DirectMessage", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CommonServers")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
+                        .HasColumnName("COMMON_SERVERS")
+                        .HasColumnType("NCLOB")
                         .HasMaxLength(4000);
 
-                    b.Property<ulong>("FromUser")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<decimal>("FromUser")
+                        .HasColumnName("FROM_USER")
+                        .HasColumnType("NUMBER(20)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnName("MESSAGE")
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("ReceivedTimestamp")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnName("RECEIVED_TIMESTAMP")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("direct_messages");
+                    b.ToTable("DIRECT_MESSAGES");
                 });
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Alliances.Alliance", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Acronym")
-                        .HasColumnType("varchar(5) CHARACTER SET utf8mb4")
-                        .HasMaxLength(5);
-
-                    b.Property<ulong?>("DefendSchedulePostChannel")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<string>("DefendSchedulePostTime")
-                        .HasColumnType("varchar(10) CHARACTER SET utf8mb4")
+                        .HasColumnName("ACRONYM")
+                        .HasColumnType("NVARCHAR2(10)")
                         .HasMaxLength(10);
 
-                    b.Property<ulong?>("GuildId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int?>("DefendBroadcastLeadTime")
+                        .HasColumnName("DEFEND_BROADCAST_LEAD_TIME")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<decimal?>("DefendSchedulePostChannel")
+                        .HasColumnName("DEFEND_SCHEDULE_POST_CHANNEL")
+                        .HasColumnType("NUMBER(20)");
+
+                    b.Property<string>("DefendSchedulePostTime")
+                        .HasColumnName("DEFEND_SCHEDULE_POST_TIME")
+                        .HasColumnType("NVARCHAR2(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<decimal?>("GuildId")
+                        .HasColumnName("GUILD_ID")
+                        .HasColumnType("NUMBER(20)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
-                        .HasMaxLength(200);
+                        .HasColumnName("NAME")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasMaxLength(2000);
 
                     b.Property<DateTime?>("NextScheduledPost")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnName("NEXT_SCHEDULED_POST")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<long?>("_allianceGroupId")
-                        .HasColumnName("AllianceGroupId")
-                        .HasColumnType("bigint");
+                        .HasColumnName("ALLIANCE_GROUP_ID")
+                        .HasColumnType("NUMBER(19)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("_allianceGroupId");
 
-                    b.ToTable("alliances");
+                    b.ToTable("ALLIANCES");
                 });
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Alliances.AllianceGroup", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasColumnName("NAME")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasMaxLength(200);
 
                     b.HasKey("Id");
 
-                    b.ToTable("alliance_groups");
+                    b.ToTable("ALLIANCE_GROUPS");
                 });
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Alliances.Diplomacy", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
 
                     b.Property<long>("_ownerId")
-                        .HasColumnName("OwnerId")
-                        .HasColumnType("bigint");
+                        .HasColumnName("OWNER_ID")
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<long>("_relatedId")
-                        .HasColumnName("RelatedId")
-                        .HasColumnType("bigint");
+                        .HasColumnName("RELATED_ID")
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<int>("_relationshipId")
-                        .HasColumnName("RelationshipId")
-                        .HasColumnType("int");
+                        .HasColumnName("RELATIONSHIP_ID")
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
 
@@ -122,23 +147,25 @@ namespace DiscordBot.Infrastructure.Migrations
 
                     b.HasIndex("_relationshipId");
 
-                    b.ToTable("alliance_diplomacy");
+                    b.ToTable("ALLIANCE_DIPLOMACY");
                 });
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Alliances.DiplomaticRelation", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(10)")
                         .HasDefaultValue(0);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasColumnName("NAME")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasMaxLength(200);
 
                     b.HasKey("Id");
 
-                    b.ToTable("ct_diplomatic_relation");
+                    b.ToTable("CT_DIPLOMATIC_RELATION");
 
                     b.HasData(
                         new
@@ -168,25 +195,89 @@ namespace DiscordBot.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DiscordBot.Domain.Entities.Services.Service", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnName("DESCRIPTION")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("NAME")
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<long?>("_zoneId")
+                        .IsRequired()
+                        .HasColumnName("ZONE_ID")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("_zoneId");
+
+                    b.ToTable("ZONE_SERVICES");
+                });
+
+            modelBuilder.Entity("DiscordBot.Domain.Entities.Services.ServiceCost", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("Cost")
+                        .HasColumnName("COST")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.Property<int?>("_resourceId")
+                        .IsRequired()
+                        .HasColumnName("RESOURCE_ID")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<long?>("_serviceId")
+                        .IsRequired()
+                        .HasColumnName("SERVICE_ID")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("_resourceId");
+
+                    b.HasIndex("_serviceId");
+
+                    b.ToTable("ZONE_SERVICE_COST");
+                });
+
             modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.Resource", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(10)")
                         .HasDefaultValue(0);
 
                     b.Property<string>("Label")
                         .IsRequired()
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasColumnName("LABEL")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasColumnName("NAME")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasMaxLength(200);
 
                     b.HasKey("Id");
 
-                    b.ToTable("ct_resources");
+                    b.ToTable("CT_RESOURCES");
 
                     b.HasData(
                         new
@@ -311,77 +402,28 @@ namespace DiscordBot.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.Service", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
-                        .HasMaxLength(200);
-
-                    b.Property<long?>("_zoneId")
-                        .IsRequired()
-                        .HasColumnName("ZoneId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("_zoneId");
-
-                    b.ToTable("zone_services");
-                });
-
-            modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.ServiceCost", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("Cost")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("ResourceId")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("_serviceId")
-                        .IsRequired()
-                        .HasColumnName("ServiceId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("_serviceId");
-
-                    b.ToTable("zone_service_cost");
-                });
-
             modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.StarSystem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasColumnName("NAME")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasMaxLength(200);
 
                     b.Property<int?>("_resourceId")
-                        .HasColumnName("ResourceId")
-                        .HasColumnType("int");
+                        .HasColumnName("RESOURCE_ID")
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<long?>("_zoneId")
                         .IsRequired()
-                        .HasColumnName("ZoneId")
-                        .HasColumnType("bigint");
+                        .HasColumnName("ZONE_ID")
+                        .HasColumnType("NUMBER(19)");
 
                     b.HasKey("Id");
 
@@ -389,73 +431,87 @@ namespace DiscordBot.Infrastructure.Migrations
 
                     b.HasIndex("_zoneId");
 
-                    b.ToTable("starsystems");
+                    b.ToTable("STARSYSTEMS");
                 });
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.Zone", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("DefendEasternDay")
-                        .HasColumnType("int");
+                        .HasColumnName("DEFEND_EASTERN_DAY")
+                        .HasColumnType("NUMBER(10)");
 
-                    b.Property<TimeSpan?>("DefendEasternTime")
-                        .HasColumnType("time(6)");
+                    b.Property<string>("DefendEasternTime")
+                        .HasColumnName("DEFEND_EASTERN_TIME")
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasMaxLength(50);
 
                     b.Property<string>("DefendUtcDayOfWeek")
                         .IsRequired()
-                        .HasColumnType("varchar(15) CHARACTER SET utf8mb4")
+                        .HasColumnName("DEFEND_DAY_OF_WEEK")
+                        .HasColumnType("NVARCHAR2(15)")
                         .HasMaxLength(15);
 
                     b.Property<string>("DefendUtcTime")
                         .IsRequired()
-                        .HasColumnType("varchar(10) CHARACTER SET utf8mb4")
+                        .HasColumnName("DEFEND_UTC_TIME")
+                        .HasColumnType("NVARCHAR2(10)")
                         .HasMaxLength(10);
 
                     b.Property<int>("Level")
-                        .HasColumnType("int");
+                        .HasColumnName("LEVEL")
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
+                        .HasColumnName("NAME")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasMaxLength(200);
 
                     b.Property<DateTime?>("NextDefend")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnName("NEXT_DEFEND")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnName("NOTES")
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Threats")
-                        .HasColumnType("varchar(2000) CHARACTER SET utf8mb4")
+                        .HasColumnName("THREATS")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasMaxLength(2000);
 
                     b.Property<long?>("_ownerId")
-                        .HasColumnName("OwnerId")
-                        .HasColumnType("bigint");
+                        .HasColumnName("OWNER_ID")
+                        .HasColumnType("NUMBER(19)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("_ownerId");
 
-                    b.ToTable("zones");
+                    b.ToTable("ZONES");
                 });
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.ZoneNeighbour", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
 
                     b.Property<long>("_fromZoneId")
-                        .HasColumnName("FromZoneId")
-                        .HasColumnType("bigint");
+                        .HasColumnName("FROM_ZONE_ID")
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<long>("_toZoneId")
-                        .HasColumnName("ToZoneId")
-                        .HasColumnType("bigint");
+                        .HasColumnName("TO_ZONE_ID")
+                        .HasColumnType("NUMBER(19)");
 
                     b.HasKey("Id");
 
@@ -463,7 +519,55 @@ namespace DiscordBot.Infrastructure.Migrations
 
                     b.HasIndex("_toZoneId");
 
-                    b.ToTable("zone_neighbours");
+                    b.ToTable("ZONE_NEIGHBOURS");
+                });
+
+            modelBuilder.Entity("DiscordBot.Infrastructure.Entities.Audit", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
+                        .HasColumnType("NUMBER(19)")
+                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AffectedColumns")
+                        .HasColumnName("AFFECTED_COLUMNS")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnName("DATE_TIME")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnName("NEW_VALUES")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("OldValues")
+                        .HasColumnName("OLD_VALUES")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("PrimaryKey")
+                        .HasColumnName("PRIMARY_KEY")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("TableName")
+                        .HasColumnName("TABLE_NAME")
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Type")
+                        .HasColumnName("TYPE")
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UserId")
+                        .HasColumnName("USER_ID")
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AUDIT");
                 });
 
             modelBuilder.Entity("DiscordBot.Domain.Entities.Alliances.Alliance", b =>
@@ -495,7 +599,7 @@ namespace DiscordBot.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.Service", b =>
+            modelBuilder.Entity("DiscordBot.Domain.Entities.Services.Service", b =>
                 {
                     b.HasOne("DiscordBot.Domain.Entities.Zones.Zone", "Zone")
                         .WithMany("Services")
@@ -504,13 +608,15 @@ namespace DiscordBot.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DiscordBot.Domain.Entities.Zones.ServiceCost", b =>
+            modelBuilder.Entity("DiscordBot.Domain.Entities.Services.ServiceCost", b =>
                 {
                     b.HasOne("DiscordBot.Domain.Entities.Zones.Resource", "Resource")
                         .WithMany()
-                        .HasForeignKey("ResourceId");
+                        .HasForeignKey("_resourceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("DiscordBot.Domain.Entities.Zones.Service", "Service")
+                    b.HasOne("DiscordBot.Domain.Entities.Services.Service", "Service")
                         .WithMany("Costs")
                         .HasForeignKey("_serviceId")
                         .OnDelete(DeleteBehavior.Cascade)

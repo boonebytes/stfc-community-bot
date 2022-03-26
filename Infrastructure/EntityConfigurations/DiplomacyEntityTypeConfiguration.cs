@@ -20,7 +20,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             diplomacyConfiguration
                 .Property<long>("_ownerId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("OwnerId")
+                .HasColumnName("owner_id")
                 .IsRequired(true);
 
             diplomacyConfiguration.HasOne<Alliance>(d => d.Owner)
@@ -35,7 +35,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             diplomacyConfiguration
                 .Property<long>("_relatedId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("RelatedId")
+                .HasColumnName("related_id")
                 .IsRequired(true);
 
             diplomacyConfiguration.HasOne<Alliance>(d => d.Related)
@@ -50,7 +50,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             diplomacyConfiguration
                 .Property<int>("_relationshipId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("RelationshipId")
+                .HasColumnName("relationship_id")
                 .IsRequired(true);
 
             diplomacyConfiguration.HasOne<DiplomaticRelation>(d => d.Relationship)

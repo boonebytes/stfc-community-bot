@@ -9,7 +9,8 @@ namespace DiscordBot.Infrastructure
         public BotContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<BotContext>();
-            optionsBuilder.UseMySql("server=localhost; port=3306; database=discord_tdl; user=tdlbot; password=Pa$$w0rd; Persist Security Info=False; Connect Timeout=300");
+            optionsBuilder.UseOracle("Data Source=localhost:1521/XEPDB1;User Id=stfc_dev;Password=NotMyPassword;");
+            
 
             return new BotContext(optionsBuilder.Options, null);
         }

@@ -17,14 +17,24 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
 
             serviceCostConfiguration.Property(sc => sc.Id)
                 .ValueGeneratedOnAdd();
-            
+
+            serviceCostConfiguration
+                .Property<int?>("_resourceId")
+                .UsePropertyAccessMode(PropertyAccessMode.Field)
+                .HasColumnName("resource_id");
+            serviceCostConfiguration.HasOne(sc => sc.Resource)
+                .WithMany()
+                .HasForeignKey("_resourceId")
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
             serviceCostConfiguration.Property(sc => sc.Cost)
                 .IsRequired(true);
 
             serviceCostConfiguration
                 .Property<long?>("_serviceId")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("ServiceId")
+                .HasColumnName("service_id")
                 .IsRequired(true);
 
             serviceCostConfiguration.HasOne<Service>(sc => sc.Service)
