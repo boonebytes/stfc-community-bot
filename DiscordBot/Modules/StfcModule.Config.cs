@@ -10,7 +10,7 @@ namespace DiscordBot.Modules;
 
 public partial class StfcModule
 {
-    [SlashCommand("setup", "Check permissions, then configures the bot to post in this channel", runMode: RunMode.Async)]
+    [SlashCommand("setup", "Admin - Check permissions, then configures the bot to post in this channel", runMode: RunMode.Async)]
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task SetupAsync()
     {
@@ -80,12 +80,12 @@ public partial class StfcModule
         _logger.LogInformation($"Setup complete");
     }
 
-    [SlashCommand("config", "Show or set a configuration variable for this Discord server")]
-    [Discord.Interactions.RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
+    [RequireUserPermission(GuildPermission.Administrator)]
     //[RequireOwner]
     public async Task ConfigAsync(
-        [Discord.Interactions.Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
-        [Discord.Interactions.Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
+        [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
+        [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
     {
         using var serviceScope = _serviceProvider.CreateScope();
         var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();

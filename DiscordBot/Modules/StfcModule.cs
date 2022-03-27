@@ -20,9 +20,31 @@ public partial class StfcModule : InteractionModuleBase
         _logger = logger;
         _serviceProvider = serviceProvider;
     }
+
+    [RequireOwner]
+    [SlashCommand("reload", "Bot Owner - Reload all data from database, without refreshing schedules.")]
+    public async Task ReloadAsync()
+    {
+        using var serviceScope = _serviceProvider.CreateScope();
+        try
+        {
+            var cmdScheduler = _serviceProvider.GetService<Scheduler>();
+            _ = cmdScheduler.ReloadJobsAsync(CancellationToken.None);
+            await RespondAsync(
+                "Reload initiated.",
+                ephemeral: true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
+            await RespondAsync(
+                "An unexpected error has occured.",
+                ephemeral: true);
+        }
+    }
         
     [RequireOwner]
-    [SlashCommand("echo", "Echo text back to this channel")]
+    [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
     public async Task EchoAsync(
         [Summary("Input", "Text to repeat")] string input)
     {
@@ -41,7 +63,7 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
     
-    [SlashCommand("today", "Prints the defense times for the rest of today")]
+    [SlashCommand("today", "Admin - Prints the defense times for the rest of today")]
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task TodayAsync(bool shortVersion = false)
     {
@@ -71,7 +93,7 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
         
-    [SlashCommand("tomorrow","Prints the defense times for tomorrow")]
+    [SlashCommand("tomorrow","Admin - Prints the defense times for tomorrow")]
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task TomorrowAsync(bool shortVersion = false)
     {
@@ -103,7 +125,7 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
 
-    [SlashCommand("next","Prints the next item on the defend schedule")]
+    [SlashCommand("next","Admin - Prints the next item on the defend schedule")]
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task NextAsync()
     {
@@ -132,7 +154,7 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
 
-    [SlashCommand("all", "Prints the full defense schedule", runMode: RunMode.Async)]
+    [SlashCommand("all", "Admin - Prints the full defense schedule", runMode: RunMode.Async)]
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task AllAsync(bool shortVersion = false)
     {
@@ -170,7 +192,7 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
 
-    [SlashCommand("refresh", "Refreshes any short posts for the entire week", runMode: RunMode.Async)]
+    [SlashCommand("refresh", "Admin - Refreshes any short posts for the entire week", runMode: RunMode.Async)]
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task RefreshAsync()
     {

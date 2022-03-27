@@ -41,7 +41,7 @@ public partial class StfcModule
         }
     }
         
-    [SlashCommand("alliance-set", "Create or update an alliance")]
+    [SlashCommand("alliance-set", "Bot Owner - Create or update an alliance")]
     [RequireOwner]
     public async Task AllianceCreateUpdateAsync(
         [Summary("Acronym", "Acronym of the alliance to add or update")] string acronym,
@@ -112,7 +112,7 @@ public partial class StfcModule
         }
     }
 
-    [SlashCommand("alliance-rename","Rename an alliance")]
+    [SlashCommand("alliance-rename","Bot Owner - Rename an alliance")]
     [RequireOwner]
     public async Task AllianceRenameAsync(
         [Summary("Old-Name","Current name or acronym")] string oldNameOrAcronym,
