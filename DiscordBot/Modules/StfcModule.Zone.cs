@@ -9,7 +9,7 @@ namespace DiscordBot.Modules;
 
 public partial class StfcModule
 {
-    [SlashCommand("zone-set", "Create or update a zone")]
+    [SlashCommand("zone-set", "Bot Owner - Create or update a zone")]
     [RequireOwner]
     public async Task ZoneCreateUpdateAsync(
         [Summary("Zone", "Zone Name")][Autocomplete(typeof(ZoneNames))] string name,
@@ -165,7 +165,7 @@ public partial class StfcModule
         }
     }
 
-    [SlashCommand("connect","Register a connection between two zones")]
+    [SlashCommand("connect","Bot Owner - Register a connection between two zones")]
     [RequireOwner]
     public async Task ConnectAsync(
         [Autocomplete(typeof(ZoneNames))] string zone1,
