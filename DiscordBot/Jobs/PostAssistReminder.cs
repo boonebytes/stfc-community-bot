@@ -8,7 +8,7 @@ using Quartz;
 namespace DiscordBot.Jobs;
 
 [DisallowConcurrentExecution]
-public class PostDefendReminder : BaseJob
+public class PostAssistReminder : BaseJob
 {
     private readonly DiscordSocketClient _client;
     
@@ -16,8 +16,8 @@ public class PostDefendReminder : BaseJob
     private IZoneRepository _zoneRepository;
     private Responses.Schedule _scheduleResponse;
 
-    public PostDefendReminder(
-        ILogger<PostDefendReminder> logger,
+    public PostAssistReminder(
+        ILogger<PostAssistReminder> logger,
         DiscordSocketClient client,
         IAllianceRepository allianceRepository,
         IZoneRepository zoneRepository,
@@ -46,12 +46,22 @@ public class PostDefendReminder : BaseJob
             throw new KeyNotFoundException("The alliance could not be found");
         if (!alliance.GuildId.HasValue || !alliance.DefendSchedulePostChannel.HasValue)
             throw new InvalidOperationException("Alliance doesn't have a guild and/or defend channel");
+        if (!alliance.AlliedBroadcastRole.HasValue)
+            throw new InvalidOperationException("Alliance doesn't have an allied broadcast role");
 
         var zone = await _zoneRepository.GetAsync(zoneId);
         if (zone == null)
             throw new KeyNotFoundException("The zone could not be found");
-        if (zone.Owner != alliance)
-            throw new InvalidOperationException("The zone is not owned by this alliance");
+        if (zone.Owner == null)
+            throw new InvalidOperationException("The zone is not owned by an alliance");
+        if (zone.Owner == alliance)
+            throw new InvalidOperationException("The zone is owned by THIS alliance");
+        
+        var ownedAlliance = await _allianceRepository.GetAsync(zone.Owner.Id);
+        var zoneAllies = _allianceRepository.GetTerritoryHelpersFromOwnerAlliance(ownedAlliance.Id);
+        if (!zoneAllies.Contains(alliance))
+            throw new InvalidOperationException("The zone's owner is not allied with this alliance");
+        
 
         var guild = _client.GetGuild(alliance.GuildId.Value);
         if (guild == null)
@@ -62,11 +72,11 @@ public class PostDefendReminder : BaseJob
             throw new InvalidOperationException("Unable to access channel");
         
         var reminder =
-            $"@everyone Reminder: Defend for {zone.Name} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
+            $"<@&{alliance.AlliedBroadcastRole}> Reminder: Assist with Defend of {zone.Name} for {ownedAlliance.Acronym} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
 
         //var embedBuilder = new EmbedBuilder
         //{
-        //    Color = Color.Purple,
+        //    Color = Color.Green,
         //    Title = $"Defend for {zone.Name}",
         //    Description = reminder
         //};

@@ -111,6 +111,78 @@ namespace DiscordBot.Infrastructure.Repositories
             else
                 return result.First();
         }
+        
+        public List<Alliance> GetTerritoryHelpersFromOwnerAlliance(long allianceId)
+        {
+            var results = new List<Alliance>();
+            
+            var alliance = _context.Alliances
+                .Include(a => a.AssignedDiplomacy)
+                    .ThenInclude(ad => ad.Related)
+                .Include(a => a.AssignedDiplomacy)
+                    .ThenInclude(ad => ad.Relationship)
+                .Include(a => a.Group)
+                    .ThenInclude(g => g.Alliances)
+                .FirstOrDefault(a => a.Id == allianceId);
+
+
+            if (alliance == null) return results;
+            
+            if (alliance.Group != null && alliance.Group.Id != 0)
+            {
+                results.AddRange(alliance.Group.Alliances);
+            }
+
+            var allies = alliance.AssignedDiplomacy
+                .Where(ad => ad.Relationship == DiplomaticRelation.Allied)
+                .Select(ad => ad.Related);
+
+            foreach (var ally in allies)
+            {
+                if (!results.Contains(ally))
+                {
+                    results.Add(ally);
+                }
+            }
+
+            return results;
+        }
+        
+        public List<Alliance> GetTerritoryHelpersFromHelpingAlliance(long allianceId)
+        {
+            
+            var results = new List<Alliance>();
+            
+            var alliance = _context.Alliances
+                .Include(a => a.Group)
+                .ThenInclude(g => g.Alliances)
+                .FirstOrDefault(a => a.Id == allianceId);
+
+            if (alliance == null) return results;
+            
+            if (alliance.Group != null && alliance.Group.Id != 0)
+            {
+                results.AddRange(alliance.Group.Alliances);
+            }
+
+            var allies = _context.Diplomacies
+                .Include(d => d.Owner)
+                    .ThenInclude(o => o.Group)
+                .Include(d => d.Related)
+                .Include(d => d.Relationship)
+                .Where(d => d.Related == alliance && d.Relationship == DiplomaticRelation.Allied)
+                .Select(d => d.Owner);
+
+            foreach (var ally in allies)
+            {
+                if (!results.Contains(ally))
+                {
+                    results.Add(ally);
+                }
+            }
+
+            return results;
+        }
 
         public Alliance FlagSchedulePosted(Alliance alliance)
         {

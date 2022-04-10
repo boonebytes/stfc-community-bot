@@ -25,6 +25,9 @@ namespace DiscordBot.Domain.Entities.Alliances
 
         Alliance FindFromGuildId(ulong id);
 
+        List<Alliance> GetTerritoryHelpersFromOwnerAlliance(long allianceId);
+        List<Alliance> GetTerritoryHelpersFromHelpingAlliance(long allianceId);
+
         Alliance FlagSchedulePosted(Alliance alliance);
 
         Task InitPostSchedule();

@@ -7,6 +7,21 @@ namespace DiscordBot;
 
 public partial class Scheduler
 {
+    private JobKey GetJobKey<T>(long allianceId, long itemId = 0) where T : BaseJob
+    {
+        if (typeof(T) == typeof(PostDefendReminder))
+        {
+            return new JobKey(typeof(T).Name + "-" + itemId);
+        }
+        else
+        {
+            return new JobKey(typeof(T).Name
+                                    + "-" 
+                                    + (itemId == 0 ? allianceId : itemId + "-" + allianceId));
+        }
+        
+    }
+    
     private async Task LoadJobs(CancellationToken cancellationToken)
     {
         try
@@ -43,6 +58,20 @@ public partial class Scheduler
                     foreach (var zone in alliance.Zones)
                     {
                         await AddOrUpdateZoneDefend(thisServiceScope, zone);
+                    }
+
+                    if (alliance.AlliedBroadcastRole.HasValue)
+                    {
+                        for (var i = 0; i < 7; i++)
+                        {
+                            var dow = (DayOfWeek)i;
+                            var interestedDefends = zoneRepository.GetFromDayOfWeek(dow, alliance.Id);
+                            foreach (var zone in interestedDefends)
+                            {
+                                await AddOrUpdateZoneAssist(thisServiceScope, zone, alliance);
+                            }
+                        }
+                        
                     }
                 }
             }
@@ -95,8 +124,7 @@ public partial class Scheduler
                 if (
                     zone.Owner != null
                     && zone.Owner.GuildId.HasValue
-                    && zone.Owner.DefendSchedulePostChannel.HasValue
-                    && zone.Owner.DefendBroadcastLeadTime.HasValue)
+                    && zone.Owner.DefendSchedulePostChannel.HasValue)
                 {
                     zone.SetNextDefend();
                     if (zone.NextDefend.HasValue)
@@ -113,15 +141,44 @@ public partial class Scheduler
     }
 
     /// <summary>
+    /// Update the scheduler for the given zone. Obtain the Mutex before calling this!
+    /// </summary>
+    /// <param name="serviceScope"></param>
+    /// <param name="zone"></param>
+    /// <param name="alliance"></param>
+    private async Task AddOrUpdateZoneAssist(IServiceScope serviceScope, Zone zone, Alliance alliance)
+    {
+        await RemoveJob<PostAssistReminder>(alliance.Id,zone.Id);
+        if (zone.Owner != null && zone.Owner != alliance)
+        {
+            if (alliance.DefendBroadcastLeadTime.HasValue)
+            {
+                if (
+                    alliance.GuildId.HasValue
+                    && alliance.DefendSchedulePostChannel.HasValue)
+                {
+                    zone.SetNextDefend();
+                    if (zone.NextDefend.HasValue)
+                    {
+                        var nextDefend = zone.NextDefend.Value;
+                        var nextExecutionTime = nextDefend.AddMinutes(-1 * alliance.DefendBroadcastLeadTime.Value);
+                        if (nextExecutionTime < DateTime.Now)
+                            nextExecutionTime = nextExecutionTime.AddDays(7);
+                        await AddOrUpdateJob<PostAssistReminder>(nextExecutionTime.ToUniversalTime(), alliance.Id, zone.Id, false);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Remove a job from the scheduler
     /// </summary>
     /// <param name="allianceId"></param>
     /// <param name="itemId"></param>
     private async Task RemoveJob<T>(long allianceId, long itemId = 0) where T : BaseJob
     {
-        var jobKey = new JobKey(typeof(T).Name
-                                + "-" 
-                                + (itemId == 0 ? allianceId : itemId));
+        var jobKey = GetJobKey<T>(allianceId, itemId);
         
         if (await _quartzScheduler.CheckExists(jobKey))
         {
@@ -139,10 +196,8 @@ public partial class Scheduler
     private async Task AddOrUpdateJob<T>(DateTimeOffset triggerTime, long allianceId, long itemId = 0, bool isDaily = true) where T : BaseJob
     {
         _logger.LogInformation($"Adding job {typeof(T).Name} for {triggerTime}, {allianceId}/{itemId}");
-        
-        var jobKey = new JobKey(typeof(T).Name
-                                + "-" 
-                                + (itemId == 0 ? allianceId : itemId));
+
+        var jobKey = GetJobKey<T>(allianceId, itemId);
         
         var triggerKey = new TriggerKey(jobKey.Name);
         

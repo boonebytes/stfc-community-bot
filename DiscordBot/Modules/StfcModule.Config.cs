@@ -100,9 +100,9 @@ public partial class StfcModule
         await DeferAsync(ephemeral: true);
         switch (name)
         {
-            case VariableNames.VariableNameKeys.BroadcastLeadTime:
-                var response = await ConfigDefendBroadcastTimeAsync(value, thisAlliance, allianceRepository);
-                if (response == "")
+            case VariableNames.VariableNameKeys.AlliedBroadcastRole:
+                var responseBroadcastRole = await ConfigAlliedBroadcastRole(value, thisAlliance, allianceRepository);
+                if (responseBroadcastRole == "")
                 {
                     await ModifyResponseAsync(
                         "No response was returned. Please check the current value or contact the developer.",
@@ -112,7 +112,24 @@ public partial class StfcModule
                 else
                 {
                     await ModifyResponseAsync(
-                        response,
+                        responseBroadcastRole,
+                        true);
+                    //await RespondAsync(response, ephemeral: true);
+                }
+                break;
+            case VariableNames.VariableNameKeys.BroadcastLeadTime:
+                var responseBroadcastLeadTime = await ConfigDefendBroadcastTimeAsync(value, thisAlliance, allianceRepository);
+                if (responseBroadcastLeadTime == "")
+                {
+                    await ModifyResponseAsync(
+                        "No response was returned. Please check the current value or contact the developer.",
+                        true);
+                    //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
+                }
+                else
+                {
+                    await ModifyResponseAsync(
+                        responseBroadcastLeadTime,
                         true);
                     //await RespondAsync(response, ephemeral: true);
                 }
@@ -124,6 +141,33 @@ public partial class StfcModule
                 //await RespondAsync("The variable could not be identified.", ephemeral: true);
                 break;
         }
+    }
+    
+    private async Task<string> ConfigAlliedBroadcastRole(string value, Alliance thisAlliance,
+        IAllianceRepository allianceRepository)
+    {
+        if (value == "")
+        {
+            return thisAlliance.AlliedBroadcastRole.HasValue
+                ? $"Current Value: {thisAlliance.AlliedBroadcastRole.Value}"
+                : "No value has been set";
+        }
+        
+        if (value == "-1" || value == "0" || value.ToLower() == "none")
+        {
+            thisAlliance.SetAlliedBroadcastRole(null);
+            allianceRepository.Update(thisAlliance);
+            await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+            return "Value cleared successfully";
+        }
+
+        if (!ulong.TryParse(value, out var newValue))
+            return "The value provided could not be understood as a number.";
+        
+        thisAlliance.SetAlliedBroadcastRole(newValue);
+        allianceRepository.Update(thisAlliance);
+        await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+        return "Value updated successfully";
     }
     
     private async Task<string> ConfigDefendBroadcastTimeAsync(string value, Alliance thisAlliance,

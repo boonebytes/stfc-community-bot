@@ -29,6 +29,10 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
             allianceConfiguration.Property(a => a.DefendBroadcastLeadTime)
                 .HasColumnName("defend_broadcast_lead_time")
                 .IsRequired(false);
+            
+            allianceConfiguration.Property(a => a.AlliedBroadcastRole)
+                .HasColumnName("allied_broadcast_role")
+                .IsRequired(false);
 
             allianceConfiguration
                 .Property<long?>("_allianceGroupId")

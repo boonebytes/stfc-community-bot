@@ -60,6 +60,7 @@ public class InteractionHandler
 
         var recognizedGuilds = _client.Guilds.Select(g => g.Id).ToArray();
         
+        
         foreach (var guildId in recognizedGuilds)
         {
             await RegisterInteractionsWithGuild(guildId);

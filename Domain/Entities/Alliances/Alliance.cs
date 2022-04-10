@@ -29,10 +29,17 @@ namespace DiscordBot.Domain.Entities.Alliances
         public virtual ulong? DefendSchedulePostChannel { get; protected set; }
         public virtual string DefendSchedulePostTime { get; protected set; }
         public virtual int? DefendBroadcastLeadTime { get; protected set; }
+        public virtual ulong? AlliedBroadcastRole { get; protected set; }
 
         public void SetDefendBroadcastLeadTime(int? value)
         {
             DefendBroadcastLeadTime = value;
+            AddAllianceChangedDomainEvent();
+        }
+
+        public void SetAlliedBroadcastRole(ulong? value)
+        {
+            AlliedBroadcastRole = value;
             AddAllianceChangedDomainEvent();
         }
 

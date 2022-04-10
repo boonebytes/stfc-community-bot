@@ -54,7 +54,49 @@ namespace DiscordBot.Infrastructure.Repositories
                 .SingleOrDefaultAsync(z => z.Name.ToUpper() == name.ToUpper());
             return zone;
         }
+        
+        public List<Alliance> GetTerritoryHelpersFromZone(long zoneId)
+        {
+            var results = new List<Alliance>();
 
+            var zone = _context.Zones
+                .Include(z => z.Owner)
+                .FirstOrDefault(z => z.Id == zoneId);
+
+            if (zone.Owner == null) return results;
+            
+            var alliance = _context.Alliances
+                .Include(a => a.AssignedDiplomacy)
+                    .ThenInclude(ad => ad.Related)
+                .Include(a => a.AssignedDiplomacy)
+                    .ThenInclude(ad => ad.Relationship)
+                .Include(a => a.Group)
+                    .ThenInclude(g => g.Alliances)
+                .FirstOrDefault(a => a.Id == zone.Owner.Id);
+
+
+            if (alliance == null) return results;
+            
+            if (alliance.Group != null && alliance.Group.Id != 0)
+            {
+                results.AddRange(alliance.Group.Alliances);
+            }
+
+            var allies = alliance.AssignedDiplomacy
+                .Where(ad => ad.Relationship == DiplomaticRelation.Allied)
+                .Select(ad => ad.Related);
+
+            foreach (var ally in allies)
+            {
+                if (!results.Contains(ally))
+                {
+                    results.Add(ally);
+                }
+            }
+
+            return results;
+        }
+        
         public List<Alliance> GetPotentialHostiles(long id)
         {
             var thisZone = _context.Zones

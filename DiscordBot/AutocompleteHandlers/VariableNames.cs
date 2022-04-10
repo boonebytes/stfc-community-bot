@@ -16,6 +16,7 @@ namespace DiscordBot.AutocompleteHandlers
         public static class VariableNameKeys
         {
             public const string BroadcastLeadTime = "BroadcastLeadTime";
+            public const string AlliedBroadcastRole = "AlliedBroadcastRole";
         }
         
         protected static Dictionary<string, string> _variables = new();
@@ -24,6 +25,8 @@ namespace DiscordBot.AutocompleteHandlers
         {
             AddVariable(VariableNameKeys.BroadcastLeadTime,
                 "Time (in minutes) ahead of territory events in which a reminder will be sent to everyone");
+            AddVariable(VariableNameKeys.AlliedBroadcastRole,
+                "Discord role to ping for allied defends");
         }
 
         private static void AddVariable(string name, string description)

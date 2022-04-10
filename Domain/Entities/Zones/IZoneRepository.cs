@@ -16,6 +16,8 @@ namespace DiscordBot.Domain.Entities.Zones
 
         Task<Zone> GetByNameAsync(string id);
 
+        List<Alliance> GetTerritoryHelpersFromZone(long zoneId);
+        
         List<Alliance> GetPotentialHostiles(long id);
 
         Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true);
