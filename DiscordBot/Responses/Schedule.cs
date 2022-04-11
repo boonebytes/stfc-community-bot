@@ -356,6 +356,10 @@ public class Schedule
                         m.Embeds.Count == 0
                         && m.MentionedEveryone == true
                     )
+                    || (
+                        m.Embeds.Count == 0
+                        && m.Content.Contains("Assist with Defend of")
+                    )
                 )
             );
             if (myMessages.Any())
