@@ -31,8 +31,8 @@ public class Program
                 {
                     if (category.Contains("Microsoft.EntityFrameworkCore.Model.Validation"))
                         return false;
-                    //if (category.Contains("Quartz.Core.QuartzSchedulerThread"))
-                    //    return false;
+                    if (category.Contains("Quartz.Core.QuartzSchedulerThread"))
+                        return false;
                     
                     return true;
                 });

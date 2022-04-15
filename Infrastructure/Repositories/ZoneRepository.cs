@@ -178,6 +178,14 @@ namespace DiscordBot.Infrastructure.Repositories
                             .ToListAsync();
         }
 
+        public async Task<List<Zone>> GetLookupListAsync()
+        {
+            return await _context.Zones
+                .Include(z => z.Owner)
+                .OrderBy(z => z.Name)
+                .ToListAsync();
+        }
+
         public Zone Update(Zone zone)
         {
             return _context.Zones

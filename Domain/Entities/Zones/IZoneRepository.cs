@@ -22,6 +22,8 @@ namespace DiscordBot.Domain.Entities.Zones
 
         Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true);
 
+        Task<List<Zone>> GetLookupListAsync();
+
         Zone GetNextDefend(long? allianceId = null);
 
         List<Zone> GetFromDayOfWeek(DayOfWeek dayOfWeek, long? allianceId = null);

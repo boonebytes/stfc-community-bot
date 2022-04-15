@@ -95,7 +95,7 @@ namespace DiscordBot.AutocompleteHandlers
                     Zones = new List<string>();
                     using var thisServiceScope = services.CreateScope();
                     var zoneRepository = thisServiceScope.ServiceProvider.GetRequiredService<IZoneRepository>();
-                    var allZones = await zoneRepository.GetAllAsync();
+                    var allZones = await zoneRepository.GetLookupListAsync();
                     foreach (var z in allZones)
                     {
                         AddZone(z.Name);
