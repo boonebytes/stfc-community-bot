@@ -5,6 +5,7 @@ using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Seedwork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Z.EntityFramework.Plus;
 
 namespace DiscordBot.Infrastructure.Repositories
 {
@@ -66,6 +67,22 @@ namespace DiscordBot.Infrastructure.Repositories
             if (zone == null) return null;
 
             return await GetByZoneIdAsync(zone.Id);
+        }
+
+        public async Task<List<Service>> GetByAllianceIdAsync(long id)
+        {
+            return await _context.Services
+                .Include(s => s.Zone)
+                .Include(s => s.AllianceServices)
+                    .ThenInclude(allianceService => allianceService.Alliance)
+                .Include(s => s.AllianceServices)
+                    .ThenInclude(allianceService => allianceService.AllianceServiceLevel)
+                .Include(s => s.Costs)
+                    .ThenInclude(c => c.Resource)
+                .IncludeFilter(s => s.AllianceServices.Where(allianceServices => allianceServices.Alliance.Id == id))
+                .Where(s => s.Zone.Owner.Id == id)
+                .OrderBy(s => s.Zone.Name)
+                .ToListAsync();
         }
     }
 }

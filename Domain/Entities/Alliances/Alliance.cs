@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
@@ -63,6 +64,9 @@ namespace DiscordBot.Domain.Entities.Alliances
         
         private readonly List<Zone> _zones;
         public IReadOnlyCollection<Zone> Zones => _zones;
+        
+        private readonly List<AllianceService> _allianceServices;
+        public IReadOnlyCollection<AllianceService> AllianceServices => _allianceServices;
 
         public virtual DateTime? NextScheduledPost { get; private set; }
 

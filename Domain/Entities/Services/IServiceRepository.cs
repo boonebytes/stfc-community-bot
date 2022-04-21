@@ -15,5 +15,7 @@ namespace DiscordBot.Domain.Entities.Services
         Task<List<Service>> GetByZoneIdAsync(long id);
 
         Task<List<Service>> GetByZoneNameAsync(string name);
+
+        Task<List<Service>> GetByAllianceIdAsync(long id);
     }
 }

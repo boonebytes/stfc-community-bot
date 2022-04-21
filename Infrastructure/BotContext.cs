@@ -66,6 +66,8 @@ namespace DiscordBot.Infrastructure
             modelBuilder.ApplyConfiguration(new AuditEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceGroupEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AllianceServiceEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AllianceServiceLevelEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomaticRelationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DirectMessageTypeConfiguration());

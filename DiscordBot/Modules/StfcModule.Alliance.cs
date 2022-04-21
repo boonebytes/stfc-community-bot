@@ -1,5 +1,9 @@
+using Discord;
 using Discord.Interactions;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Services;
+using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
@@ -40,7 +44,80 @@ public partial class StfcModule
             _logger.LogError(ex, "An unexpected error has occured while trying to run AllianceShowAsync");
         }
     }
+    
+    [SlashCommand("services-show", "Admin - Show alliance service costs")]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    public async Task ServicesShowAsync()
+    {
+        using var serviceScope = _serviceProvider.CreateScope();
+        var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+        var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+
+        if (thisAlliance == null)
+        {
+            await RespondAsync("Unable to determine alliance from this channel", ephemeral: true);
+            return;
+        }
+
+        await DeferAsync(ephemeral: true);
         
+        var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
+        var services = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id);
+
+        var basicServices = services.Where(s =>
+            s.AllianceServices.FirstOrDefault(allianceService => allianceService.Alliance == thisAlliance)?.AllianceServiceLevel == AllianceServiceLevel.Basic)
+            .ToList();
+        var enabledServices = services.Where(s =>
+            new [] {AllianceServiceLevel.Basic, AllianceServiceLevel.Enabled}
+                .Contains(s.AllianceServices.FirstOrDefault(allianceService => allianceService.Alliance == thisAlliance)?.AllianceServiceLevel))
+            .ToList();
+        var desiredServices = services.Where(s =>
+            new [] {AllianceServiceLevel.Basic, AllianceServiceLevel.Enabled, AllianceServiceLevel.Desired}
+                .Contains(s.AllianceServices.FirstOrDefault(allianceService => allianceService.Alliance == thisAlliance)?.AllianceServiceLevel))
+            .ToList();
+
+        var summary = "**__Summary_**\n\n";
+        if (basicServices.Any())
+        {
+            summary += "**Basic Services:**\n";
+            summary += getServiceCostSummary(basicServices) + "\n";
+        }
+        
+        if (enabledServices.Any())
+        {
+            summary += "**Basic + Enabled Services:**\n";
+            summary += getServiceCostSummary(enabledServices) + "\n";
+        }
+        
+        if (desiredServices.Any())
+        {
+            summary += "**Basic + Enabled + Desired Services:**\n";
+            summary += getServiceCostSummary(desiredServices) + "\n";
+        }
+
+        summary = summary.TrimEnd('\n');
+
+        await Context.Channel.SendMessageAsync(summary);
+    }
+
+    private static string getServiceCostSummary(List<Service> services)
+    {
+        string result = "";
+        var allCosts = services.SelectMany(s => s.Costs).ToList();
+        foreach (var res in new[]
+                 {
+                     Resource.RefinedIsogenTier1, Resource.RefinedIsogenTier2, Resource.RefinedIsogenTier3,
+                     Resource.ProgenitorDiodes, Resource.ProgenitorEmitters, Resource.ProgenitorReactors
+                 })
+        {
+            var thisCost = allCosts.Where(c => c.Resource == res).Sum(c => c.Cost);
+            result += "> " + res.Label + " = " + Functions.FriendlyNumberFormat(thisCost) + "\n";
+        }
+
+        return result;
+    }
+
+    /*
     [SlashCommand("alliance-set", "Bot Owner - Create or update an alliance")]
     [RequireOwner]
     public async Task AllianceCreateUpdateAsync(
@@ -171,4 +248,5 @@ public partial class StfcModule
                 $"An unexpected error has occured while trying to rename the {oldNameOrAcronym} alliance.");
         }
     }
+    */
 }

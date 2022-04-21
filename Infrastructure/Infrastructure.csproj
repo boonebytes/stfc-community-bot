@@ -44,5 +44,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.13.17" />
   </ItemGroup>
 </Project>

@@ -32,7 +32,8 @@ public partial class StfcModule : InteractionModuleBase
                 "Reload initiated.",
                 ephemeral: true);
             var cmdScheduler = _serviceProvider.GetService<Scheduler>();
-            _ = cmdScheduler.ReloadJobsAsync(CancellationToken.None);
+            await cmdScheduler.ReloadJobsAsync(CancellationToken.None);
+            await ModifyResponseAsync("Reload complete.", true);
         }
         catch (Exception ex)
         {
@@ -225,7 +226,8 @@ public partial class StfcModule : InteractionModuleBase
                 //await schedule.TryCleanMessages(channel, channelMessages, thisAlliance);
                 await schedule.TryUpdateWeeklyMessages(channelMessages, thisAlliance);
                 //await TryDeleteMessage(Context.Message);
-                await DeleteOriginalResponseAsync();
+                //await DeleteOriginalResponseAsync();
+                await ModifyResponseAsync("Refresh complete", true);
                 //await RespondAsync(
                 //    "Done!",
                 //    ephemeral: true);

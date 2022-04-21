@@ -20,6 +20,9 @@ namespace DiscordBot.Domain.Entities.Services
         private readonly List<ServiceCost> _costs;
         public IReadOnlyCollection<ServiceCost> Costs => _costs;
 
+        private readonly List<AllianceService> _allianceServices;
+        public IReadOnlyCollection<AllianceService> AllianceServices => _allianceServices;
+        
         public void SetCost(Resource resource, long cost)
         {
             var existingCost = _costs.FirstOrDefault(c => c.Resource == resource);
