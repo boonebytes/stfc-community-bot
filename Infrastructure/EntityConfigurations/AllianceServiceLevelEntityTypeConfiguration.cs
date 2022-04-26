@@ -29,7 +29,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
                 .IsRequired(true);
 
             serviceLevelConfigu.HasData(
-                data: Resource.List()
+                data: AllianceServiceLevel.List()
             );
         }
     }
