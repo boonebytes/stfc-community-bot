@@ -69,8 +69,23 @@ namespace DiscordBot.Infrastructure.Repositories
             return await GetByZoneIdAsync(zone.Id);
         }
 
-        public async Task<List<Service>> GetByAllianceIdAsync(long id)
+        public async Task<List<Service>> GetByAllianceIdAsync(long id, AllianceServiceLevel allianceServiceLevel = null)
         {
+            if (allianceServiceLevel == null)
+            {
+                return await _context.Services
+                    .Include(s => s.Zone)
+                    .Include(s => s.AllianceServices)
+                        .ThenInclude(allianceService => allianceService.Alliance)
+                    .Include(s => s.AllianceServices)
+                        .ThenInclude(allianceService => allianceService.AllianceServiceLevel)
+                    .Include(s => s.Costs)
+                        .ThenInclude(c => c.Resource)
+                    .IncludeFilter(s => s.AllianceServices.Where(allianceServices => allianceServices.Alliance.Id == id))
+                    .Where(s => s.Zone.Owner.Id == id)
+                    .OrderBy(s => s.Zone.Name)
+                    .ToListAsync();
+            }
             return await _context.Services
                 .Include(s => s.Zone)
                 .Include(s => s.AllianceServices)
@@ -79,7 +94,7 @@ namespace DiscordBot.Infrastructure.Repositories
                     .ThenInclude(allianceService => allianceService.AllianceServiceLevel)
                 .Include(s => s.Costs)
                     .ThenInclude(c => c.Resource)
-                .IncludeFilter(s => s.AllianceServices.Where(allianceServices => allianceServices.Alliance.Id == id))
+                .IncludeFilter(s => s.AllianceServices.Where(allianceServices => allianceServices.Alliance.Id == id && allianceServices.AllianceServiceLevel == allianceServiceLevel))
                 .Where(s => s.Zone.Owner.Id == id)
                 .OrderBy(s => s.Zone.Name)
                 .ToListAsync();

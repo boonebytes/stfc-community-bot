@@ -62,21 +62,14 @@ public partial class StfcModule
         await DeferAsync(ephemeral: true);
         
         var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
-        var services = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id);
-
-        var basicServices = services.Where(s =>
-            s.AllianceServices.FirstOrDefault(allianceService => allianceService.Alliance == thisAlliance)?.AllianceServiceLevel == AllianceServiceLevel.Basic)
-            .ToList();
-        var enabledServices = services.Where(s =>
-            new [] {AllianceServiceLevel.Basic, AllianceServiceLevel.Enabled}
-                .Contains(s.AllianceServices.FirstOrDefault(allianceService => allianceService.Alliance == thisAlliance)?.AllianceServiceLevel))
-            .ToList();
-        var desiredServices = services.Where(s =>
-            new [] {AllianceServiceLevel.Basic, AllianceServiceLevel.Enabled, AllianceServiceLevel.Desired}
-                .Contains(s.AllianceServices.FirstOrDefault(allianceService => allianceService.Alliance == thisAlliance)?.AllianceServiceLevel))
-            .ToList();
-
-        var summary = "**__Summary_**\n\n";
+                
+        var basicServices = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
+        var enabledServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
+        var desiredServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
+        var enabledServices = basicServices.Concat(enabledServicesRaw).ToList();
+        var desiredServices = enabledServices.Concat(desiredServicesRaw).ToList();
+        
+        var summary = "**__Summary__**\n\n";
         if (basicServices.Any())
         {
             summary += "**Basic Services:**\n";
@@ -98,6 +91,7 @@ public partial class StfcModule
         summary = summary.TrimEnd('\n');
 
         await Context.Channel.SendMessageAsync(summary);
+        await ModifyResponseAsync("Done!", true);
     }
 
     private static string getServiceCostSummary(List<Service> services)
@@ -110,8 +104,9 @@ public partial class StfcModule
                      Resource.ProgenitorDiodes, Resource.ProgenitorEmitters, Resource.ProgenitorReactors
                  })
         {
-            var thisCost = allCosts.Where(c => c.Resource == res).Sum(c => c.Cost);
-            result += "> " + res.Label + " = " + Functions.FriendlyNumberFormat(thisCost) + "\n";
+            var thisCost = allCosts.Where(c => c.Resource.Id == res.Id).Sum(c => c.Cost);
+            if (thisCost > 0)
+                result += "> " + res.Label + " = " + Functions.FriendlyNumberFormat(thisCost) + "\n";
         }
 
         return result;
