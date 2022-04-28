@@ -88,7 +88,7 @@ public partial class StfcModule
             }
             
             var desiredServices = desiredServicesRaw;
-            foreach (var service in basicServices)
+            foreach (var service in enabledServices)
             {
                 if (desiredServices.ContainsKey(service.Key))
                 {
