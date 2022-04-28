@@ -96,7 +96,7 @@ public partial class StfcModule
                 }
                 else
                 {
-                    enabledServices.Add(service.Key, service.Value);
+                    desiredServices.Add(service.Key, service.Value);
                 }
             }
             
