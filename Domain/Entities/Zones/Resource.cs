@@ -32,7 +32,7 @@ namespace DiscordBot.Domain.Entities.Zones
         public static Resource ProgenitorEmitters = new(61, nameof(ProgenitorEmitters), "Progenitor Emitters");
         public static Resource ProgenitorDiodes = new(62, nameof(ProgenitorDiodes), "Progenitor Diodes");
         public static Resource ProgenitorCores = new(63, nameof(ProgenitorCores), "Progenitor Cores");
-        public static Resource ProgenitorReactors = new(64, nameof(ProgenitorReactors), "ProgenitorReactors");
+        public static Resource ProgenitorReactors = new(64, nameof(ProgenitorReactors), "Progenitor Reactors");
 
         public virtual string Label { get; private set; }
 

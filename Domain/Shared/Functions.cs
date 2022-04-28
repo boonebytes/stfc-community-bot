@@ -22,17 +22,17 @@ namespace DiscordBot.Domain.Shared
             switch (num)
             {
                 case >= 100000000:
-                    return (num / 1000000D).ToString("0.##M");
+                    return (num / 1000000D).ToString("0.## M");
                 case >= 10000000:
-                    return (num / 1000000D).ToString("0.#M");
+                    return (num / 1000000D).ToString("0.# M");
                 case >= 1000000:
-                    return (num / 1000000D).ToString("0.##M");
+                    return (num / 1000000D).ToString("0.## M");
                 case >= 100000:
-                    return (num / 1000D).ToString("0k");
+                    return (num / 1000D).ToString("0 K");
                 case >= 10000:
-                    return (num / 1000D).ToString("0.#k");
+                    return (num / 1000D).ToString("0.# K");
                 case >= 1000:
-                    return (num / 1000D).ToString("0.##k");
+                    return (num / 1000D).ToString("0.## K");
                 default:
                     return num.ToString("#,0");
             }

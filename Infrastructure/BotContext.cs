@@ -32,6 +32,8 @@ namespace DiscordBot.Infrastructure
         public DbSet<Zone> Zones { get; set; }
         public DbSet<ZoneNeighbour> ZoneNeighbours { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<ServiceCost> ServiceCosts { get; set; }
+        public DbSet<AllianceService> AllianceServices { get; set; }
 
         private readonly IMediator _mediator;
         private readonly ILogger<BotContext> _logger;

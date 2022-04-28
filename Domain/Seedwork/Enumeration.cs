@@ -72,7 +72,7 @@ namespace DiscordBot.Domain.Seedwork
 
         public override bool Equals(object obj)
         {
-            if (obj is not Entity other)
+            if (obj is not Enumeration other)
                 return false;
 
             if (ReferenceEquals(this, other))

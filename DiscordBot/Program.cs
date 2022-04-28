@@ -49,6 +49,8 @@ public class Program
                 IConfiguration configuration = hostContext.Configuration;
                 Models.Config.Discord discordConfig = configuration.GetSection(Models.Config.Discord.Section).Get<Models.Config.Discord>();
 
+                Models.Config.App appConfig = configuration.GetSection(Models.Config.App.Section).Get<Models.Config.App>();
+                
                 //services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
                 services.ConfigureBotInfrastructure(configuration.GetSection("Oracle").GetValue<string>("ConnectionString"));
 
@@ -58,6 +60,8 @@ public class Program
                 services.AddScoped<IServiceRepository, ServiceRepository>();
 
                 services.AddSingleton(discordConfig);
+                services.AddSingleton(appConfig);
+                
                 var clientConfig = new DiscordSocketConfig
                 {
                     //ExclusiveBulkDelete = false,

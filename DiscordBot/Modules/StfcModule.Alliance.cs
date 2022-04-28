@@ -62,12 +62,50 @@ public partial class StfcModule
         await DeferAsync(ephemeral: true);
         
         var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
-                
+
+        var countedServices = new List<long>();
+
+        var basicServices =
+            await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
+        var enabledServicesRaw =
+            await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
+        var desiredServicesRaw =
+            await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
+
+        var enabledServices = enabledServicesRaw;
+        foreach (var service in basicServices)
+        {
+            if (enabledServices.ContainsKey(service.Key))
+            {
+                enabledServices[service.Key] += service.Value;
+            }
+            else
+            {
+                enabledServices.Add(service.Key, service.Value);
+            }
+        }
+        
+        var desiredServices = desiredServicesRaw;
+        foreach (var service in basicServices)
+        {
+            if (desiredServices.ContainsKey(service.Key))
+            {
+                desiredServices[service.Key] += service.Value;
+            }
+            else
+            {
+                enabledServices.Add(service.Key, service.Value);
+            }
+        }
+        
+        /*
         var basicServices = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
+        countedServices.AddRange(basicServices.Select(s => s.Id));
         var enabledServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
         var desiredServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
         var enabledServices = basicServices.Concat(enabledServicesRaw).ToList();
         var desiredServices = enabledServices.Concat(desiredServicesRaw).ToList();
+        */
         
         var summary = "**__Summary__**\n\n";
         if (basicServices.Any())
@@ -94,19 +132,19 @@ public partial class StfcModule
         await ModifyResponseAsync("Done!", true);
     }
 
-    private static string getServiceCostSummary(List<Service> services)
+    private static string getServiceCostSummary(Dictionary<Resource, long> allCosts)
     {
         string result = "";
-        var allCosts = services.SelectMany(s => s.Costs).ToList();
         foreach (var res in new[]
                  {
                      Resource.RefinedIsogenTier1, Resource.RefinedIsogenTier2, Resource.RefinedIsogenTier3,
                      Resource.ProgenitorDiodes, Resource.ProgenitorEmitters, Resource.ProgenitorReactors
                  })
         {
-            var thisCost = allCosts.Where(c => c.Resource.Id == res.Id).Sum(c => c.Cost);
-            if (thisCost > 0)
-                result += "> " + res.Label + " = " + Functions.FriendlyNumberFormat(thisCost) + "\n";
+            if (allCosts.ContainsKey(res) && allCosts[res] > 0)
+            {
+                result += "> " + res.Label + " = " + Functions.FriendlyNumberFormat(allCosts[res]) + "\n";
+            }
         }
 
         return result;

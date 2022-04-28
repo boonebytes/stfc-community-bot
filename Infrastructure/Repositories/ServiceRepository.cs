@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Services;
+using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -98,6 +100,35 @@ namespace DiscordBot.Infrastructure.Repositories
                 .Where(s => s.Zone.Owner.Id == id)
                 .OrderBy(s => s.Zone.Name)
                 .ToListAsync();
+        }
+
+        public async Task<Dictionary<Resource, long>> GetCostByAllianceServiceLevelAsync(long id, AllianceServiceLevel allianceServiceLevel = null)
+        {
+            try
+            {
+                var results = _context.AllianceServices
+                    .Include(allianceService => allianceService.Service.Costs)
+                    .ThenInclude(c => c.Resource)
+                    .Where(allianceService =>
+                        allianceService.Alliance.Id == id
+                        && allianceService.AllianceServiceLevel.Id == allianceServiceLevel.Id
+                        && allianceService.Service.Zone.Owner.Id == id)
+                    .SelectMany(allianceService => allianceService.Service.Costs)
+                    .AsEnumerable();
+                var groupedResults = results
+                    .GroupBy(sc => sc.Resource)
+                    .Select(i => new
+                    {
+                        Resource = i.Key,
+                        TotalCost = i.Sum(sc => sc.Cost)
+                    });;
+                return groupedResults.ToDictionary(i => i.Resource, i => i.TotalCost);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error getting costs by alliance service level");
+                return new Dictionary<Resource, long>();
+            }
         }
     }
 }

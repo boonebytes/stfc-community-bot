@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Services
@@ -17,5 +18,7 @@ namespace DiscordBot.Domain.Entities.Services
         Task<List<Service>> GetByZoneNameAsync(string name);
 
         Task<List<Service>> GetByAllianceIdAsync(long id, AllianceServiceLevel allianceServiceLevel = null);
+
+        Task<Dictionary<Resource, long>> GetCostByAllianceServiceLevelAsync(long id, AllianceServiceLevel allianceServiceLevel = null);
     }
 }
