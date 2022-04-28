@@ -9,7 +9,10 @@ services:
     networks:
       db:
         ipv4_address: 172.16.2.121
-#    volumes:
+    volumes:
+       - type: bind
+         source: /efs/discordbot/src/DiscordBot/DiscordBot/appsettings.json
+         target: /app/appsettings.json
 #      - type: bind
 #        source: DiscordBot/Defends.csv
 #        target: /app/Defends.csv
