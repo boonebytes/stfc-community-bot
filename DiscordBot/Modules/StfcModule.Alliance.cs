@@ -49,87 +49,94 @@ public partial class StfcModule
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task ServicesShowAsync()
     {
-        using var serviceScope = _serviceProvider.CreateScope();
-        var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-        var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-
-        if (thisAlliance == null)
+        try
         {
-            await RespondAsync("Unable to determine alliance from this channel", ephemeral: true);
-            return;
-        }
+            using var serviceScope = _serviceProvider.CreateScope();
+            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
-        await DeferAsync(ephemeral: true);
-        
-        var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
-
-        var countedServices = new List<long>();
-
-        var basicServices =
-            await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
-        var enabledServicesRaw =
-            await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
-        var desiredServicesRaw =
-            await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
-
-        var enabledServices = enabledServicesRaw;
-        foreach (var service in basicServices)
-        {
-            if (enabledServices.ContainsKey(service.Key))
+            if (thisAlliance == null)
             {
-                enabledServices[service.Key] += service.Value;
+                await RespondAsync("Unable to determine alliance from this channel", ephemeral: true);
+                return;
             }
-            else
-            {
-                enabledServices.Add(service.Key, service.Value);
-            }
-        }
-        
-        var desiredServices = desiredServicesRaw;
-        foreach (var service in basicServices)
-        {
-            if (desiredServices.ContainsKey(service.Key))
-            {
-                desiredServices[service.Key] += service.Value;
-            }
-            else
-            {
-                enabledServices.Add(service.Key, service.Value);
-            }
-        }
-        
-        /*
-        var basicServices = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
-        countedServices.AddRange(basicServices.Select(s => s.Id));
-        var enabledServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
-        var desiredServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
-        var enabledServices = basicServices.Concat(enabledServicesRaw).ToList();
-        var desiredServices = enabledServices.Concat(desiredServicesRaw).ToList();
-        */
-        
-        var summary = "**__Summary__**\n\n";
-        if (basicServices.Any())
-        {
-            summary += "**Basic Services:**\n";
-            summary += getServiceCostSummary(basicServices) + "\n";
-        }
-        
-        if (enabledServices.Any())
-        {
-            summary += "**Basic + Enabled Services:**\n";
-            summary += getServiceCostSummary(enabledServices) + "\n";
-        }
-        
-        if (desiredServices.Any())
-        {
-            summary += "**Basic + Enabled + Desired Services:**\n";
-            summary += getServiceCostSummary(desiredServices) + "\n";
-        }
 
-        summary = summary.TrimEnd('\n');
+            await DeferAsync(ephemeral: true);
+            
+            var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
 
-        await Context.Channel.SendMessageAsync(summary);
-        await ModifyResponseAsync("Done!", true);
+            var countedServices = new List<long>();
+
+            var basicServices =
+                await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
+            var enabledServicesRaw =
+                await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
+            var desiredServicesRaw =
+                await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
+
+            var enabledServices = enabledServicesRaw;
+            foreach (var service in basicServices)
+            {
+                if (enabledServices.ContainsKey(service.Key))
+                {
+                    enabledServices[service.Key] += service.Value;
+                }
+                else
+                {
+                    enabledServices.Add(service.Key, service.Value);
+                }
+            }
+            
+            var desiredServices = desiredServicesRaw;
+            foreach (var service in basicServices)
+            {
+                if (desiredServices.ContainsKey(service.Key))
+                {
+                    desiredServices[service.Key] += service.Value;
+                }
+                else
+                {
+                    enabledServices.Add(service.Key, service.Value);
+                }
+            }
+            
+            /*
+            var basicServices = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
+            countedServices.AddRange(basicServices.Select(s => s.Id));
+            var enabledServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
+            var desiredServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
+            var enabledServices = basicServices.Concat(enabledServicesRaw).ToList();
+            var desiredServices = enabledServices.Concat(desiredServicesRaw).ToList();
+            */
+            
+            var summary = "**__Summary__**\n\n";
+            if (basicServices.Any())
+            {
+                summary += "**Basic Services:**\n";
+                summary += getServiceCostSummary(basicServices) + "\n";
+            }
+            
+            if (enabledServices.Any())
+            {
+                summary += "**Basic + Enabled Services:**\n";
+                summary += getServiceCostSummary(enabledServices) + "\n";
+            }
+            
+            if (desiredServices.Any())
+            {
+                summary += "**Basic + Enabled + Desired Services:**\n";
+                summary += getServiceCostSummary(desiredServices) + "\n";
+            }
+
+            summary = summary.TrimEnd('\n');
+
+            await Context.Channel.SendMessageAsync(summary);
+            await ModifyResponseAsync("Done!", true);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error in AllianceServiceCostSummary");
+        }
     }
 
     private static string getServiceCostSummary(Dictionary<Resource, long> allCosts)
