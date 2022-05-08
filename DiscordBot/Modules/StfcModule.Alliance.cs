@@ -62,33 +62,35 @@ public partial class StfcModule
             }
 
             await DeferAsync(ephemeral: true);
-            
+
             var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
 
             var countedServices = new List<long>();
 
             var basicServices =
                 await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
-            var enabledServicesRaw =
-                await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
+            var preferredServicesRaw =
+                await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id,
+                    AllianceServiceLevel.Preferred);
             var desiredServicesRaw =
-                await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
+                await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id,
+                    AllianceServiceLevel.Desired);
 
-            var enabledServices = enabledServicesRaw;
+            var preferredServices = preferredServicesRaw;
             foreach (var service in basicServices)
             {
-                if (enabledServices.ContainsKey(service.Key))
+                if (preferredServices.ContainsKey(service.Key))
                 {
-                    enabledServices[service.Key] += service.Value;
+                    preferredServices[service.Key] += service.Value;
                 }
                 else
                 {
-                    enabledServices.Add(service.Key, service.Value);
+                    preferredServices.Add(service.Key, service.Value);
                 }
             }
-            
+
             var desiredServices = desiredServicesRaw;
-            foreach (var service in enabledServices)
+            foreach (var service in preferredServices)
             {
                 if (desiredServices.ContainsKey(service.Key))
                 {
@@ -99,7 +101,7 @@ public partial class StfcModule
                     desiredServices.Add(service.Key, service.Value);
                 }
             }
-            
+
             /*
             var basicServices = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
             countedServices.AddRange(basicServices.Select(s => s.Id));
@@ -108,29 +110,44 @@ public partial class StfcModule
             var enabledServices = basicServices.Concat(enabledServicesRaw).ToList();
             var desiredServices = enabledServices.Concat(desiredServicesRaw).ToList();
             */
-            
-            var summary = "**__Summary__**\n\n";
+
+            const string serviceHeader = "**__Service Cost Summary__**";
+            var summary = serviceHeader + "\n\n";
             if (basicServices.Any())
             {
                 summary += "**Basic Services:**\n";
                 summary += getServiceCostSummary(basicServices) + "\n";
             }
-            
-            if (enabledServices.Any())
+
+            if (preferredServices.Any())
             {
-                summary += "**Basic + Enabled Services:**\n";
-                summary += getServiceCostSummary(enabledServices) + "\n";
+                summary += "**Basic + Preferred Services:**\n";
+                summary += getServiceCostSummary(preferredServices) + "\n";
             }
-            
+
             if (desiredServices.Any())
             {
-                summary += "**Basic + Enabled + Desired Services:**\n";
+                summary += "**Basic + Preferred + Desired Services:**\n";
                 summary += getServiceCostSummary(desiredServices) + "\n";
             }
 
             summary = summary.TrimEnd('\n');
 
-            await Context.Channel.SendMessageAsync(summary);
+
+            var channelMessages = await Context.Channel.GetMessagesAsync().FlattenAsync();
+            var botServiceSummaryMessage = (Discord.Rest.RestUserMessage)channelMessages.FirstOrDefault(m => 
+                m.Author.Id == Context.Client.CurrentUser.Id
+                && m.Content.StartsWith(serviceHeader));
+
+            if (botServiceSummaryMessage == null)
+            {
+                await Context.Channel.SendMessageAsync(summary);
+            }
+            else
+            {
+                await botServiceSummaryMessage.ModifyAsync(m => m.Content = summary);
+            }
+            
             await ModifyResponseAsync("Done!", true);
         }
         catch (Exception e)
