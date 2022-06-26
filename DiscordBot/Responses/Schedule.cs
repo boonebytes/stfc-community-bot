@@ -29,7 +29,7 @@ public class Schedule
             return $"{zone.Owner.Acronym} - {zone.Name} ({zone.Level}^)";
     }
 
-    public string GetDiscordEmbedValue(Zone zone, bool shortVersion = false, bool useNextWeek = false)
+    public string GetDiscordEmbedValue(Zone zone, bool shortVersion = false, bool useNextWeek = false, Alliance alliance = null)
     {
         var response = new StringBuilder();
         //var tz = TimeZoneInfo.ConvertTime(NextDefend.Value, )
@@ -61,6 +61,11 @@ public class Schedule
                 response.Append(" [*_" + potentialThreats + "_*]");
             else if (zone.LowRisk)
                 response.Append(" [*_Low Risk_*]");
+
+            if (alliance != null && alliance.AssignedDiplomacy != null && alliance.AssignedDiplomacy.Any(ad =>
+                    ad.Relationship == DiplomaticRelation.Pew
+                    && ad.Related == zone.Owner))
+                response.Append(" (PEW)");
         }
         else
         {
@@ -99,6 +104,11 @@ public class Schedule
             }
 
             response.Append("\n" + contenders);
+            if (alliance != null && alliance.AssignedDiplomacy != null && alliance.AssignedDiplomacy.Any(ad =>
+                    ad.Relationship == DiplomaticRelation.Pew
+                    && ad.Related == zone.Owner))
+                response.Append(" (PEW)");
+            
             if (!string.IsNullOrEmpty(zone.Notes))
             {
                 response.Append($"\n**Notes**: {zone.Notes}");
@@ -109,7 +119,7 @@ public class Schedule
     }
 
 
-    public string GetDayScheduleAsString(List<Zone> zones, DayOfWeek day, bool includeDayHeader = true)
+    public string GetDayScheduleAsString(List<Zone> zones, DayOfWeek day, bool includeDayHeader = true, Alliance alliance = null)
     {
         string indent = "";
         var response = new StringBuilder();
@@ -131,7 +141,7 @@ public class Schedule
 
         foreach (Zone zone in dayZones)
         {
-            response.AppendLine(indent + GetDiscordEmbedValue(zone, true));
+            response.AppendLine(indent + GetDiscordEmbedValue(zone, true, alliance: alliance));
         }
         return response.ToString();
     }
@@ -429,7 +439,7 @@ public class Schedule
                     .ToList();
                 await dayShortPost.ModifyAsync(msg =>
                     msg.Content =
-                        this.GetDayScheduleAsString(dayDefends, dayOfWeek, true)
+                        this.GetDayScheduleAsString(dayDefends, dayOfWeek, true, alliance)
                         + $"*_Last Updated: <t:{DateTime.UtcNow.ToUnixTimestamp()}:R>_*" + "\n\u200b"
                 );
 

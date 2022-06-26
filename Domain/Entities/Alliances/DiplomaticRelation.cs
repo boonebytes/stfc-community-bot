@@ -9,7 +9,8 @@ namespace DiscordBot.Domain.Entities.Alliances
     public class DiplomaticRelation : Enumeration
     {
         public static DiplomaticRelation Unspecified = new(0, nameof(Unspecified));
-        public static DiplomaticRelation Enemy = new(-1, nameof(Enemy));
+        public static DiplomaticRelation Enemy = new(-99, nameof(Enemy));
+        public static DiplomaticRelation Pew = new(-1, nameof(Pew));
         public static DiplomaticRelation Neutral = new(1, nameof(Neutral));
         public static DiplomaticRelation Friendly = new(2, nameof(Friendly));
         public static DiplomaticRelation Allied = new(3, nameof(Allied));
@@ -20,7 +21,7 @@ namespace DiscordBot.Domain.Entities.Alliances
         }
 
         public static IEnumerable<DiplomaticRelation> List() =>
-            new[] { Unspecified, Enemy, Neutral, Friendly, Allied };
+            new[] { Unspecified, Enemy, Pew, Neutral, Friendly, Allied };
 
         public static DiplomaticRelation FromName(string name)
         {

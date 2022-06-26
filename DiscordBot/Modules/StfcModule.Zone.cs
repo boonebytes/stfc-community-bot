@@ -20,6 +20,7 @@ public partial class StfcModule
         string notes = "")
     {
         using var serviceScope = _serviceProvider.CreateScope();
+        await this.DeferAsync(ephemeral: true);
         try
         {
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
@@ -27,7 +28,7 @@ public partial class StfcModule
 
             if (level < 0 || level > 3)
             {
-                await RespondAsync(
+                await ModifyResponseAsync(
                     "Level must be between 1 and 3. Specify 0 if you do not wish to change an existing value.",
                     ephemeral: true);
                 return;
@@ -39,7 +40,7 @@ public partial class StfcModule
                 ownerAlliance = await allianceRepository.GetByNameOrAcronymAsync(owner);
                 if (ownerAlliance == null)
                 {
-                    await RespondAsync(
+                    await ModifyResponseAsync(
                         "The owner could not be found. Please check it and try again.",
                         ephemeral: true);
                     return;
@@ -49,7 +50,7 @@ public partial class StfcModule
             if (!(new[] {"", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}.Contains(
                     dayOfWeekUtc)))
             {
-                await RespondAsync(
+                await ModifyResponseAsync(
                     "The day of the week could not be determined.",
                     ephemeral: true);
                 return;
@@ -63,7 +64,7 @@ public partial class StfcModule
                 if (!DateTime.TryParseExact(timeOfDayUtc, "h:mm tt", culture, DateTimeStyles.AssumeUniversal,
                         out verifyTimeOfDay))
                 {
-                    await RespondAsync(
+                    await ModifyResponseAsync(
                         "The time of day could not be understood.",
                         ephemeral: true);
                     return;
@@ -76,7 +77,7 @@ public partial class StfcModule
                 // Create zone
                 if (level == 0)
                 {
-                    await RespondAsync(
+                    await ModifyResponseAsync(
                         "Level cannot be 0 for a new record.",
                         ephemeral: true);
                     return;
@@ -84,7 +85,7 @@ public partial class StfcModule
 
                 if (dayOfWeekUtc == "")
                 {
-                    await RespondAsync(
+                    await ModifyResponseAsync(
                         "The day of the week cannot be blank for a new record.",
                         ephemeral: true);
                     return;
@@ -92,7 +93,7 @@ public partial class StfcModule
 
                 if (timeOfDayUtc == "")
                 {
-                    await RespondAsync(
+                    await ModifyResponseAsync(
                         "The time of day cannot be blank for a new record.",
                         ephemeral: true);
                     return;
@@ -111,7 +112,7 @@ public partial class StfcModule
                 zoneRepository.Add(newZone);
                 await zoneRepository.UnitOfWork.SaveEntitiesAsync();
                 await zoneRepository.InitZones();
-                await RespondAsync(
+                await ModifyResponseAsync(
                     "Zone created",
                     ephemeral: true);
             }
@@ -150,14 +151,14 @@ public partial class StfcModule
                 zoneRepository.Update(zoneExists);
                 await zoneRepository.UnitOfWork.SaveEntitiesAsync();
                 await zoneRepository.InitZones();
-                await RespondAsync(
+                await ModifyResponseAsync(
                     "Zone updated",
                     ephemeral: true);
             }
         }
         catch (Exception ex)
         {
-            await RespondAsync(
+            await ModifyResponseAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
             _logger.LogError(ex,
@@ -165,6 +166,7 @@ public partial class StfcModule
         }
     }
 
+    /*
     [SlashCommand("connect","Bot Owner - Register a connection between two zones")]
     [RequireOwner]
     public async Task ConnectAsync(
@@ -230,6 +232,7 @@ public partial class StfcModule
                 $"An unexpected error has occured while trying to run Connect for {Context.Guild.Name} in {Context.Channel.Name}.");
         }
     }
+    */
 
     [SlashCommand("zone-show", "Shows current zone info from the database")]
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
@@ -262,7 +265,7 @@ public partial class StfcModule
                 string response =
                     $"Zone: {thisZone.Name} ({thisZone.Level}^)\n"
                     + $"Current Owner: {owner}\n"
-                    + $"Next Event: <t:{thisZone.NextDefend.Value.ToUnixTimestamp()}> local / {thisZone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")}\n"
+                    + $"Next Event: <t:{thisZone.NextDefend.Value.ToUnixTimestamp()}> local / {thisZone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET\n"
                     + $"Contenders: {potentialThreats}\n";
                 //if (!string.IsNullOrEmpty(thisZone.Threats))
                 //    response += $"Saved Threats: {thisZone.Threats}\n";

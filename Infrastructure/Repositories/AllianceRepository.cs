@@ -35,6 +35,8 @@ namespace DiscordBot.Infrastructure.Repositories
         public async Task<Alliance> GetAsync(long id)
         {
             var alliance = await _context.Alliances.AsQueryable()
+                .Include(a => a.AssignedDiplomacy)
+                    .ThenInclude(ad => ad.Related)
                 .Where(a => a.Id == id)
                 .SingleOrDefaultAsync();
             return alliance;
