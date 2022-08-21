@@ -36,7 +36,7 @@ public class Schedule
 
         string potentialThreats = "";
         var potentialHostiles = _zoneRepository
-            .GetPotentialHostiles(zone.Id)
+            .GetContenders(zone.Id, alliance?.Id)
             .Select(a => a.Acronym)
             .OrderBy(a => a);
 

@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
@@ -18,6 +19,9 @@ public partial class StfcModule
         {
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
 
+            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            
             var alliance = await allianceRepository.GetByNameOrAcronymAsync(name);
             if (alliance == null)
             {
@@ -62,7 +66,9 @@ public partial class StfcModule
             }
 
             await DeferAsync(ephemeral: true);
-
+            
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            
             var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
 
             var countedServices = new List<long>();

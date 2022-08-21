@@ -5,6 +5,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 
 namespace DiscordBot.Modules;
 
@@ -20,6 +21,7 @@ public partial class StfcModule
         using var serviceScope = _serviceProvider.CreateScope();
         var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
         var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+        serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
         
         if (Context.Channel is not SocketTextChannel channel)
         {
@@ -98,6 +100,8 @@ public partial class StfcModule
         }
 
         await DeferAsync(ephemeral: true);
+        serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+        
         switch (name)
         {
             case VariableNames.VariableNameKeys.AlliedBroadcastRole:

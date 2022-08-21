@@ -2,6 +2,7 @@ using System.Globalization;
 using Discord.Interactions;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 
@@ -71,7 +72,7 @@ public partial class StfcModule
                 }
             }
 
-            var zoneExists = await zoneRepository.GetByNameAsync(name);
+            var zoneExists = await zoneRepository.GetByNameAsync(name, null);
             if (zoneExists == null)
             {
                 // Create zone
@@ -104,7 +105,6 @@ public partial class StfcModule
                     name,
                     level,
                     ownerAlliance,
-                    "",
                     dayOfWeekUtc.ToString(),
                     timeOfDayUtc,
                     notes
@@ -126,9 +126,7 @@ public partial class StfcModule
                 var newTimeOfDay = (timeOfDayUtc == "" || timeOfDayUtc == "0"
                     ? zoneExists.DefendUtcTime
                     : timeOfDayUtc);
-
-                string newThreats = zoneExists.Threats;
-                    
+                
                 string newNotes = zoneExists.Notes;
                 if (notes == "null")
                 {
@@ -143,7 +141,6 @@ public partial class StfcModule
                     zoneExists.Name,
                     level,
                     ownerAlliance,
-                    newThreats,
                     newDayOfWeek,
                     newTimeOfDay,
                     newNotes
@@ -244,8 +241,12 @@ public partial class StfcModule
         {
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
-            var thisZone = await zoneRepository.GetByNameAsync(name);
+            
+            // TODO: Get current alliance from Guild ID, then filter results.
+            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            
+            var thisZone = await zoneRepository.GetByNameAsync(name, thisAlliance?.Id);
             if (thisZone == null)
             {
                 await ModifyResponseAsync(
@@ -255,7 +256,7 @@ public partial class StfcModule
             else
             {
                 var potentialHostiles = zoneRepository
-                    .GetPotentialHostiles(thisZone.Id)
+                    .GetContenders(thisZone.Id, thisAlliance?.Id)
                     .Select(a => a.Acronym)
                     .OrderBy(a => a)
                     .ToList();

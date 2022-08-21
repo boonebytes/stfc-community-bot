@@ -1,6 +1,7 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 using Quartz;
@@ -15,19 +16,22 @@ public class PostAssistReminder : BaseJob
     private IAllianceRepository _allianceRepository;
     private IZoneRepository _zoneRepository;
     private Responses.Schedule _scheduleResponse;
+    private RequestContext _requestContext;
 
     public PostAssistReminder(
         ILogger<PostAssistReminder> logger,
         DiscordSocketClient client,
         IAllianceRepository allianceRepository,
         IZoneRepository zoneRepository,
-        Responses.Schedule scheduleResponse
+        Responses.Schedule scheduleResponse,
+        RequestContext requestContext
         ) : base(logger)
     {
         _client = client;
         _allianceRepository = allianceRepository;
         _zoneRepository = zoneRepository;
         _scheduleResponse = scheduleResponse;
+        _requestContext = requestContext;
     }
     
     protected override async Task DoWork(IJobExecutionContext context)
@@ -40,7 +44,9 @@ public class PostAssistReminder : BaseJob
             throw new NullReferenceException("Alliance has not been set");
         if (zoneId == 0)
             throw new NullReferenceException("Zone has not been set");
-
+        
+        _requestContext.Init(allianceId);
+        
         var alliance = await _allianceRepository.GetAsync(allianceId);
         if (alliance == null)
             throw new KeyNotFoundException("The alliance could not be found");
@@ -49,7 +55,7 @@ public class PostAssistReminder : BaseJob
         if (!alliance.AlliedBroadcastRole.HasValue)
             throw new InvalidOperationException("Alliance doesn't have an allied broadcast role");
 
-        var zone = await _zoneRepository.GetAsync(zoneId);
+        var zone = await _zoneRepository.GetAsync(zoneId, allianceId);
         if (zone == null)
             throw new KeyNotFoundException("The zone could not be found");
         if (zone.Owner == null)

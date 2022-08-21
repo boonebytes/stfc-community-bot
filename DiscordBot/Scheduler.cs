@@ -32,7 +32,7 @@ public partial class Scheduler
         
         using var thisServiceScope = _serviceProvider.CreateScope();
         var zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
-        var zone = await zoneRepository.GetAsync(zoneId);
+        var zone = await zoneRepository.GetAsync(zoneId, null);
         await AddOrUpdateZoneDefend(thisServiceScope, zone);
     }
 }

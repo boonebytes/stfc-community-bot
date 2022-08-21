@@ -4,12 +4,14 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Exceptions;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("stfc", "Star Trek Fleet Command - Community Bot")]
+//[Discord.Interactions.Group("stfc", "Star Trek Fleet Command - Community Bot")]
+
 public partial class StfcModule : InteractionModuleBase
 {
     private readonly ILogger<StfcModule> _logger;
@@ -76,6 +78,7 @@ public partial class StfcModule : InteractionModuleBase
             var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
             var embedMsg = schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id, shortVersion);
             //_ = TryDeleteMessage(Context.Message);
@@ -109,6 +112,7 @@ public partial class StfcModule : InteractionModuleBase
             var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
             var embedMsg = schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id, shortVersion);
             //_ = TryDeleteMessage(Context.Message);
@@ -145,6 +149,8 @@ public partial class StfcModule : InteractionModuleBase
             var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            
             var embedMsg = schedule.GetNext(thisAlliance.Id);
             //_ = TryDeleteMessage(Context.Message);
             _ = this.DeleteOriginalResponseAsync();
@@ -177,6 +183,7 @@ public partial class StfcModule : InteractionModuleBase
             var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
             var targetGuild = Context.Guild.Id;
             var targetChannel = Context.Channel.Id;
@@ -216,6 +223,7 @@ public partial class StfcModule : InteractionModuleBase
             var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
             //await zoneRepository.InitZones();
             if (Context.Channel is SocketTextChannel channel)

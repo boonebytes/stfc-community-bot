@@ -4,6 +4,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Infrastructure;
@@ -54,6 +55,8 @@ public class Program
                 //services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
                 services.ConfigureBotInfrastructure(configuration.GetSection("Oracle").GetValue<string>("ConnectionString"));
 
+                services.AddScoped<RequestContext>();
+                
                 services.AddScoped<IAllianceRepository, AllianceRepository>();
                 services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
                 services.AddScoped<IZoneRepository, ZoneRepository>();

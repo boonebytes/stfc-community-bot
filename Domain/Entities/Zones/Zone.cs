@@ -20,7 +20,7 @@ namespace DiscordBot.Domain.Entities.Zones
 
         public virtual string Name { get; private set; }
         public virtual int Level { get; private set; }
-        public virtual string Threats { get; private set; }
+        public virtual string Threats { get; set; }
         public virtual string DefendUtcDayOfWeek { get; private set; }
         public virtual string DefendUtcTime { get; private set; }
         public virtual DayOfWeek? DefendEasternDay { get; private set; }
