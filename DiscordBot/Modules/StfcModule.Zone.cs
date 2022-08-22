@@ -238,6 +238,8 @@ public partial class StfcModule
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
     {
         using var serviceScope = _serviceProvider.CreateScope();
+        await this.DeferAsync(ephemeral: false);
+        
         try
         {
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
@@ -246,7 +248,7 @@ public partial class StfcModule
             var thisZone = await zoneRepository.GetByNameAsync(name);
             if (thisZone == null)
             {
-                await RespondAsync(
+                await ModifyResponseAsync(
                     "Zone not found.",
                     ephemeral: true);
             }
@@ -271,12 +273,12 @@ public partial class StfcModule
                 //    response += $"Saved Threats: {thisZone.Threats}\n";
                 if (!string.IsNullOrEmpty(thisZone.Notes))
                     response += $"Notes: {thisZone.Notes}\n";
-                await RespondAsync(response);
+                await ModifyResponseAsync(response, ephemeral: false);
             }
         }
         catch (Exception ex)
         {
-            await RespondAsync(
+            await ModifyResponseAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
             _logger.LogError(ex,

@@ -60,9 +60,26 @@ public class PostDefendReminder : BaseJob
         var channel = guild.GetTextChannel(alliance.DefendSchedulePostChannel.Value);
         if (channel == null)
             throw new InvalidOperationException("Unable to access channel");
-        
+
+        var rolePing = "";
+        if (!zone.LowRisk || (alliance.DefendBroadcastPingForLowRisk.HasValue &&
+                              alliance.DefendBroadcastPingForLowRisk.Value))
+        {
+            if (alliance.DefendBroadcastPingRole.HasValue)
+            {
+                if (alliance.DefendBroadcastPingRole.Value == ulong.MaxValue)
+                {
+                    rolePing = "@everyone ";
+                }
+                else
+                {
+                    rolePing = $"<@&{alliance.DefendBroadcastPingRole.Value}> ";
+                }
+            }
+        }
+
         var reminder =
-            $"@everyone Reminder: Defend for {zone.Name} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
+            $"{rolePing}Reminder: Defend for {zone.Name} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
 
         //var embedBuilder = new EmbedBuilder
         //{

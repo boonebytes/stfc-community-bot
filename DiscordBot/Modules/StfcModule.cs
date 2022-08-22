@@ -251,6 +251,8 @@ public partial class StfcModule : InteractionModuleBase
 
     private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
     {
+        //var originalResponse = await Context.Interaction.GetOriginalResponseAsync();
+        //var originalResponseEphemeral = originalResponse.Flags != null && originalResponse.Flags.Value.HasFlag(MessageFlags.Ephemeral);
         await Context.Interaction.ModifyOriginalResponseAsync(properties =>
         {
             if (embed != null) properties.Embed = embed;
