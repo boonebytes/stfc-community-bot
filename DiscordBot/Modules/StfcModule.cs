@@ -64,8 +64,8 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
     
-    [SlashCommand("today", "Admin - Prints the defense times for the rest of today")]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("today", "Prints the defense times for the rest of today")]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task TodayAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -97,8 +97,8 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
         
-    [SlashCommand("tomorrow","Admin - Prints the defense times for tomorrow")]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("tomorrow","Prints the defense times for tomorrow")]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task TomorrowAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -133,8 +133,8 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
 
-    [SlashCommand("next","Admin - Prints the next item on the defend schedule")]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("next","Prints the next item on the defend schedule")]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task NextAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -165,8 +165,8 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
 
-    [SlashCommand("all", "Admin - Prints the full defense schedule", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("all", "Prints the full defense schedule", runMode: RunMode.Async)]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task AllAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -203,8 +203,8 @@ public partial class StfcModule : InteractionModuleBase
         }
     }
 
-    [SlashCommand("refresh", "Admin - Refreshes any short posts for the entire week", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("refresh", "Refreshes any short posts for the entire week", runMode: RunMode.Async)]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task RefreshAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();

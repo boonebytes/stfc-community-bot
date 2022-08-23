@@ -45,8 +45,8 @@ public partial class StfcModule
         }
     }
     
-    [SlashCommand("services-show", "Admin - Show alliance service costs")]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("services-show", "Show alliance service costs")]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task ServicesShowAsync()
     {
         try
