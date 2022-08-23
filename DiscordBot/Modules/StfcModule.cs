@@ -217,7 +217,7 @@ public partial class StfcModule : InteractionModuleBase
 
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
-            await zoneRepository.InitZones();
+            //await zoneRepository.InitZones();
             if (Context.Channel is SocketTextChannel channel)
             {
                 var channelMessages = await channel.GetMessagesAsync().FlattenAsync();

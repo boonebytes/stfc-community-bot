@@ -56,6 +56,8 @@ namespace DiscordBot.Infrastructure.Repositories
                 interestedAlliances = friendlies
                                             .Select(ag => ag.Related.Id).ToList()
                                             .Union(thisAllianceGroupMembers).ToList();
+                if (!interestedAlliances.Contains(thisAlliance.Id))
+                    interestedAlliances.Add(thisAlliance.Id);
             }
             else
             {
