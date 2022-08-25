@@ -370,6 +370,10 @@ public class Schedule
                         m.Embeds.Count == 0
                         && m.Content.Contains("Assist with Defend of")
                     )
+                    || (
+                        m.Embeds.Count == 0
+                        && m.Content.Contains("Reminder: Defend for")
+                    )
                 )
             );
             if (myMessages.Any())
