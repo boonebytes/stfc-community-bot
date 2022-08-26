@@ -63,9 +63,9 @@ public class Schedule
                 response.Append(" [*_Low Risk_*]");
 
             if (alliance != null && alliance.AssignedDiplomacy != null && alliance.AssignedDiplomacy.Any(ad =>
-                    ad.Relationship == DiplomaticRelation.Pew
+                    ad.Relationship == DiplomaticRelation.Untrusted
                     && ad.Related == zone.Owner))
-                response.Append(" (PEW)");
+                response.Append(" (PvP)");
         }
         else
         {
@@ -105,7 +105,7 @@ public class Schedule
 
             response.Append("\n" + contenders);
             if (alliance != null && alliance.AssignedDiplomacy != null && alliance.AssignedDiplomacy.Any(ad =>
-                    ad.Relationship == DiplomaticRelation.Pew
+                    ad.Relationship == DiplomaticRelation.Untrusted
                     && ad.Related == zone.Owner))
                 response.Append(" (PEW)");
             

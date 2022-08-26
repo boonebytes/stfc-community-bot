@@ -70,9 +70,14 @@ public class PostAssistReminder : BaseJob
         var channel = guild.GetTextChannel(alliance.DefendSchedulePostChannel.Value);
         if (channel == null)
             throw new InvalidOperationException("Unable to access channel");
-        
+
+        var risk = "";
+        if (zone.LowRisk)
+        {
+            risk = "Low Risk ";
+        }
         var reminder =
-            $"<@&{alliance.AlliedBroadcastRole}> Reminder: Assist with Defend of {zone.Name} for {ownedAlliance.Acronym} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
+            $"<@&{alliance.AlliedBroadcastRole}> Reminder: Assist with {risk}Defend of {zone.Name} for {ownedAlliance.Acronym} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
 
         //var embedBuilder = new EmbedBuilder
         //{

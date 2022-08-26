@@ -76,10 +76,24 @@ public class PostDefendReminder : BaseJob
                     rolePing = $"<@&{alliance.DefendBroadcastPingRole.Value}> ";
                 }
             }
+
+            if (alliance.AlliedBroadcastRole.HasValue
+                && !(alliance.DefendBroadcastPingRole.HasValue
+                     && alliance.AlliedBroadcastRole.Value != alliance.DefendBroadcastPingRole.Value))
+            {
+                if (alliance.AlliedBroadcastRole.Value == ulong.MaxValue)
+                {
+                    rolePing += "@everyone ";
+                }
+                else
+                {
+                    rolePing = $"<@&{alliance.AlliedBroadcastRole.Value}> ";
+                }
+            }
         }
 
         var reminder =
-            $"{rolePing}Reminder: Defend for {zone.Name} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
+            $"Reminder: Defend for {zone.Name} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R> {rolePing}";
 
         //var embedBuilder = new EmbedBuilder
         //{
