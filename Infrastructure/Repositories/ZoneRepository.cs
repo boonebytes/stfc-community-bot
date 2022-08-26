@@ -43,6 +43,8 @@ namespace DiscordBot.Infrastructure.Repositories
                     .ThenInclude(zn => zn.ToZone)
                         .ThenInclude(tz => tz.Owner)
                 .SingleOrDefaultAsync(z => z.Id == id);
+
+            zone.Threats = String.Join( ", ", GetContenders(zone.Id).Select(a => a.Acronym));
             return zone;
         }
 
@@ -58,7 +60,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 .Include(z => z.Services)
                 .SingleOrDefaultAsync(z => z.Name.ToUpper() == name.ToUpper());
 
-            zone.Threats = String.Join(", ", GetContenders(zone.Id));
+            zone.Threats = String.Join( ", ", GetContenders(zone.Id).Select(a => a.Acronym));
             return zone;
         }
         
@@ -191,7 +193,7 @@ namespace DiscordBot.Infrastructure.Repositories
             if (!withTracking) tracking = QueryTrackingBehavior.NoTracking;
 
             List<long> interestedAlliances = GetInterestedAlliances(allianceId);
-            return await _context.Zones
+            var results = await _context.Zones
                             .Include(z => z.Owner)
                             .Include(z => z.ZoneNeighbours)
                                 .ThenInclude(zn => zn.ToZone)
@@ -201,6 +203,12 @@ namespace DiscordBot.Infrastructure.Repositories
                             .OrderBy(z => z.DefendEasternDay)
                             .ThenBy(z => z.DefendEasternTime)
                             .ToListAsync();
+
+            foreach (var zone in results)
+            {
+                zone.Threats = String.Join(", ", GetContenders(zone.Id).Select(a => a.Acronym));
+            }
+            return results;
         }
 
         public async Task<List<Zone>> GetLookupListAsync()
@@ -229,7 +237,14 @@ namespace DiscordBot.Infrastructure.Repositories
                             .Where(z => interestedAlliances.Contains(z.Owner.Id))
                             .OrderBy(z => z.NextDefend)
                             .ToList();
-            return !next.Any() ? null : next.First();
+            var result = !next.Any() ? null : next.First();
+
+            if (result != null)
+            {
+                result.Threats = String.Join(", ", GetContenders(result.Id).Select(a => a.Acronym));
+            }
+            
+            return result;
         }
 
         public List<Zone> GetFromDayOfWeek(DayOfWeek dayOfWeek, long? allianceId = null)
@@ -248,6 +263,12 @@ namespace DiscordBot.Infrastructure.Repositories
                     )
                 .OrderBy(z => z.DefendEasternTime)
                 .ToList();
+            
+            foreach (var zone in results)
+            {
+                zone.Threats = String.Join(", ", GetContenders(zone.Id).Select(a => a.Acronym));
+            }
+            
             return results;
         }
 
@@ -274,6 +295,12 @@ namespace DiscordBot.Infrastructure.Repositories
                     )
                 .OrderBy(z => z.NextDefend)
                 .ToList();
+            
+            foreach (var zone in nextDefends)
+            {
+                zone.Threats = String.Join(", ", GetContenders(zone.Id).Select(a => a.Acronym));
+            }
+            
             return nextDefends;
         }
 

@@ -72,7 +72,7 @@ public partial class StfcModule
                 }
             }
 
-            var zoneExists = await zoneRepository.GetByNameAsync(name, null);
+            var zoneExists = await zoneRepository.GetByNameAsync(name);
             if (zoneExists == null)
             {
                 // Create zone
@@ -246,7 +246,7 @@ public partial class StfcModule
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
             
-            var thisZone = await zoneRepository.GetByNameAsync(name, thisAlliance?.Id);
+            var thisZone = await zoneRepository.GetByNameAsync(name);
             if (thisZone == null)
             {
                 await ModifyResponseAsync(
@@ -256,12 +256,16 @@ public partial class StfcModule
             else
             {
                 var potentialHostiles = zoneRepository
-                    .GetContenders(thisZone.Id, thisAlliance?.Id)
+                    .GetContenders(thisZone.Id)
                     .Select(a => a.Acronym)
                     .OrderBy(a => a)
                     .ToList();
                 var potentialThreats = "";
-                potentialThreats = potentialHostiles.Any() ? string.Join(", ", potentialHostiles) : "None";
+                potentialThreats = potentialHostiles.Any()
+                    ? string.Join(", ", potentialHostiles)
+                    : thisZone.Level == 1
+                        ? "Anyone (1^)"
+                        : "None";
 
                 var owner = (thisZone.Owner == null ? "Unclaimed" : thisZone.Owner.Acronym);
                 thisZone.SetNextDefend();

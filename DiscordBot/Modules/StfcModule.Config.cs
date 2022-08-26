@@ -11,6 +11,7 @@ namespace DiscordBot.Modules;
 
 public partial class StfcModule
 {
+    /*
     [SlashCommand("setup", "Admin - Check permissions, then configures the bot to post in this channel", runMode: RunMode.Async)]
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task SetupAsync()
@@ -21,8 +22,7 @@ public partial class StfcModule
         using var serviceScope = _serviceProvider.CreateScope();
         var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
         var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-        serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
-        
+
         if (Context.Channel is not SocketTextChannel channel)
         {
             _logger.LogInformation($"Unable to determine channel");
@@ -30,12 +30,14 @@ public partial class StfcModule
             return;
         }
         
-        if (thisAlliance == null)
+        if (thisAlliance == null || thisAlliance.Id == 0)
         {
             _logger.LogInformation($"Server not initialized");
             await ModifyResponseAsync($"Server hasn't been initialized in the bot. Please provide these two IDs to the bot developer, along with your alliance name: Guild ${Context.Guild.Id} / Channel ${channel.Id}", ephemeral: true);
             return;
         }
+        
+        serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
         var guildUser = await Context.Guild.GetCurrentUserAsync();
         var channelPerms = guildUser.GetPermissions(channel);
@@ -81,9 +83,10 @@ public partial class StfcModule
         await schedule.PostAllAsync(Context.Guild.Id, channel.Id, thisAlliance.Id, true);
         _logger.LogInformation($"Setup complete");
     }
+    */
 
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
     //[RequireOwner]
     public async Task ConfigAsync(
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,

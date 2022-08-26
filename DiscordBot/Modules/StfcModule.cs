@@ -81,9 +81,6 @@ public partial class StfcModule : InteractionModuleBase
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
             var embedMsg = schedule.GetForDate(DateTime.UtcNow, thisAlliance.Id, shortVersion);
-            //_ = TryDeleteMessage(Context.Message);
-            //_ = this.DeleteOriginalResponseAsync();
-            //await this.Context.Channel.SendMessageAsync(embed: embedMsg.Build());
             await this.ModifyResponseAsync(embed: embedMsg.Build(), ephemeral: false);
         }
         catch (BotDomainException ex)
@@ -115,10 +112,6 @@ public partial class StfcModule : InteractionModuleBase
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
             var embedMsg = schedule.GetForDate(DateTime.UtcNow.AddDays(1), thisAlliance.Id, shortVersion);
-            //_ = TryDeleteMessage(Context.Message);
-            //_ = this.DeleteOriginalResponseAsync();
-            //await this.Context.Channel.SendMessageAsync(embed: embedMsg.Build());
-            //await this.RespondAsync(embed: embedMsg.Build());
             await this.ModifyResponseAsync(embed: embedMsg.Build(), ephemeral: false);
         }
         catch (BotDomainException ex)
@@ -152,10 +145,8 @@ public partial class StfcModule : InteractionModuleBase
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
             
             var embedMsg = schedule.GetNext(thisAlliance.Id);
-            //_ = TryDeleteMessage(Context.Message);
             _ = this.DeleteOriginalResponseAsync();
             await this.Context.Channel.SendMessageAsync(embed: embedMsg.Build());
-            //await this.RespondAsync(embed: embedMsg.Build());
         }
         catch (BotDomainException ex)
         {
@@ -172,7 +163,7 @@ public partial class StfcModule : InteractionModuleBase
     }
 
     [SlashCommand("all", "Prints the full defense schedule", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
     public async Task AllAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -180,19 +171,16 @@ public partial class StfcModule : InteractionModuleBase
         {
             await this.DeferAsync(ephemeral: true);
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-            var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
-
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
 
+            var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
+            
             var targetGuild = Context.Guild.Id;
             var targetChannel = Context.Channel.Id;
 
             await schedule.PostAllAsync(targetGuild, targetChannel, thisAlliance.Id, shortVersion);
-            //await TryDeleteMessage(Context.Message);
             await DeleteOriginalResponseAsync();
-
-            //await this.ReplyAsync(embed: embedMsg.Build());
         }
         catch (BotDomainException ex)
         {
@@ -211,7 +199,7 @@ public partial class StfcModule : InteractionModuleBase
     }
 
     [SlashCommand("refresh", "Refreshes any short posts for the entire week", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
     public async Task RefreshAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -224,21 +212,14 @@ public partial class StfcModule : InteractionModuleBase
 
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
-
-            //await zoneRepository.InitZones();
+            
             if (Context.Channel is SocketTextChannel channel)
             {
                 var channelMessages = await channel.GetMessagesAsync().FlattenAsync();
 
                 await zoneRepository.InitZones(true);
-                //await schedule.TryCleanMessages(channel, channelMessages, thisAlliance);
                 await schedule.TryUpdateWeeklyMessages(channelMessages, thisAlliance);
-                //await TryDeleteMessage(Context.Message);
-                //await DeleteOriginalResponseAsync();
                 await ModifyResponseAsync("Refresh complete", true);
-                //await RespondAsync(
-                //    "Done!",
-                //    ephemeral: true);
             }
             else
             {
@@ -259,8 +240,6 @@ public partial class StfcModule : InteractionModuleBase
 
     private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
     {
-        //var originalResponse = await Context.Interaction.GetOriginalResponseAsync();
-        //var originalResponseEphemeral = originalResponse.Flags != null && originalResponse.Flags.Value.HasFlag(MessageFlags.Ephemeral);
         await Context.Interaction.ModifyOriginalResponseAsync(properties =>
         {
             if (embed != null) properties.Embed = embed;

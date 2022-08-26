@@ -1,4 +1,6 @@
 ﻿using Discord.WebSocket;
+using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using Quartz;
 using Quartz.Impl;
@@ -22,8 +24,6 @@ public partial class Scheduler
         _logger = logger;
         _client = client;
         _serviceProvider = serviceProvider;
-        //_quartzScheduler = quartzScheduler;
-        //LogProvider.SetCurrentLogProvider(new QuartzLogger(_serviceProvider.GetService<ILogger<QuartzLogger>>()));
     }
 
     public async Task HandleZoneUpdatedAsync(long zoneId)
@@ -32,7 +32,18 @@ public partial class Scheduler
         
         using var thisServiceScope = _serviceProvider.CreateScope();
         var zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
-        var zone = await zoneRepository.GetAsync(zoneId, null);
+        var zone = await zoneRepository.GetAsync(zoneId);
         await AddOrUpdateZoneDefend(thisServiceScope, zone);
+
+        if (zone.Owner != null)
+        {
+            var allianceRepository = thisServiceScope.ServiceProvider.GetService<IAllianceRepository>();
+            var allies = allianceRepository.GetTerritoryHelpersFromOwnerAlliance(zone.Owner.Id);
+            
+            foreach (var ally in allies)
+            {
+                await AddOrUpdateZoneAssist(thisServiceScope, zone, ally);
+            }
+        }
     }
 }

@@ -55,7 +55,7 @@ public class PostAssistReminder : BaseJob
         if (!alliance.AlliedBroadcastRole.HasValue)
             throw new InvalidOperationException("Alliance doesn't have an allied broadcast role");
 
-        var zone = await _zoneRepository.GetAsync(zoneId, allianceId);
+        var zone = await _zoneRepository.GetAsync(zoneId);
         if (zone == null)
             throw new KeyNotFoundException("The zone could not be found");
         if (zone.Owner == null)

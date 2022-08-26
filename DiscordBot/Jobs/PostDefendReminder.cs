@@ -53,7 +53,7 @@ public class PostDefendReminder : BaseJob
         if (!alliance.GuildId.HasValue || !alliance.DefendSchedulePostChannel.HasValue)
             throw new InvalidOperationException("Alliance doesn't have a guild and/or defend channel");
 
-        var zone = await _zoneRepository.GetAsync(zoneId, allianceId);
+        var zone = await _zoneRepository.GetAsync(zoneId);
         if (zone == null)
             throw new KeyNotFoundException("The zone could not be found");
         if (zone.Owner != alliance)

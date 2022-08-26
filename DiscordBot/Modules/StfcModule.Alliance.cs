@@ -50,7 +50,7 @@ public partial class StfcModule
     }
     
     [SlashCommand("services-show", "Show alliance service costs")]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
     public async Task ServicesShowAsync()
     {
         try
@@ -107,16 +107,7 @@ public partial class StfcModule
                     desiredServices.Add(service.Key, service.Value);
                 }
             }
-
-            /*
-            var basicServices = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
-            countedServices.AddRange(basicServices.Select(s => s.Id));
-            var enabledServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
-            var desiredServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
-            var enabledServices = basicServices.Concat(enabledServicesRaw).ToList();
-            var desiredServices = enabledServices.Concat(desiredServicesRaw).ToList();
-            */
-
+            
             const string serviceHeader = "**__Service Cost Summary__**";
             var summary = serviceHeader + "\n\n";
             if (basicServices.Any())
