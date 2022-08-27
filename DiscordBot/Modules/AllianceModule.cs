@@ -8,9 +8,32 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-public partial class StfcModule
+[Discord.Interactions.Group("alliance", "Show Alliance Info")]
+public class AllianceModule : InteractionModuleBase<SocketInteractionContext>
 {
-    [SlashCommand("alliance-show", "Shows information about an alliance")]
+    private readonly ILogger<AllianceModule> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    public AllianceModule(ILogger<AllianceModule> logger, IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+    
+    private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
+    {
+        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+        {
+            if (embed != null) properties.Embed = embed;
+            properties.Content = content;
+            if (ephemeral)
+                properties.Flags = MessageFlags.Ephemeral;
+            else
+                properties.Flags = MessageFlags.None;
+        });
+    }
+    
+    [SlashCommand("show", "Shows information about an alliance")]
     public async Task AllianceShowAsync(
         [Summary("Name", "Name or acronym of the alliance to display")] string name)
     {
@@ -49,7 +72,7 @@ public partial class StfcModule
         }
     }
     
-    [SlashCommand("services-show", "Show alliance service costs")]
+    [SlashCommand("services", "Show alliance service costs")]
     [RequireUserPermission(GuildPermission.ManageGuild)]
     public async Task ServicesShowAsync()
     {

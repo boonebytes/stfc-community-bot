@@ -10,9 +10,8 @@ using DiscordBot.Domain.Exceptions;
 
 namespace DiscordBot.Modules;
 
-//[Discord.Interactions.Group("stfc", "Star Trek Fleet Command - Community Bot")]
-
-public partial class StfcModule : InteractionModuleBase
+[Discord.Interactions.Group("stfc", "Star Trek Fleet Command - Community Bot")]
+public partial class StfcModule : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly ILogger<StfcModule> _logger;
     private readonly IServiceProvider _serviceProvider;

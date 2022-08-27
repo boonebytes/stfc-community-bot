@@ -1,4 +1,5 @@
 using System.Globalization;
+using Discord;
 using Discord.Interactions;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
@@ -8,9 +9,34 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-public partial class StfcModule
+[Discord.Interactions.Group("zone", "Show / Edit Zone Info")]
+public class ZoneModule : InteractionModuleBase<SocketInteractionContext>
 {
-    [SlashCommand("zone-set", "Bot Owner - Create or update a zone")]
+    private readonly ILogger<ZoneModule> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ZoneModule(ILogger<ZoneModule> logger, IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+    
+    private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
+    {
+        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+        {
+            if (embed != null) properties.Embed = embed;
+            properties.Content = content;
+            if (ephemeral)
+                properties.Flags = MessageFlags.Ephemeral;
+            else
+                properties.Flags = MessageFlags.None;
+        });
+    }
+    
+    
+    
+    [SlashCommand("set", "Bot Owner - Create or update a zone")]
     [RequireOwner]
     public async Task ZoneCreateUpdateAsync(
         [Summary("Zone", "Zone Name")][Autocomplete(typeof(ZoneNames))] string name,
@@ -231,7 +257,7 @@ public partial class StfcModule
     }
     */
 
-    [SlashCommand("zone-show", "Shows current zone info from the database")]
+    [SlashCommand("show", "Shows current zone info from the database")]
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
     {
         using var serviceScope = _serviceProvider.CreateScope();
