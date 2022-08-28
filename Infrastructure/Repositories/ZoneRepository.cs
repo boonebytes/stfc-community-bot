@@ -114,33 +114,19 @@ namespace DiscordBot.Infrastructure.Repositories
                 .Include(z => z.Owner)
                     .ThenInclude(o => o.AssignedDiplomacy)
                         .ThenInclude(ad => ad.Related)
-                            .ThenInclude(ada => ada.Zones)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
                         .ThenInclude(tz => tz.Owner)
                 .SingleOrDefault(z => z.Id == zoneId);;
             
-            if (thisZone == null || thisZone.Owner == null) return default;
-
+            if (thisZone == null) return null;
+            
             var thisZoneOwner = thisZone.Owner;
             var zoneNeighbours = thisZone.ZoneNeighbours.Select(zn => zn.ToZone);
 
             var povAlliance = _context.Alliances
                 .FirstOrDefault(a => a.Id == povAllianceId);
 
-            bool hideFriendliesFromContenders = povAlliance != null
-                                                && (
-                                                    (thisZoneOwner.Group != null && thisZoneOwner.Group == povAlliance.Group)
-                                                    || thisZoneOwner.AssignedDiplomacy.Any(ad =>
-                                                        ad.Related == povAlliance
-                                                        && (
-                                                            ad.Relationship == DiplomaticRelation.Friendly
-                                                            || ad.Relationship == DiplomaticRelation.Allied
-                                                        )
-                                                    )
-                                                );
-
-            if (thisZone == null) return default;
             /*
             var ownerHostiles = thisZone.Owner.AssignedDiplomacy
                                     .Where(ad =>
@@ -149,11 +135,10 @@ namespace DiscordBot.Infrastructure.Repositories
                                     );
             */
 
-            List<Alliance> ownerFriendlies;
+            List<Alliance> ownerFriendlies = new();
             List<Alliance> riskyNeighbours;
             if (thisZone.Owner == null)
             {
-                ownerFriendlies = new();
                 riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
                     .Select(n => n.Owner)
                     .Distinct()
@@ -162,21 +147,43 @@ namespace DiscordBot.Infrastructure.Repositories
             }
             else
             {
-                ownerFriendlies = thisZone.Owner.AssignedDiplomacy
-                    .Where(ad => ad.Relationship.Id >= DiplomaticRelation.Friendly.Id)
-                    .Select(ad => ad.Related)
-                    .ToList();
+                bool hideFriendliesFromContenders =
+                    thisZoneOwner != null
+                    && povAlliance != null
+                    && (
+                        (thisZoneOwner.Group != null && thisZoneOwner.Group == povAlliance.Group)
+                        || thisZoneOwner.AssignedDiplomacy.Any(ad =>
+                            ad.Related == povAlliance
+                            && (
+                                ad.Relationship == DiplomaticRelation.Friendly
+                                || ad.Relationship == DiplomaticRelation.Allied
+                            )
+                        )
+                    );
+                
+                if (hideFriendliesFromContenders)
+                {
+                    ownerFriendlies = thisZone.Owner.AssignedDiplomacy
+                        .Where(ad => ad.Relationship.Id >= DiplomaticRelation.Friendly.Id)
+                        .Select(ad => ad.Related)
+                        .ToList();
+                }
 
                 riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
                     .Select(n => n.Owner)
                     .Distinct()
                     .Where(no =>
-                            !ownerFriendlies.Contains(no)
-                            && no != thisZone.Owner
+                            no != thisZone.Owner
                             && (
-                                thisZone.Owner.Group == null
-                                || no.Group == null
-                                || no.Group != thisZone.Owner.Group
+                                !hideFriendliesFromContenders
+                                || (
+                                    !ownerFriendlies.Contains(no)
+                                    && (
+                                        thisZone.Owner.Group == null
+                                        || no.Group == null
+                                        || no.Group != thisZone.Owner.Group
+                                    )
+                                )
                             )
                         // && no.Zones.Count < 5
                     )

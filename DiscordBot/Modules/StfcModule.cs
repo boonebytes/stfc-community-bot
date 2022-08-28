@@ -27,11 +27,12 @@ public partial class StfcModule : InteractionModuleBase<SocketInteractionContext
     public async Task ReloadAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
+        _ = DeferAsync(true);
         try
         {
-            await RespondAsync(
+            await ModifyResponseAsync(
                 "Reload initiated.",
-                ephemeral: true);
+                true);
             var cmdScheduler = _serviceProvider.GetService<Scheduler>();
             await cmdScheduler.ReloadJobsAsync(CancellationToken.None);
             await ModifyResponseAsync("Reload complete.", true);
