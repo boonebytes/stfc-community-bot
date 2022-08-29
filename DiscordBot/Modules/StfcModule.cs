@@ -163,7 +163,7 @@ public partial class StfcModule : InteractionModuleBase<SocketInteractionContext
     }
 
     [SlashCommand("all", "Prints the full defense schedule", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task AllAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -199,7 +199,7 @@ public partial class StfcModule : InteractionModuleBase<SocketInteractionContext
     }
 
     [SlashCommand("refresh", "Refreshes any short posts for the entire week", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task RefreshAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
