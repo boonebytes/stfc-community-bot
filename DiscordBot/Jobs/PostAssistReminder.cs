@@ -80,10 +80,10 @@ public class PostAssistReminder : BaseJob
         var risk = "";
         if (zone.LowRisk)
         {
-            risk = "Low Risk ";
+            risk = "low risk ";
         }
         var reminder =
-            $"<@&{alliance.AlliedBroadcastRole}> Reminder: Assist with {risk}Defend of {zone.Name} for {ownedAlliance.Acronym} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R>";
+            $"Reminder: Assist with the {risk}defend of {zone.Name} for {ownedAlliance.Acronym} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R> <@&{alliance.AlliedBroadcastRole}>";
 
         //var embedBuilder = new EmbedBuilder
         //{

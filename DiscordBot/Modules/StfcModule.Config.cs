@@ -93,61 +93,76 @@ public partial class StfcModule
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
     {
         using var serviceScope = _serviceProvider.CreateScope();
-        var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-        var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-
-        if (thisAlliance == null)
+        _ = DeferAsync(true);
+        try
         {
-            await RespondAsync("Unable to determine alliance from this channel", ephemeral: true);
-            return;
-        }
+            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
-        await DeferAsync(ephemeral: true);
-        serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            if (thisAlliance == null)
+            {
+                await ModifyResponseAsync("Unable to determine alliance from this channel", ephemeral: true);
+                return;
+            }
+
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+
+            switch (name)
+            {
+                case VariableNames.VariableNameKeys.AlliedBroadcastRole:
+                    var responseBroadcastRole =
+                        await ConfigAlliedBroadcastRole(value, thisAlliance, allianceRepository);
+                    if (responseBroadcastRole == "")
+                    {
+                        await ModifyResponseAsync(
+                            "No response was returned. Please check the current value or contact the developer.",
+                            true);
+                        //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
+                    }
+                    else
+                    {
+                        await ModifyResponseAsync(
+                            responseBroadcastRole,
+                            true);
+                        //await RespondAsync(response, ephemeral: true);
+                    }
+
+                    break;
+                case VariableNames.VariableNameKeys.BroadcastLeadTime:
+                    var responseBroadcastLeadTime =
+                        await ConfigDefendBroadcastTimeAsync(value, thisAlliance, allianceRepository);
+                    if (responseBroadcastLeadTime == "")
+                    {
+                        await ModifyResponseAsync(
+                            "No response was returned. Please check the current value or contact the developer.",
+                            true);
+                        //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
+                    }
+                    else
+                    {
+                        await ModifyResponseAsync(
+                            responseBroadcastLeadTime,
+                            true);
+                        //await RespondAsync(response, ephemeral: true);
+                    }
+
+                    break;
+                default:
+                    await ModifyResponseAsync(
+                        "The variable could not be identified.",
+                        true);
+                    //await RespondAsync("The variable could not be identified.", ephemeral: true);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected exception running config for {Name} = {Value} on {Guild}", name, value, Context.Guild.Id);
+            await ModifyResponseAsync(
+                "An unexpected error has occurred. If this continues, please contact the developer for support.",
+                true);
+        }
         
-        switch (name)
-        {
-            case VariableNames.VariableNameKeys.AlliedBroadcastRole:
-                var responseBroadcastRole = await ConfigAlliedBroadcastRole(value, thisAlliance, allianceRepository);
-                if (responseBroadcastRole == "")
-                {
-                    await ModifyResponseAsync(
-                        "No response was returned. Please check the current value or contact the developer.",
-                        true);
-                    //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
-                }
-                else
-                {
-                    await ModifyResponseAsync(
-                        responseBroadcastRole,
-                        true);
-                    //await RespondAsync(response, ephemeral: true);
-                }
-                break;
-            case VariableNames.VariableNameKeys.BroadcastLeadTime:
-                var responseBroadcastLeadTime = await ConfigDefendBroadcastTimeAsync(value, thisAlliance, allianceRepository);
-                if (responseBroadcastLeadTime == "")
-                {
-                    await ModifyResponseAsync(
-                        "No response was returned. Please check the current value or contact the developer.",
-                        true);
-                    //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
-                }
-                else
-                {
-                    await ModifyResponseAsync(
-                        responseBroadcastLeadTime,
-                        true);
-                    //await RespondAsync(response, ephemeral: true);
-                }
-                break;
-            default:
-                await ModifyResponseAsync(
-                    "The variable could not be identified.",
-                    true);
-                //await RespondAsync("The variable could not be identified.", ephemeral: true);
-                break;
-        }
     }
     
     private async Task<string> ConfigAlliedBroadcastRole(string value, Alliance thisAlliance,

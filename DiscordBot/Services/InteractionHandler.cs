@@ -92,7 +92,7 @@ public class InteractionHandler
     {
         _ = Task.Run(async () =>
         {
-            _logger.LogInformation("Interaction started");
+            //_logger.LogInformation("Interaction started");
             var context = new SocketInteractionContext(_client, arg);
             var result = await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
 
@@ -121,7 +121,7 @@ public class InteractionHandler
                 //await interactionContext.Interaction.RespondAsync("An unexpected error has occured.", ephemeral: true);
             }
 
-            _logger.LogInformation("Interaction finished");
+            //_logger.LogInformation("Interaction finished");
         });
     }
 
