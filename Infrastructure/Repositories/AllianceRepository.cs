@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Exceptions;
 using DiscordBot.Domain.Seedwork;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace DiscordBot.Infrastructure.Repositories
     {
         public IUnitOfWork UnitOfWork => _context;
 
-        public AllianceRepository(ILogger<AllianceRepository> logger, BotContext context) : base(logger, context)
+        public AllianceRepository(ILogger<AllianceRepository> logger, BotContext context, RequestContext requestContext) : base(logger, context, requestContext)
         { }
 
         public Alliance Add(Alliance alliance)

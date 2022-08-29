@@ -1,15 +1,42 @@
 using System.Globalization;
+using Discord;
 using Discord.Interactions;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-public partial class StfcModule
+[Discord.Interactions.Group("zone", "Show / Edit Zone Info")]
+public class ZoneModule : InteractionModuleBase<SocketInteractionContext>
 {
-    [SlashCommand("zone-set", "Bot Owner - Create or update a zone")]
+    private readonly ILogger<ZoneModule> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ZoneModule(ILogger<ZoneModule> logger, IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+    
+    private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
+    {
+        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+        {
+            if (embed != null) properties.Embed = embed;
+            properties.Content = content;
+            if (ephemeral)
+                properties.Flags = MessageFlags.Ephemeral;
+            else
+                properties.Flags = MessageFlags.None;
+        });
+    }
+    
+    
+    
+    [SlashCommand("set", "Bot Owner - Create or update a zone")]
     [RequireOwner]
     public async Task ZoneCreateUpdateAsync(
         [Summary("Zone", "Zone Name")][Autocomplete(typeof(ZoneNames))] string name,
@@ -104,7 +131,6 @@ public partial class StfcModule
                     name,
                     level,
                     ownerAlliance,
-                    "",
                     dayOfWeekUtc.ToString(),
                     timeOfDayUtc,
                     notes
@@ -126,9 +152,7 @@ public partial class StfcModule
                 var newTimeOfDay = (timeOfDayUtc == "" || timeOfDayUtc == "0"
                     ? zoneExists.DefendUtcTime
                     : timeOfDayUtc);
-
-                string newThreats = zoneExists.Threats;
-                    
+                
                 string newNotes = zoneExists.Notes;
                 if (notes == "null")
                 {
@@ -143,7 +167,6 @@ public partial class StfcModule
                     zoneExists.Name,
                     level,
                     ownerAlliance,
-                    newThreats,
                     newDayOfWeek,
                     newTimeOfDay,
                     newNotes
@@ -234,7 +257,7 @@ public partial class StfcModule
     }
     */
 
-    [SlashCommand("zone-show", "Shows current zone info from the database")]
+    [SlashCommand("show", "Shows current zone info from the database")]
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -244,7 +267,11 @@ public partial class StfcModule
         {
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
+            
+            // TODO: Get current alliance from Guild ID, then filter results.
+            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            
             var thisZone = await zoneRepository.GetByNameAsync(name);
             if (thisZone == null)
             {
@@ -255,12 +282,16 @@ public partial class StfcModule
             else
             {
                 var potentialHostiles = zoneRepository
-                    .GetPotentialHostiles(thisZone.Id)
+                    .GetContenders(thisZone.Id)
                     .Select(a => a.Acronym)
                     .OrderBy(a => a)
                     .ToList();
                 var potentialThreats = "";
-                potentialThreats = potentialHostiles.Any() ? string.Join(", ", potentialHostiles) : "None";
+                potentialThreats = potentialHostiles.Any()
+                    ? string.Join(", ", potentialHostiles)
+                    : thisZone.Level == 1
+                        ? "Anyone (1^)"
+                        : "None";
 
                 var owner = (thisZone.Owner == null ? "Unclaimed" : thisZone.Owner.Acronym);
                 thisZone.SetNextDefend();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace DiscordBot.Infrastructure.Repositories
     {
         public IUnitOfWork UnitOfWork => _context;
 
-        public ZoneRepository(ILogger<ZoneRepository> logger, BotContext context) : base(logger, context)
+        public ZoneRepository(ILogger<ZoneRepository> logger, BotContext context, RequestContext requestContext) : base(logger, context, requestContext)
         { }
 
         public Zone Add(Zone zone)
@@ -34,17 +35,23 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<Zone> GetAsync(long id)
         {
+            var povAllianceId = _requestContext.GetAllianceId();
+            
             var zone = await _context.Zones
                 .Include(z => z.Owner)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
                         .ThenInclude(tz => tz.Owner)
                 .SingleOrDefaultAsync(z => z.Id == id);
+
+            zone.Threats = String.Join( ", ", GetContenders(zone.Id).Select(a => a.Acronym));
             return zone;
         }
 
         public async Task<Zone> GetByNameAsync(string name)
         {
+            var povAllianceId = _requestContext.GetAllianceId();
+        
             var zone = await _context.Zones
                 .Include(z => z.Owner)
                 .Include(z => z.ZoneNeighbours)
@@ -52,6 +59,8 @@ namespace DiscordBot.Infrastructure.Repositories
                         .ThenInclude(tz => tz.Owner)
                 .Include(z => z.Services)
                 .SingleOrDefaultAsync(z => z.Name.ToUpper() == name.ToUpper());
+
+            zone.Threats = String.Join( ", ", GetContenders(zone.Id).Select(a => a.Acronym));
             return zone;
         }
         
@@ -97,20 +106,27 @@ namespace DiscordBot.Infrastructure.Repositories
             return results;
         }
         
-        public List<Alliance> GetPotentialHostiles(long id)
+        public List<Alliance> GetContenders(long zoneId)
         {
+            var povAllianceId = _requestContext.GetAllianceId();
+            
             var thisZone = _context.Zones
-                    .Include(z => z.Owner)
-                        .ThenInclude(o => o.AssignedDiplomacy)
-                            .ThenInclude(ad => ad.Related)
-                                .ThenInclude(ada => ada.Zones)
-                    .Include(z => z.ZoneNeighbours)
-                        .ThenInclude(zn => zn.ToZone)
-                            .ThenInclude(tz => tz.Owner)
-                                .ThenInclude(tzo => tzo.Zones)
-                    .SingleOrDefault(z => z.Id == id);
+                .Include(z => z.Owner)
+                    .ThenInclude(o => o.AssignedDiplomacy)
+                        .ThenInclude(ad => ad.Related)
+                .Include(z => z.ZoneNeighbours)
+                    .ThenInclude(zn => zn.ToZone)
+                        .ThenInclude(tz => tz.Owner)
+                .SingleOrDefault(z => z.Id == zoneId);;
+            
+            if (thisZone == null) return null;
+            
+            var thisZoneOwner = thisZone.Owner;
+            var zoneNeighbours = thisZone.ZoneNeighbours.Select(zn => zn.ToZone);
 
-            if (thisZone == null) return default;
+            var povAlliance = _context.Alliances
+                .FirstOrDefault(a => a.Id == povAllianceId);
+
             /*
             var ownerHostiles = thisZone.Owner.AssignedDiplomacy
                                     .Where(ad =>
@@ -119,40 +135,58 @@ namespace DiscordBot.Infrastructure.Repositories
                                     );
             */
 
-            List<Alliance> ownerFriendlies;
+            List<Alliance> ownerFriendlies = new();
             List<Alliance> riskyNeighbours;
             if (thisZone.Owner == null)
             {
-                ownerFriendlies = new();
                 riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
                     .Select(n => n.Owner)
                     .Distinct()
-                    .Where(no =>
-                            !ownerFriendlies.Contains(no)
-                            // && no.Zones.Count < 5
-                        )
+                    //.Where(no => no.Zones.Count < 5)
                     .ToList();
             }
             else
             {
-                ownerFriendlies = thisZone.Owner.AssignedDiplomacy
-                    .Where(ad => ad.Relationship.Id >= DiplomaticRelation.Friendly.Id)
-                    .Select(ad => ad.Related)
-                    .ToList();
+                bool hideFriendliesFromContenders =
+                    thisZoneOwner != null
+                    && povAlliance != null
+                    && (
+                        (thisZoneOwner.Group != null && thisZoneOwner.Group == povAlliance.Group)
+                        || thisZoneOwner.AssignedDiplomacy.Any(ad =>
+                            ad.Related == povAlliance
+                            && (
+                                ad.Relationship == DiplomaticRelation.Friendly
+                                || ad.Relationship == DiplomaticRelation.Allied
+                            )
+                        )
+                    );
+                
+                if (hideFriendliesFromContenders)
+                {
+                    ownerFriendlies = thisZone.Owner.AssignedDiplomacy
+                        .Where(ad => ad.Relationship.Id >= DiplomaticRelation.Friendly.Id)
+                        .Select(ad => ad.Related)
+                        .ToList();
+                }
 
                 riskyNeighbours = thisZone.Neighbours.Where(n => n.Owner != null)
                     .Select(n => n.Owner)
                     .Distinct()
                     .Where(no =>
-                            !ownerFriendlies.Contains(no)
-                            && no != thisZone.Owner
+                            no != thisZone.Owner
                             && (
-                                thisZone.Owner.Group == null
-                                || no.Group == null
-                                || no.Group != thisZone.Owner.Group
+                                !hideFriendliesFromContenders
+                                || (
+                                    !ownerFriendlies.Contains(no)
+                                    && (
+                                        thisZone.Owner.Group == null
+                                        || no.Group == null
+                                        || no.Group != thisZone.Owner.Group
+                                    )
+                                )
                             )
                         // && no.Zones.Count < 5
-                        )
+                    )
                     .ToList();
             }
             
@@ -166,7 +200,7 @@ namespace DiscordBot.Infrastructure.Repositories
             if (!withTracking) tracking = QueryTrackingBehavior.NoTracking;
 
             List<long> interestedAlliances = GetInterestedAlliances(allianceId);
-            return await _context.Zones
+            var results = await _context.Zones
                             .Include(z => z.Owner)
                             .Include(z => z.ZoneNeighbours)
                                 .ThenInclude(zn => zn.ToZone)
@@ -176,6 +210,12 @@ namespace DiscordBot.Infrastructure.Repositories
                             .OrderBy(z => z.DefendEasternDay)
                             .ThenBy(z => z.DefendEasternTime)
                             .ToListAsync();
+
+            foreach (var zone in results)
+            {
+                zone.Threats = String.Join(", ", GetContenders(zone.Id).Select(a => a.Acronym));
+            }
+            return results;
         }
 
         public async Task<List<Zone>> GetLookupListAsync()
@@ -204,7 +244,14 @@ namespace DiscordBot.Infrastructure.Repositories
                             .Where(z => interestedAlliances.Contains(z.Owner.Id))
                             .OrderBy(z => z.NextDefend)
                             .ToList();
-            return !next.Any() ? null : next.First();
+            var result = !next.Any() ? null : next.First();
+
+            if (result != null)
+            {
+                result.Threats = String.Join(", ", GetContenders(result.Id).Select(a => a.Acronym));
+            }
+            
+            return result;
         }
 
         public List<Zone> GetFromDayOfWeek(DayOfWeek dayOfWeek, long? allianceId = null)
@@ -223,6 +270,12 @@ namespace DiscordBot.Infrastructure.Repositories
                     )
                 .OrderBy(z => z.DefendEasternTime)
                 .ToList();
+            
+            foreach (var zone in results)
+            {
+                zone.Threats = String.Join(", ", GetContenders(zone.Id).Select(a => a.Acronym));
+            }
+            
             return results;
         }
 
@@ -249,6 +302,12 @@ namespace DiscordBot.Infrastructure.Repositories
                     )
                 .OrderBy(z => z.NextDefend)
                 .ToList();
+            
+            foreach (var zone in nextDefends)
+            {
+                zone.Threats = String.Join(", ", GetContenders(zone.Id).Select(a => a.Acronym));
+            }
+            
             return nextDefends;
         }
 
@@ -262,6 +321,7 @@ namespace DiscordBot.Infrastructure.Repositories
                     .ToList();
             foreach (var zone in allZones)
             {
+                /*
                 var potentialHostiles = GetPotentialHostiles(zone.Id)
                     .Select(h => h.Acronym)
                     .Distinct()
@@ -275,6 +335,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 {
                     zone.SetThreats(string.Empty);
                 }
+                */
                 zone.SetNextDefend(true);
             }
             await _context.SaveEntitiesAsync();

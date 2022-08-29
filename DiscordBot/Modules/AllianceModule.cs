@@ -1,15 +1,39 @@
 using Discord;
 using Discord.Interactions;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-public partial class StfcModule
+[Discord.Interactions.Group("alliance", "Show Alliance Info")]
+public class AllianceModule : InteractionModuleBase<SocketInteractionContext>
 {
-    [SlashCommand("alliance-show", "Shows information about an alliance")]
+    private readonly ILogger<AllianceModule> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    public AllianceModule(ILogger<AllianceModule> logger, IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+    
+    private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
+    {
+        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+        {
+            if (embed != null) properties.Embed = embed;
+            properties.Content = content;
+            if (ephemeral)
+                properties.Flags = MessageFlags.Ephemeral;
+            else
+                properties.Flags = MessageFlags.None;
+        });
+    }
+    
+    [SlashCommand("show", "Shows information about an alliance")]
     public async Task AllianceShowAsync(
         [Summary("Name", "Name or acronym of the alliance to display")] string name)
     {
@@ -18,6 +42,9 @@ public partial class StfcModule
         {
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
 
+            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            
             var alliance = await allianceRepository.GetByNameOrAcronymAsync(name);
             if (alliance == null)
             {
@@ -45,8 +72,8 @@ public partial class StfcModule
         }
     }
     
-    [SlashCommand("services-show", "Show alliance service costs")]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [SlashCommand("services", "Show alliance service costs")]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
     public async Task ServicesShowAsync()
     {
         try
@@ -62,7 +89,9 @@ public partial class StfcModule
             }
 
             await DeferAsync(ephemeral: true);
-
+            
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            
             var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
 
             var countedServices = new List<long>();
@@ -101,16 +130,7 @@ public partial class StfcModule
                     desiredServices.Add(service.Key, service.Value);
                 }
             }
-
-            /*
-            var basicServices = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
-            countedServices.AddRange(basicServices.Select(s => s.Id));
-            var enabledServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Enabled);
-            var desiredServicesRaw = await serviceRepository.GetByAllianceIdAsync(thisAlliance.Id, AllianceServiceLevel.Desired);
-            var enabledServices = basicServices.Concat(enabledServicesRaw).ToList();
-            var desiredServices = enabledServices.Concat(desiredServicesRaw).ToList();
-            */
-
+            
             const string serviceHeader = "**__Service Cost Summary__**";
             var summary = serviceHeader + "\n\n";
             if (basicServices.Any())

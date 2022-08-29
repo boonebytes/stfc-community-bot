@@ -3,6 +3,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 
@@ -12,12 +13,14 @@ public class Schedule
 {
     private readonly ILogger<Schedule> _logger;
     private readonly IZoneRepository _zoneRepository;
+    private readonly RequestContext _requestContext;
     private readonly DiscordSocketClient _client;
 
-    public Schedule(ILogger<Schedule> logger, IZoneRepository zoneRepository, DiscordSocketClient client)
+    public Schedule(ILogger<Schedule> logger, IZoneRepository zoneRepository, RequestContext requestContext, DiscordSocketClient client)
     {
         _logger = logger;
         _zoneRepository = zoneRepository;
+        _requestContext = requestContext;
         _client = client;
     }
 
@@ -36,7 +39,7 @@ public class Schedule
 
         string potentialThreats = "";
         var potentialHostiles = _zoneRepository
-            .GetPotentialHostiles(zone.Id)
+            .GetContenders(zone.Id)
             .Select(a => a.Acronym)
             .OrderBy(a => a);
 
@@ -54,9 +57,7 @@ public class Schedule
                 response.Append(zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp());
             }
             response.Append($":t> local / {zone.NextDefend.Value.ToEasternTime().ToString("h:mm tt")} ET");
-
-            //if (!string.IsNullOrEmpty(zone.Threats))
-            //    response += " [*_" + zone.Threats + "_*]";
+            
             if (!string.IsNullOrEmpty(potentialThreats))
                 response.Append(" [*_" + potentialThreats + "_*]");
             else if (zone.LowRisk)

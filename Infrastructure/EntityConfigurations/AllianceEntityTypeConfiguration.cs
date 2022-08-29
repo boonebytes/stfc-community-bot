@@ -64,6 +64,7 @@ namespace DiscordBot.Infrastructure.EntityConfigurations
 
             var assignedDiplomacyNavigation = allianceConfiguration.Metadata.FindNavigation(nameof(Alliance.AssignedDiplomacy));
             assignedDiplomacyNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+            assignedDiplomacyNavigation.SetIsEagerLoaded(true);
 
             allianceConfiguration.HasMany<Diplomacy>(a => a.ReceivedDiplomacy)
                 .WithOne(d => d.Related)

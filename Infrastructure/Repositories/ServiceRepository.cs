@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
@@ -15,7 +16,7 @@ namespace DiscordBot.Infrastructure.Repositories
     {
         public IUnitOfWork UnitOfWork { get; }
         
-        public ServiceRepository(ILogger<ServiceRepository> logger, BotContext context) : base(logger, context)
+        public ServiceRepository(ILogger<ServiceRepository> logger, BotContext context, RequestContext requestContext) : base(logger, context, requestContext)
         { }
 
         public Service Add(Service service)

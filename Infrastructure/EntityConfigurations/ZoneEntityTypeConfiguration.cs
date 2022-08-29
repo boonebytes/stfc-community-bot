@@ -22,8 +22,12 @@ public class ZoneEntityTypeConfiguration : IEntityTypeConfiguration<Zone>
             .HasMaxLength(200)
             .IsRequired(true);
 
+        /*
         zoneConfiguration.Property(z => z.Threats)
             .HasMaxLength(2000);
+        */
+        zoneConfiguration
+            .Ignore(z => z.Threats);
 
         zoneConfiguration.Property(z => z.DefendUtcDayOfWeek)
             .HasColumnName("defend_day_of_week")

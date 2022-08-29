@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Admin;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Exceptions;
 using DiscordBot.Domain.Seedwork;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ namespace DiscordBot.Infrastructure.Repositories
             }
         }
 
-        public DirectMessageRepository(ILogger<DirectMessageRepository> logger, BotContext context) : base(logger, context)
+        public DirectMessageRepository(ILogger<DirectMessageRepository> logger, BotContext context, RequestContext requestContext) : base(logger, context, requestContext)
         { }
 
         public DirectMessage Add(DirectMessage directMessage)

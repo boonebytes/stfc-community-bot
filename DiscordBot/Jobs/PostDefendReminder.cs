@@ -1,6 +1,7 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 using Quartz;
@@ -15,19 +16,22 @@ public class PostDefendReminder : BaseJob
     private IAllianceRepository _allianceRepository;
     private IZoneRepository _zoneRepository;
     private Responses.Schedule _scheduleResponse;
+    private RequestContext _requestContext;
 
     public PostDefendReminder(
         ILogger<PostDefendReminder> logger,
         DiscordSocketClient client,
         IAllianceRepository allianceRepository,
         IZoneRepository zoneRepository,
-        Responses.Schedule scheduleResponse
+        Responses.Schedule scheduleResponse,
+        RequestContext requestContext
         ) : base(logger)
     {
         _client = client;
         _allianceRepository = allianceRepository;
         _zoneRepository = zoneRepository;
         _scheduleResponse = scheduleResponse;
+        _requestContext = requestContext;
     }
     
     protected override async Task DoWork(IJobExecutionContext context)
@@ -41,6 +45,8 @@ public class PostDefendReminder : BaseJob
         if (zoneId == 0)
             throw new NullReferenceException("Zone has not been set");
 
+        _requestContext.Init(allianceId);
+        
         var alliance = await _allianceRepository.GetAsync(allianceId);
         if (alliance == null)
             throw new KeyNotFoundException("The alliance could not be found");

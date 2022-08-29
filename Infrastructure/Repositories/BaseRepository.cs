@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Domain.Entities.Request;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -11,11 +12,13 @@ namespace DiscordBot.Infrastructure.Repositories
     {
         protected readonly ILogger<BaseRepository> _logger;
         protected readonly BotContext _context;
+        protected readonly RequestContext _requestContext;
 
-        public BaseRepository(ILogger<BaseRepository> logger, BotContext context)
+        public BaseRepository(ILogger<BaseRepository> logger, BotContext context, RequestContext requestContext)
         {
             _logger = logger;
             _context = context;
+            _requestContext = requestContext;
         }
 
         protected List<long> GetInterestedAlliances(long? allianceId = null)
