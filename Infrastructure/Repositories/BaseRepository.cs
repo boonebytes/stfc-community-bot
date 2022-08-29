@@ -51,8 +51,8 @@ namespace DiscordBot.Infrastructure.Repositories
                                 .Where(d =>
                                         d.Owner == thisAlliance
                                         && (
-                                            d.Relationship == DiplomaticRelation.Friendly
-                                            || d.Relationship == DiplomaticRelation.Allied
+                                            // d.Relationship == DiplomaticRelation.Friendly
+                                            d.Relationship == DiplomaticRelation.Allied
                                         )
                                     );
 
