@@ -369,7 +369,7 @@ public class Schedule
                     )
                     || (
                         m.Embeds.Count == 0
-                        && m.Content.Contains("Assist with Defend of")
+                        && m.Content.Contains("Reminder: Assist with the")
                     )
                     || (
                         m.Embeds.Count == 0
