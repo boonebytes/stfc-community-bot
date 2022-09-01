@@ -9,28 +9,11 @@ using DiscordBot.Domain.Shared;
 namespace DiscordBot.Modules;
 
 [Discord.Interactions.Group("alliance", "Show Alliance Info")]
-public class AllianceModule : InteractionModuleBase<SocketInteractionContext>
+public class AllianceModule : BaseModule
 {
-    private readonly ILogger<AllianceModule> _logger;
-    private readonly IServiceProvider _serviceProvider;
 
-    public AllianceModule(ILogger<AllianceModule> logger, IServiceProvider serviceProvider)
+    public AllianceModule(ILogger<AllianceModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
     {
-        _logger = logger;
-        _serviceProvider = serviceProvider;
-    }
-    
-    private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
-    {
-        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
-        {
-            if (embed != null) properties.Embed = embed;
-            properties.Content = content;
-            if (ephemeral)
-                properties.Flags = MessageFlags.Ephemeral;
-            else
-                properties.Flags = MessageFlags.None;
-        });
     }
     
     [SlashCommand("show", "Shows information about an alliance")]

@@ -1,16 +1,67 @@
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Collections.Immutable;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
+using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Domain.Exceptions;
 
 namespace DiscordBot.Modules;
 
-public partial class StfcModule
+[Discord.Interactions.Group("admin", "Admin Commands")]
+public class AdminModule : BaseModule
 {
+    
+    public AdminModule(ILogger<AdminModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
+    {
+    }
+
+    [RequireOwner]
+    [SlashCommand("reload", "Bot Owner - Reload all data from database, without refreshing schedules.")]
+    public async Task ReloadAsync()
+    {
+        using var serviceScope = _serviceProvider.CreateScope();
+        _ = DeferAsync(true);
+        try
+        {
+            await ModifyResponseAsync(
+                "Reload initiated.",
+                true);
+            var cmdScheduler = _serviceProvider.GetService<Scheduler>();
+            await cmdScheduler.ReloadJobsAsync(CancellationToken.None);
+            await ModifyResponseAsync("Reload complete.", true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
+            await RespondAsync(
+                "An unexpected error has occured.",
+                ephemeral: true);
+        }
+    }
+        
+    [RequireOwner]
+    [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
+    public async Task EchoAsync(
+        [Summary("Input", "Text to repeat")] string input)
+    {
+        if (Context.Channel is ISocketMessageChannel channel)
+        {
+            await channel.SendMessageAsync(input);
+            await RespondAsync(
+                "Done!",
+                ephemeral: true);
+        }
+        else
+        {
+            await RespondAsync(
+                "I can't do that; this doesn't look like a message channel.",
+                ephemeral: true);
+        }
+    }
+    
     /*
     [SlashCommand("setup", "Admin - Check permissions, then configures the bot to post in this channel", runMode: RunMode.Async)]
     [RequireUserPermission(GuildPermission.Administrator)]

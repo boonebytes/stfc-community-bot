@@ -10,62 +10,14 @@ using DiscordBot.Domain.Exceptions;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("stfc", "Star Trek Fleet Command - Community Bot")]
-public partial class StfcModule : InteractionModuleBase<SocketInteractionContext>
+[Discord.Interactions.Group("schedule", "Admin Commands")]
+public class ScheduleModule : BaseModule
 {
-    private readonly ILogger<StfcModule> _logger;
-    private readonly IServiceProvider _serviceProvider;
-
-    public StfcModule(ILogger<StfcModule> logger, IServiceProvider serviceProvider)
-    {
-        _logger = logger;
-        _serviceProvider = serviceProvider;
-    }
-
-    [RequireOwner]
-    [SlashCommand("reload", "Bot Owner - Reload all data from database, without refreshing schedules.")]
-    public async Task ReloadAsync()
-    {
-        using var serviceScope = _serviceProvider.CreateScope();
-        _ = DeferAsync(true);
-        try
-        {
-            await ModifyResponseAsync(
-                "Reload initiated.",
-                true);
-            var cmdScheduler = _serviceProvider.GetService<Scheduler>();
-            await cmdScheduler.ReloadJobsAsync(CancellationToken.None);
-            await ModifyResponseAsync("Reload complete.", true);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
-            await RespondAsync(
-                "An unexpected error has occured.",
-                ephemeral: true);
-        }
-    }
-        
-    [RequireOwner]
-    [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
-    public async Task EchoAsync(
-        [Summary("Input", "Text to repeat")] string input)
-    {
-        if (Context.Channel is ISocketMessageChannel channel)
-        {
-            await channel.SendMessageAsync(input);
-            await RespondAsync(
-                "Done!",
-                ephemeral: true);
-        }
-        else
-        {
-            await RespondAsync(
-                "I can't do that; this doesn't look like a message channel.",
-                ephemeral: true);
-        }
-    }
     
+    public ScheduleModule(ILogger<ScheduleModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
+    {
+    }
+
     [SlashCommand("today", "Prints the defense times for the rest of today")]
     [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task TodayAsync(bool shortVersion = false)
@@ -236,18 +188,5 @@ public partial class StfcModule : InteractionModuleBase<SocketInteractionContext
                 "An unexpected error has occured.",
                 ephemeral: true);
         }
-    }
-
-    private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
-    {
-        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
-        {
-            if (embed != null) properties.Embed = embed;
-            properties.Content = content;
-            if (ephemeral)
-                properties.Flags = MessageFlags.Ephemeral;
-            else
-                properties.Flags = MessageFlags.None;
-        });
     }
 }

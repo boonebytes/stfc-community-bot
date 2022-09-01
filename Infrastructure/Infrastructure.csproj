@@ -39,7 +39,6 @@
     <PackageReference Include="MediatR" Version="10.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="3.21.5" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.21">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

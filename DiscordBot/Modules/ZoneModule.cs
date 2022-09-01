@@ -10,31 +10,11 @@ using DiscordBot.Domain.Shared;
 namespace DiscordBot.Modules;
 
 [Discord.Interactions.Group("zone", "Show / Edit Zone Info")]
-public class ZoneModule : InteractionModuleBase<SocketInteractionContext>
+public class ZoneModule : BaseModule
 {
-    private readonly ILogger<ZoneModule> _logger;
-    private readonly IServiceProvider _serviceProvider;
-
-    public ZoneModule(ILogger<ZoneModule> logger, IServiceProvider serviceProvider)
+    public ZoneModule(ILogger<ZoneModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
     {
-        _logger = logger;
-        _serviceProvider = serviceProvider;
     }
-    
-    private async Task ModifyResponseAsync(string content = "", bool ephemeral = false, Embed embed = null)
-    {
-        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
-        {
-            if (embed != null) properties.Embed = embed;
-            properties.Content = content;
-            if (ephemeral)
-                properties.Flags = MessageFlags.Ephemeral;
-            else
-                properties.Flags = MessageFlags.None;
-        });
-    }
-    
-    
     
     [SlashCommand("set", "Bot Owner - Create or update a zone")]
     [RequireOwner]
