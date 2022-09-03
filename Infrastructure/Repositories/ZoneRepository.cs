@@ -151,7 +151,8 @@ namespace DiscordBot.Infrastructure.Repositories
                     thisZoneOwner != null
                     && povAlliance != null
                     && (
-                        (thisZoneOwner.Group != null && thisZoneOwner.Group == povAlliance.Group)
+                        thisZoneOwner.Id == povAlliance.Id
+                        || (thisZoneOwner.Group != null && thisZoneOwner.Group == povAlliance.Group)
                         || thisZoneOwner.AssignedDiplomacy.Any(ad =>
                             ad.Related == povAlliance
                             && (
@@ -282,6 +283,8 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null)
         {
+            if (!allianceId.HasValue) allianceId = _requestContext.GetAllianceId();
+
             if (!fromDate.HasValue)
             {
                 fromDate = DateTime.UtcNow;

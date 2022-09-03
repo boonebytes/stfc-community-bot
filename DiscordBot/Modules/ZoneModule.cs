@@ -261,6 +261,7 @@ public class ZoneModule : BaseModule
             }
             else
             {
+                /*
                 var potentialHostiles = zoneRepository
                     .GetContenders(thisZone.Id)
                     .Select(a => a.Acronym)
@@ -272,6 +273,13 @@ public class ZoneModule : BaseModule
                     : thisZone.Level == 1
                         ? "Anyone (1^)"
                         : "None";
+                */
+                var potentialThreats = (
+                    thisZone.Threats == ""
+                        ? thisZone.Threats
+                        : (
+                            thisZone.Level == 1 ? "Anyone (1^)" : "None"
+                        ));
 
                 var owner = (thisZone.Owner == null ? "Unclaimed" : thisZone.Owner.Acronym);
                 thisZone.SetNextDefend();

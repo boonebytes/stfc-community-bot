@@ -37,6 +37,7 @@ public class Schedule
         var response = new StringBuilder();
         //var tz = TimeZoneInfo.ConvertTime(NextDefend.Value, )
 
+        /*
         string potentialThreats = "";
         var potentialHostiles = _zoneRepository
             .GetContenders(zone.Id)
@@ -44,6 +45,8 @@ public class Schedule
             .OrderBy(a => a);
 
         potentialThreats = string.Join(", ", potentialHostiles);
+        */
+        var potentialThreats = zone.Threats;
 
         if (shortVersion)
         {
@@ -294,7 +297,7 @@ public class Schedule
             fromDate = fromDate.AddDays(-1);
         }
         fromDate = fromDate.AddHours(-date.ToUniversalTime().Hour + 3);
-
+        
         var todayDefends = _zoneRepository.GetNext24Hours(fromDate, allianceId).OrderBy(z => z.NextDefend).ToList();
 
         AddDefendsToEmbed(todayDefends, ref embedMsg, shortVersion);
