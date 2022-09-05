@@ -13,6 +13,9 @@ namespace DiscordBot.Modules;
 [Discord.Interactions.Group("admin", "Admin Commands")]
 public class AdminModule : BaseModule
 {
+
+    public const string BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE = "set-member-broadcast-role";
+    public const string BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE = "set-allied-broadcast-role";
     
     public AdminModule(ILogger<AdminModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
     {
@@ -58,6 +61,65 @@ public class AdminModule : BaseModule
         {
             await RespondAsync(
                 "I can't do that; this doesn't look like a message channel.",
+                ephemeral: true);
+        }
+    }
+
+
+    [SlashCommand("role-msg", "Post msg to allow users to adjust roles. NOTE: Anyone who sees this message can update their roles")]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task SendRoleMessage(
+        [Summary("UpdateMemberBroadcastRole", "Allow viewers to add/remove themselves from the role for local defends")] bool setMemberBroadcastRole = false,
+        [Summary("UpdateAlliedBroadcastRole", "Allow viewers to add/remove themselves from the role for allied defends")] bool setAlliedBroadcastRole = false
+    )
+    {
+        using var serviceScope = _serviceProvider.CreateScope();
+        _ = DeferAsync(true);
+        try
+        {
+            if (!(setMemberBroadcastRole || setAlliedBroadcastRole))
+            {
+                await ModifyResponseAsync("Can't post a role message where neither role can be updated.", true);
+                return;
+            }
+            
+            var buttonBuilder = new ComponentBuilder();
+
+            var buttonCount = 0;
+            if (setMemberBroadcastRole)
+            {
+                buttonBuilder.WithButton("Our Pings", BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE);
+                buttonCount++;
+            }
+            if (setAlliedBroadcastRole)
+            {
+                buttonBuilder.WithButton("Allied Pings", BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE);
+                buttonCount++;
+            }
+
+            var buttonText = (buttonCount == 1 ? "button" : "buttons");
+            await Context.Channel.SendMessageAsync(
+                $"You can view/add/remove yourself from Discord pings by clicking the {buttonText} below.",
+                components: buttonBuilder.Build()
+            );
+            
+            
+            /*
+            var menuBuilder = new SelectMenuBuilder()
+                .WithPlaceholder("Please select a role")
+                .WithCustomId("role-selector-1")
+                .WithMinValues(1)
+                .WithMaxValues(1)
+            */
+
+            await ModifyResponseAsync("Done!", true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"An unexpected error has occured while trying to run Role-Msg.");
+            await RespondAsync(
+                "An unexpected error has occured.",
                 ephemeral: true);
         }
     }

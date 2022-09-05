@@ -1,7 +1,11 @@
+using System.Diagnostics;
+using System.DirectoryServices.Protocols;
 using System.Reflection;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
+using DiscordBot.Modules;
 
 namespace DiscordBot.Services;
 
@@ -32,6 +36,8 @@ public class InteractionHandler
         // Hook the event into our command handler
         _client.InteractionCreated += InteractionCreatedAsync;
         _client.JoinedGuild += OnJoinedGuild;
+        _client.ButtonExecuted += ButtonClickedAsync;
+        _client.ModalSubmitted += ModalSubmiittedAsync;
         
 
         // Here we discover all of the command modules in the entry 
@@ -75,7 +81,7 @@ public class InteractionHandler
         //await _interactionService.RegisterCommandsGloballyAsync();
 //#endif
     }
-
+    
     private async Task OnJoinedGuild(SocketGuild guild)
     {
         _logger.LogInformation($"Joined guild {guild.Name} ({guild.Id})");  
@@ -160,6 +166,209 @@ public class InteractionHandler
             await interactionContext.Interaction.RespondAsync("An unexpected error has occured.", ephemeral: true);
         }
     }
+
+    private async Task ButtonClickedAsync(SocketMessageComponent component)
+    {
+        using var serviceScope = _serviceProvider.CreateScope();
+        await component.DeferAsync(true);
+
+        var thisUserId = component.User.Id;
+        var thisButtonId = component.Data.CustomId;
+        try
+        {
+            if (!component.GuildId.HasValue)
+            {
+                _logger.LogError("No guild provided for button ID {ButtonID} / user {User}", thisButtonId, thisUserId);
+                await component.FollowupAsync("An unexpected error has occurred.", ephemeral: true);
+                return;
+            }
+            
+            var originalMessage = await component.Channel.GetMessageAsync(component.Message.Id);
+            var thisGuild = _client.GetGuild(component.GuildId.Value);
+            var thisUser = thisGuild.GetUser(thisUserId);
+
+            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+            var thisAlliance = allianceRepository.FindFromGuildId(component.GuildId.Value);
+            
+            /*
+            if (thisButtonId.StartsWith(AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE))
+            {
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var thisAlliance = allianceRepository.FindFromGuildId(component.GuildId.Value);
+                    
+                var memberRoleId = thisAlliance.DefendBroadcastPingRole;
+                if (!memberRoleId.HasValue)
+                {
+                    _logger.LogError("No member role ID found. Button {ButtonID} from user {User} / guild {Guild}", thisButtonId, thisUserId, component.GuildId.Value);
+                    await component.FollowupAsync("An unexpected error has occurred.", ephemeral: true);
+                    return;
+                }
+                
+                var memberRole = thisGuild.GetRole(memberRoleId.Value);
+                var isUserInRole = memberRole.Members.Any(m => m.Id == thisUserId);
+
+                switch (thisButtonId)
+                {
+                    case AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE:
+                    {
+                        var message = "";
+                        var buttonBuilder = new ComponentBuilder();
+                        if (isUserInRole)
+                        {
+                            message =
+                                "You are currently in the member ping role. Click the button below to remove yourself, or ignore this message to cancel.";
+                            buttonBuilder.WithButton("Remove Me",
+                                AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE + "-remove");
+                        }
+                        else
+                        {
+                            message =
+                                "You are currently _**not**_ in the member ping role. Click the button below to remove yourself, or ignore this message to cancel.";
+                            buttonBuilder.WithButton("Add Me", AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE + "-add");
+                        }
+
+                        await component.FollowupAsync(message, components: buttonBuilder.Build(), ephemeral: true);
+                        /*
+                        await component.ModifyOriginalResponseAsync(properties =>
+                        {
+                            properties.Content = message;
+                            properties.Components = buttonBuilder.Build();
+                        });
+                        *
+                        return;
+                    }
+                    case AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE + "-add":
+                        await thisUser.AddRoleAsync(memberRoleId.Value);
+                        await component.FollowupAsync("You have been added to the member broadcast role successfully.", ephemeral: true);
+                        /*
+                        await component.Message.ModifyAsync(properties =>
+                        {
+                            properties.
+                        });
+                        *
+                        await originalMessage.DeleteAsync();
+                        return;
+                    case AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE + "-remove":
+                        await thisUser.RemoveRoleAsync(memberRoleId.Value);
+                        await component.FollowupAsync("You have been removed from the member broadcast role successfully.", ephemeral: true);
+                        await originalMessage.DeleteAsync();
+                        return;
+                }
+            }
+            
+            if (thisButtonId.StartsWith(AdminModule.BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE))
+            {
+                var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+                var thisAlliance = allianceRepository.FindFromGuildId(component.GuildId.Value);
+                
+                var alliedRoleId = thisAlliance.AlliedBroadcastRole;
+                if (!alliedRoleId.HasValue)
+                {
+                    _logger.LogError("No allied role ID found. Button {ButtonID} from user {User} / guild {Guild}", thisButtonId, thisUserId, component.GuildId.Value);
+                    await component.FollowupAsync("An unexpected error has occurred.", ephemeral: true);
+                    return;
+                }
+                
+                var alliedRole = thisGuild.GetRole(alliedRoleId.Value);
+                var isUserInRole = alliedRole.Members.Any(m => m.Id == thisUserId);
+
+                switch (thisButtonId)
+                {
+                    case AdminModule.BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE:
+                    {
+                        var message = "";
+                        var buttonBuilder = new ComponentBuilder();
+                        if (isUserInRole)
+                        {
+                            message =
+                                "You are currently in the allied ping role. Click the button below to remove yourself, or ignore this message to cancel.";
+                            buttonBuilder.WithButton("Remove Me", AdminModule.BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE + "-remove");
+                        }
+                        else
+                        {
+                            message =
+                                "You are currently _**not**_ in the allied ping role. Click the button below to remove yourself, or ignore this message to cancel.";
+                            buttonBuilder.WithButton("Add Me", AdminModule.BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE + "-add");
+                        }
+
+                        await component.FollowupAsync(message, components: buttonBuilder.Build(), ephemeral: true);
+                        return;
+                    }
+                    case AdminModule.BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE + "-add":
+                        await thisUser.AddRoleAsync(alliedRoleId.Value);
+                        await component.UpdateAsync(properties =>
+                        {
+                            properties.Content = "You have been added to the allied broadcast role successfully.";
+                            properties.Components = new ComponentBuilder().Build();
+                        });
+                        return;
+                    case AdminModule.BUTTON_ID_UPDATE_ALLIED_BROADCAST_ROLE + "-remove":
+                        await thisUser.RemoveRoleAsync(alliedRoleId.Value);
+                        await component.DeleteOriginalResponseAsync();
+                        /*
+                        await component.UpdateAsync(properties =>
+                        {
+                            properties.Content = "You have been removed from the allied broadcast role successfully.";
+                            properties.Components = new ComponentBuilder().Build();
+                        });
+                        *
+                        /*
+                        await component.Message.ModifyAsync(properties =>
+                        {
+                            properties.Components = null;
+                        });
+                        *
+                        return;
+                }
+            }
+            */
+
+            
+            /*
+            switch (thisButtonId)
+            {
+                case AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE:
+                    var modalBuilder = new ModalBuilder()
+                        .WithTitle("Member Broadcast Role")
+                        .WithCustomId(AdminModule.BUTTON_ID_UPDATE_MEMBER_BROADCAST_ROLE + "-modal");
+
+                    var componentBuilder = new ComponentBuilder();
+                    
+                    var memberRoleId = thisAlliance.DefendBroadcastPingRole;
+                    if (!memberRoleId.HasValue)
+                    {
+                        _logger.LogError("No member role ID found. Button {ButtonID} from user {User} / guild {Guild}", thisButtonId, thisUserId, component.GuildId.Value);
+                        await component.FollowupAsync("An unexpected error has occurred.", ephemeral: true);
+                        return;
+                    }
+                
+                    var memberRole = thisGuild.GetRole(memberRoleId.Value);
+                    var isUserInRole = memberRole.Members.Any(m => m.Id == thisUserId);
+                    if (isUserInRole)
+                    {
+                        var newRow = new ActionRowBuilder()
+                            .AddComponent(
+                    }
+                    
+            }
+            */
+            _logger.LogError("Reached end of conditional logic for button ID {ButtonID} from user {User} / guild {Guild}", thisButtonId, thisUserId, component.GuildId.Value); 
+            await component.FollowupAsync("An unexpected error has occurred.", ephemeral: true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "An unexpected error has occured while trying to run the Button handler for {ButtonID} from user {User}",
+                thisButtonId, thisUserId);;
+            await component.FollowupAsync("An unexpected error has occurred.", ephemeral: true);
+        }
+    }
+    
+    private async Task ModalSubmiittedAsync(SocketModal arg)
+    {
+        throw new NotImplementedException();
+    }
+    
     /*
     private async Task HandleSlashCommandAsync(SocketSlashCommand command)
     {
