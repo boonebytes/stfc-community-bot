@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.Textract;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ namespace DiscordBot.Infrastructure
                     },
                     ServiceLifetime.Scoped
                 );
+
+            serviceCollection.AddAWSService<IAmazonTextract>();
         }
     }
 }
