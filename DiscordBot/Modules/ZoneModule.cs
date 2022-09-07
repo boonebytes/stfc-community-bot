@@ -238,6 +238,7 @@ public class ZoneModule : BaseModule
     */
 
     [SlashCommand("show", "Shows current zone info from the database")]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
     {
         using var serviceScope = _serviceProvider.CreateScope();

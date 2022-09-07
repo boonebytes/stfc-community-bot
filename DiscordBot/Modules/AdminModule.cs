@@ -7,6 +7,7 @@ using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Exceptions;
+using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
@@ -17,9 +18,9 @@ public class AdminModule : BaseModule
     public AdminModule(ILogger<AdminModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
     {
     }
-
-    [RequireOwner]
+    
     [SlashCommand("reload", "Bot Owner - Reload all data from database, without refreshing schedules.")]
+    [RequireOwner]
     public async Task ReloadAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -41,9 +42,9 @@ public class AdminModule : BaseModule
                 ephemeral: true);
         }
     }
-        
-    [RequireOwner]
+    
     [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
+    [RequireOwner]
     public async Task EchoAsync(
         [Summary("Input", "Text to repeat")] string input)
     {
@@ -136,9 +137,43 @@ public class AdminModule : BaseModule
     }
     */
 
+    [SlashCommand("get-role", "Get information about a specific role")]
+    [RequireOwner]
+    public async Task GetRoleId([Summary("Role")] IRole role)
+    {
+        await RespondAsync($"Role {role.Name} ID = {role.Id}", ephemeral: true);
+    }
+
+    [SlashCommand("get-timestamp", "Converts a date/time to a timestamp to be used in Discord messages")]
+    [RequireOwner]
+    public async Task GetTimestamp(
+        [Summary("Timezone", "Source timezone")] [Autocomplete(typeof(TimeZones))]
+        string timezone,
+        [Summary("Timestamp")] DateTime dateTime
+    )
+    {
+        _ = DeferAsync(true);
+        try
+        {
+            var sourceTimezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+            var destinationTimezone = TimeZoneInfo.Utc;
+            var utcTime = TimeZoneInfo.ConvertTime(dateTime, sourceTimezone, destinationTimezone);
+            await ModifyResponseAsync(
+                $"Date/Time {dateTime} in {timezone} is {utcTime.ToUnixTimestamp()} seconds from Epoch; locally known as <t:{utcTime.ToUnixTimestamp()}>",
+                true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected exception getting timestamp for {Timezone} / {DateTime} on {Guild}", timezone, dateTime, Context.Guild.Id);
+            await ModifyResponseAsync(
+                "An unexpected error has occurred. If this continues, please contact the developer for support.",
+                true);
+        }
+    }
+    
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
-    [RequireUserPermission(GuildPermission.ManageGuild)]
-    //[RequireOwner]
+    //[RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireOwner]
     public async Task ConfigAsync(
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")

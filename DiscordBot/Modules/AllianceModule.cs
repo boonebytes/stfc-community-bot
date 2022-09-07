@@ -17,6 +17,7 @@ public class AllianceModule : BaseModule
     }
     
     [SlashCommand("show", "Shows information about an alliance")]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task AllianceShowAsync(
         [Summary("Name", "Name or acronym of the alliance to display")] string name)
     {
@@ -56,7 +57,8 @@ public class AllianceModule : BaseModule
     }
     
     [SlashCommand("services", "Show alliance service costs")]
-    [RequireUserPermission(GuildPermission.ManageGuild)]
+    //[RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireOwner]
     public async Task ServicesShowAsync()
     {
         try

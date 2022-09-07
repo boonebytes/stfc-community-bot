@@ -19,7 +19,7 @@ public class ScheduleModule : BaseModule
     }
 
     [SlashCommand("today", "Prints the defense times for the rest of today")]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task TodayAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -50,7 +50,7 @@ public class ScheduleModule : BaseModule
     }
         
     [SlashCommand("tomorrow","Prints the defense times for tomorrow")]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task TomorrowAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -83,7 +83,7 @@ public class ScheduleModule : BaseModule
     }
 
     [SlashCommand("next","Prints the next item on the defend schedule")]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task NextAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -115,7 +115,7 @@ public class ScheduleModule : BaseModule
     }
 
     [SlashCommand("all", "Prints the full defense schedule", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task AllAsync(bool shortVersion = false)
     {
         using var serviceScope = _serviceProvider.CreateScope();
@@ -151,7 +151,8 @@ public class ScheduleModule : BaseModule
     }
 
     [SlashCommand("refresh", "Refreshes any short posts for the entire week", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.SendMessages)]
+    //[RequireUserPermission(ChannelPermission.SendMessages)]
+    [RequireOwner]
     public async Task RefreshAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
