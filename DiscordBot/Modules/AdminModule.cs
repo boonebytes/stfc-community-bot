@@ -138,14 +138,16 @@ public class AdminModule : BaseModule
     */
 
     [SlashCommand("get-role", "Get information about a specific role")]
-    [RequireOwner]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
     public async Task GetRoleId([Summary("Role")] IRole role)
     {
         await RespondAsync($"Role {role.Name} ID = {role.Id}", ephemeral: true);
     }
 
     [SlashCommand("get-timestamp", "Converts a date/time to a timestamp to be used in Discord messages")]
-    [RequireOwner]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
     public async Task GetTimestamp(
         [Summary("Timezone", "Source timezone")] [Autocomplete(typeof(TimeZones))]
         string timezone,
@@ -172,8 +174,8 @@ public class AdminModule : BaseModule
     }
     
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
-    //[RequireUserPermission(GuildPermission.ManageGuild)]
-    [RequireOwner]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
     public async Task ConfigAsync(
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")

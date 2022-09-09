@@ -151,8 +151,8 @@ public class ScheduleModule : BaseModule
     }
 
     [SlashCommand("refresh", "Refreshes any short posts for the entire week", runMode: RunMode.Async)]
-    //[RequireUserPermission(ChannelPermission.SendMessages)]
-    [RequireOwner]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
     public async Task RefreshAsync()
     {
         using var serviceScope = _serviceProvider.CreateScope();
