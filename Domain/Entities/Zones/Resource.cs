@@ -34,6 +34,11 @@ namespace DiscordBot.Domain.Entities.Zones
         public static Resource ProgenitorCores = new(63, nameof(ProgenitorCores), "Progenitor Cores");
         public static Resource ProgenitorReactors = new(64, nameof(ProgenitorReactors), "Progenitor Reactors");
 
+        public static Resource CollisionalPlasma = new(71, nameof(CollisionalPlasma), "Collisional Plasma");
+        public static Resource MagneticPlasma = new(72, nameof(MagneticPlasma), "Magnetic Plasma");
+        public static Resource SubspaceSuperconductor = new(73, nameof(SubspaceSuperconductor), "Subspace Superconductor");
+        public static Resource AllianceReserves = new(74, nameof(AllianceReserves), "Alliance Reserves");
+        
         public virtual string Label { get; private set; }
 
         public Resource(int id, string name, string label)
@@ -49,7 +54,8 @@ namespace DiscordBot.Domain.Entities.Zones
                     CrystalTier3, CrystalTier4,
                     OreTier3, OreTier4,
                     RefinedIsogenTier1, RefinedIsogenTier2, RefinedIsogenTier3,
-                    ProgenitorEmitters, ProgenitorDiodes, ProgenitorCores, ProgenitorReactors
+                    ProgenitorEmitters, ProgenitorDiodes, ProgenitorCores, ProgenitorReactors,
+                    CollisionalPlasma, MagneticPlasma, SubspaceSuperconductor, AllianceReserves
             };
 
         public static Resource FromName(string name)
