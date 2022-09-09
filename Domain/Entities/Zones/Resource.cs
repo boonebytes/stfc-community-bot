@@ -36,7 +36,7 @@ namespace DiscordBot.Domain.Entities.Zones
 
         public static Resource CollisionalPlasma = new(71, nameof(CollisionalPlasma), "Collisional Plasma");
         public static Resource MagneticPlasma = new(72, nameof(MagneticPlasma), "Magnetic Plasma");
-        public static Resource SubspaceSuperconductor = new(73, nameof(SubspaceSuperconductor), "Subspace Superconductor");
+        public static Resource SubspaceSuperconductor = new(73, nameof(SubspaceSuperconductor), "Subspace Superconductors");
         public static Resource AllianceReserves = new(74, nameof(AllianceReserves), "Alliance Reserves");
         
         public virtual string Label { get; private set; }
