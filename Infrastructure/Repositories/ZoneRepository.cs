@@ -152,7 +152,7 @@ namespace DiscordBot.Infrastructure.Repositories
                     && povAlliance != null
                     && (
                         thisZoneOwner.Id == povAlliance.Id
-                        || (thisZoneOwner.Group != null && thisZoneOwner.Group == povAlliance.Group)
+                        || (thisZoneOwner.Group != null && povAlliance.Group != null && thisZoneOwner.Group == povAlliance.Group)
                         || thisZoneOwner.AssignedDiplomacy.Any(ad =>
                             ad.Related == povAlliance
                             && (

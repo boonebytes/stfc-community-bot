@@ -276,7 +276,7 @@ public class ZoneModule : BaseModule
                         : "None";
                 */
                 var potentialThreats = (
-                    thisZone.Threats == ""
+                    thisZone.Threats != ""
                         ? thisZone.Threats
                         : (
                             thisZone.Level == 1 ? "Anyone (1^)" : "None"
