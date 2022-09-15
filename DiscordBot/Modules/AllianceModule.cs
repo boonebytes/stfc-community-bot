@@ -40,9 +40,9 @@ public class AllianceModule : BaseModule
             {
                 string response = $"Alliance: {alliance.Acronym} ({alliance.Name})\n"
                                   + $"Total Zones: {alliance.Zones.Count}\n";
-                foreach (var zone in alliance.Zones.OrderBy(z => z.Level).ThenBy(z => z.Name))
+                foreach (var zone in alliance.Zones.OrderBy(z => z.NextDefend).ThenBy(z => z.Name))
                 {
-                    response += $"- {zone.Name} ({zone.Level}^)\n";
+                    response += $"- {zone.Name} ({zone.Level}^) - {zone.NextDefend?.ToEasternTime().ToString("M d h:m tt")} ET";
                 }
                 await RespondAsync(response);
             }
