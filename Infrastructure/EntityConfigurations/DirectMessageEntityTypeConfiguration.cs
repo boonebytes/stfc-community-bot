@@ -1,5 +1,4 @@
-﻿using System;
-using DiscordBot.Domain.Entities.Admin;
+﻿using DiscordBot.Domain.Entities.Admin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

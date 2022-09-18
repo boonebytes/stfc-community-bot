@@ -1,6 +1,4 @@
-﻿using System;
-using DiscordBot.Domain.Entities.Alliances;
-using DiscordBot.Domain.Events;
+﻿using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Zones

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DiscordBot.Domain.Events;
-using MediatR;
 
 namespace DiscordBot.Domain.Seedwork
 {

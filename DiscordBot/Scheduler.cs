@@ -1,34 +1,27 @@
-﻿using Discord.WebSocket;
-using DiscordBot.Domain.Entities.Alliances;
-using DiscordBot.Domain.Entities.Services;
+﻿using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using Quartz;
-using Quartz.Impl;
-using Quartz.Logging;
 
 namespace DiscordBot;
 
 public partial class Scheduler
 {
     private readonly ILogger<Scheduler> _logger;
-    private readonly DiscordSocketClient _client;
     private readonly IServiceProvider _serviceProvider;
-    private IScheduler _quartzScheduler = null;
+    private IScheduler _quartzScheduler;
 
     public Scheduler(
         ILogger<Scheduler> logger,
-        DiscordSocketClient client,
         IServiceProvider serviceProvider
     )
     {
         _logger = logger;
-        _client = client;
         _serviceProvider = serviceProvider;
     }
 
     public async Task HandleZoneUpdatedAsync(long zoneId)
     {
-        _logger.LogInformation($"Zone Update received: {zoneId}");
+        _logger.LogInformation("Zone Update received: {ZoneId}", zoneId);
         
         using var thisServiceScope = _serviceProvider.CreateScope();
         var zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();

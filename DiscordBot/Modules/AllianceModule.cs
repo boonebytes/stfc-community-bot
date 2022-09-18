@@ -8,7 +8,8 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("alliance", "Show Alliance Info")]
+[EnabledInDm(false)]
+[Group("alliance", "Show Alliance Info")]
 public class AllianceModule : BaseModule
 {
 
@@ -21,7 +22,7 @@ public class AllianceModule : BaseModule
     public async Task AllianceShowAsync(
         [Summary("Name", "Name or acronym of the alliance to display")] string name)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         try
         {
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
@@ -52,7 +53,7 @@ public class AllianceModule : BaseModule
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
-            _logger.LogError(ex, "An unexpected error has occured while trying to run AllianceShowAsync");
+            Logger.LogError(ex, "An unexpected error has occured while trying to run AllianceShowAsync");
         }
     }
     
@@ -63,7 +64,7 @@ public class AllianceModule : BaseModule
     {
         try
         {
-            using var serviceScope = _serviceProvider.CreateScope();
+            using var serviceScope = ServiceProvider.CreateScope();
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
@@ -78,8 +79,6 @@ public class AllianceModule : BaseModule
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
             
             var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
-
-            var countedServices = new List<long>();
 
             var basicServices =
                 await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
@@ -121,19 +120,19 @@ public class AllianceModule : BaseModule
             if (basicServices.Any())
             {
                 summary += "**Basic Services:**\n";
-                summary += getServiceCostSummary(basicServices) + "\n";
+                summary += GetServiceCostSummary(basicServices) + "\n";
             }
 
             if (preferredServices.Any())
             {
                 summary += "**Basic + Preferred Services:**\n";
-                summary += getServiceCostSummary(preferredServices) + "\n";
+                summary += GetServiceCostSummary(preferredServices) + "\n";
             }
 
             if (desiredServices.Any())
             {
                 summary += "**Basic + Preferred + Desired Services:**\n";
-                summary += getServiceCostSummary(desiredServices) + "\n";
+                summary += GetServiceCostSummary(desiredServices) + "\n";
             }
 
             summary = summary.TrimEnd('\n');
@@ -159,11 +158,11 @@ public class AllianceModule : BaseModule
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error in AllianceServiceCostSummary");
+            Logger.LogError(e, "Error in AllianceServiceCostSummary");
         }
     }
 
-    private static string getServiceCostSummary(Dictionary<Resource, long> allCosts)
+    private static string GetServiceCostSummary(Dictionary<Resource, long> allCosts)
     {
         string result = "";
         foreach (var res in new[]

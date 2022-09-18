@@ -13,7 +13,6 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Quartz;
-using Quartz.Logging;
 
 namespace DiscordBot;
 
@@ -72,15 +71,16 @@ public class Program
                     GatewayIntents =  GatewayIntents.AllUnprivileged
                                       | GatewayIntents.GuildMembers
                                       | GatewayIntents.GuildMessages
-                                      | GatewayIntents.DirectMessages
+                                      | GatewayIntents.DirectMessages,
+                    MessageCacheSize = 100
                 };
                 //clientConfig.GatewayIntents &= Discord.GatewayIntents.GuildMembers;
-                var client = new DiscordSocketClient(clientConfig);
-                services.AddSingleton<DiscordSocketClient>(client);
+                var discordClient = new DiscordSocketClient(clientConfig);
+                services.AddSingleton(discordClient);
 
                     
-                var interactionService = new InteractionService(client.Rest);
-                services.AddSingleton<InteractionService>(interactionService);
+                var interactionService = new InteractionService(discordClient.Rest);
+                services.AddSingleton(interactionService);
                 services.AddSingleton<Services.InteractionHandler>();
                     
 

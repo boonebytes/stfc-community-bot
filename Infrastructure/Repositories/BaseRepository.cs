@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
@@ -10,15 +9,15 @@ namespace DiscordBot.Infrastructure.Repositories
 {
     public abstract class BaseRepository
     {
-        protected readonly ILogger<BaseRepository> _logger;
-        protected readonly BotContext _context;
-        protected readonly RequestContext _requestContext;
+        protected readonly ILogger<BaseRepository> Logger;
+        protected readonly BotContext Context;
+        protected readonly RequestContext RequestContext;
 
-        public BaseRepository(ILogger<BaseRepository> logger, BotContext context, RequestContext requestContext)
+        protected BaseRepository(ILogger<BaseRepository> logger, BotContext context, RequestContext requestContext)
         {
-            _logger = logger;
-            _context = context;
-            _requestContext = requestContext;
+            Logger = logger;
+            Context = context;
+            RequestContext = requestContext;
         }
 
         protected List<long> GetInterestedAlliances(long? allianceId = null)
@@ -26,7 +25,7 @@ namespace DiscordBot.Infrastructure.Repositories
             List<long> interestedAlliances;
             if (allianceId.HasValue)
             {
-                var thisAlliance = _context.Alliances
+                var thisAlliance = Context.Alliances
                     .Include(a => a.Group)
                         .ThenInclude(ag => ag.Alliances)
                     .Include(a => a.AssignedDiplomacy)
@@ -46,7 +45,7 @@ namespace DiscordBot.Infrastructure.Repositories
                                                 .Select(gm => gm.Id).ToList();
                 }
 
-                var friendlies = _context.Diplomacies
+                var friendlies = Context.Diplomacies
                                 .AsQueryable()
                                 .Where(d =>
                                         d.Owner == thisAlliance
@@ -64,7 +63,7 @@ namespace DiscordBot.Infrastructure.Repositories
             }
             else
             {
-                interestedAlliances = _context.Alliances
+                interestedAlliances = Context.Alliances
                                             .AsQueryable()
                                             .Select(a => a.Id)
                                             .ToList();

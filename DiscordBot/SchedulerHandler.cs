@@ -1,4 +1,3 @@
-using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Events;
 using MediatR;
 

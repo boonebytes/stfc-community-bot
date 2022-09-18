@@ -3,7 +3,6 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
-using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 
@@ -13,14 +12,12 @@ public class Schedule
 {
     private readonly ILogger<Schedule> _logger;
     private readonly IZoneRepository _zoneRepository;
-    private readonly RequestContext _requestContext;
     private readonly DiscordSocketClient _client;
 
-    public Schedule(ILogger<Schedule> logger, IZoneRepository zoneRepository, RequestContext requestContext, DiscordSocketClient client)
+    public Schedule(ILogger<Schedule> logger, IZoneRepository zoneRepository, DiscordSocketClient client)
     {
         _logger = logger;
         _zoneRepository = zoneRepository;
-        _requestContext = requestContext;
         _client = client;
     }
 
@@ -344,7 +341,7 @@ public class Schedule
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unexpected error occured while trying to write all to {guildId} {channelId}");
+            _logger.LogError(ex, "Unexpected error occured while trying to write all to {GuildId} {ChannelId}", guildId, channelId);
         }
     }
 
@@ -368,7 +365,7 @@ public class Schedule
                     )
                     || (
                         m.Embeds.Count == 0
-                        && m.MentionedEveryone == true
+                        && m.MentionedEveryone
                     )
                     || (
                         m.Embeds.Count == 0
@@ -402,7 +399,8 @@ public class Schedule
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, $"Unable to delete messages for new schedule for {alliance.Acronym} in guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value}");
+            _logger.LogWarning(ex, "Unable to delete messages for new schedule for {Alliance} in guild {GuildId} channel {DefendSchedulePostChannel}",
+            alliance.Acronym, alliance.GuildId.Value, alliance.DefendSchedulePostChannel.Value);
         }
     }
 
@@ -419,7 +417,7 @@ public class Schedule
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to update all weekly messages for {alliance.Acronym}");
+            _logger.LogError(ex, "Unable to update all weekly messages for {Alliance}", alliance.Acronym);
         }
     }
 
@@ -454,12 +452,14 @@ public class Schedule
             }
             else
             {
-                _logger.LogError($"Unable to find mesage to edit {dayOfWeek} day-of-week schedule for {alliance.Acronym}. Records returned: {dayShortPosts.Count}");
+                _logger.LogError("Unable to find message to edit {DayOfWeek} day-of-week schedule for {Alliance}. Records returned: {DayShortPostsCount}",
+                    dayOfWeek, alliance.Acronym, dayShortPosts.Count);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, $"Unable to edit message for {dayOfWeek} day-of-week schedule for {alliance.Acronym}.");
+            _logger.LogWarning(ex, "Unable to edit message for {DayOfWeek} day-of-week schedule for {Alliance}",
+                dayOfWeek, alliance.Acronym);
         }
     }
 }

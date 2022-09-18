@@ -37,8 +37,7 @@ public class Worker : BackgroundService
             IZoneRepository zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
             await zoneRepository.InitZones();
         }
-
-        var config = new DiscordSocketConfig { MessageCacheSize = 100 };
+        
         var cmdService = _serviceProvider.GetRequiredService<CommandService>();
         var cmdHandler = _serviceProvider.GetRequiredService<Services.CommandHandler>();
         var intHandler = _serviceProvider.GetRequiredService<Services.InteractionHandler>();
@@ -63,7 +62,7 @@ public class Worker : BackgroundService
                         var cmdScheduler = _serviceProvider.GetService<Scheduler>();
                         _ = Task.Run(async () =>
                         {
-                            cmdScheduler.Run(stoppingToken);
+                            await cmdScheduler.Run(stoppingToken);
                         }, stoppingToken);
                     }
                     

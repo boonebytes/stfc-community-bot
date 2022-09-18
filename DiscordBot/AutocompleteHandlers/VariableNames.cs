@@ -1,13 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Interactions;
-using DiscordBot.Domain.Entities.Zones;
-using DiscordBot.Infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.AutocompleteHandlers
 {
@@ -19,7 +11,7 @@ namespace DiscordBot.AutocompleteHandlers
             public const string AlliedBroadcastRole = "AlliedBroadcastRole";
         }
         
-        protected static Dictionary<string, string> _variables = new();
+        protected static readonly Dictionary<string, string> Variables = new();
 
         static VariableNames()
         {
@@ -31,7 +23,7 @@ namespace DiscordBot.AutocompleteHandlers
 
         private static void AddVariable(string name, string description)
         {
-            _variables.Add(name, description);
+            Variables.Add(name, description);
         }
 
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(
@@ -48,10 +40,10 @@ namespace DiscordBot.AutocompleteHandlers
                 var data = autocompleteInteraction.Data.Current.Value as string;
                 if (string.IsNullOrEmpty(data))
                     return AutocompletionResult.FromSuccess(
-                        _variables.Select(v => new AutocompleteResult(v.Key, v.Key))
+                        Variables.Select(v => new AutocompleteResult(v.Key, v.Key))
                         );
                 
-                var matches = _variables
+                var matches = Variables
                     .Where(kbp => kbp.Key.ToUpper().Contains(data.ToUpper()));
                 return AutocompletionResult.FromSuccess(
                             matches.Select(m => new AutocompleteResult(m.Key, m.Key))

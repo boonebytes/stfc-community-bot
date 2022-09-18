@@ -1,23 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Interactions;
-using DiscordBot.Domain.Entities.Zones;
-using DiscordBot.Infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.AutocompleteHandlers
 {
     public class TimeZones : AutocompleteHandler
     {
-        private static List<string> _timezones = null;
+        private static readonly List<string> Timezones;
         
         static TimeZones()
         {
-            _timezones = new();
+            Timezones = new();
             
             TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
             var tzs = TimeZoneInfo.GetSystemTimeZones()
@@ -30,7 +22,7 @@ namespace DiscordBot.AutocompleteHandlers
 
         private static void AddTimeZone(string name)
         {
-            _timezones.Add(name);
+            Timezones.Add(name);
         }
 
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(
@@ -46,7 +38,7 @@ namespace DiscordBot.AutocompleteHandlers
                 if (string.IsNullOrEmpty(data))
                     return AutocompletionResult.FromSuccess();
                 
-                var matches = _timezones.Where(z => z.ToUpper().Contains(data.ToUpper()));
+                var matches = Timezones.Where(z => z.ToUpper().Contains(data.ToUpper()));
                 return AutocompletionResult.FromSuccess(
                             matches.Select(m => new AutocompleteResult(m, m))
                         );

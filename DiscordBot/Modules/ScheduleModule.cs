@@ -1,8 +1,6 @@
-using System.Collections.Immutable;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Entities.Zones;
@@ -10,7 +8,8 @@ using DiscordBot.Domain.Exceptions;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("schedule", "Admin Commands")]
+[EnabledInDm(false)]
+[Group("schedule", "Admin Commands")]
 public class ScheduleModule : BaseModule
 {
     
@@ -22,7 +21,7 @@ public class ScheduleModule : BaseModule
     [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task TodayAsync(bool shortVersion = false)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         try
         {
             _ = this.DeferAsync();
@@ -38,11 +37,13 @@ public class ScheduleModule : BaseModule
         catch (BotDomainException ex)
         {
             await this.RespondAsync(ex.Message, ephemeral: true);
-            _logger.LogError(ex, $"Exception when trying to run TODAY for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "Exception when trying to run TODAY for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run TODAY for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "An unexpected error has occured while trying to run TODAY for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
@@ -53,7 +54,7 @@ public class ScheduleModule : BaseModule
     [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task TomorrowAsync(bool shortVersion = false)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         try
         {
             _ = this.DeferAsync();
@@ -71,11 +72,13 @@ public class ScheduleModule : BaseModule
             await this.RespondAsync(
                 ex.Message,
                 ephemeral: true);
-            _logger.LogError(ex, $"Exception when trying to run TOMORROW for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "Exception when trying to run TOMORROW for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run TOMORROW for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "An unexpected error has occured while trying to run TOMORROW for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
@@ -86,7 +89,7 @@ public class ScheduleModule : BaseModule
     [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task NextAsync()
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         try
         {
             _ = this.DeferAsync(true);
@@ -103,11 +106,13 @@ public class ScheduleModule : BaseModule
         catch (BotDomainException ex)
         {
             await this.RespondAsync(ex.Message, ephemeral: true);
-            _logger.LogError(ex, $"Exception when trying to run NEXT for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "Exception when trying to run NEXT for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run NEXT for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "An unexpected error has occured while trying to run NEXT for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
@@ -118,7 +123,7 @@ public class ScheduleModule : BaseModule
     [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task AllAsync(bool shortVersion = false)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         try
         {
             await this.DeferAsync(ephemeral: true);
@@ -139,14 +144,16 @@ public class ScheduleModule : BaseModule
             await this.RespondAsync(
                 ex.Message,
                 ephemeral: true);
-            _logger.LogError(ex, $"Exception when trying to run ALL for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "Exception when trying to run ALL for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
         catch (Exception ex)
         {
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run ALL for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "An unexpected error has occured while trying to run ALL for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
     }
 
@@ -155,7 +162,7 @@ public class ScheduleModule : BaseModule
     [RequireOwner(Group = "Permission")]
     public async Task RefreshAsync()
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         await this.DeferAsync(ephemeral: true);
         try
         {
@@ -176,7 +183,8 @@ public class ScheduleModule : BaseModule
             }
             else
             {
-                _logger.LogError($"Unable to cast context channel to text channel for {Context.Guild.Name} in {Context.Channel.Name}.");
+                Logger.LogError("Unable to cast context channel to text channel for {GuildName} in {ChannelName}",
+                    Context.Guild.Name, Context.Channel.Name);
                 await ModifyResponseAsync(
                     "An unexpected error has occured.",
                     ephemeral: true);
@@ -184,7 +192,8 @@ public class ScheduleModule : BaseModule
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run REFRESH for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex, "An unexpected error has occured while trying to run REFRESH for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);

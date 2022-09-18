@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using DiscordBot.Domain.Exceptions;
 using DiscordBot.Domain.Seedwork;
 

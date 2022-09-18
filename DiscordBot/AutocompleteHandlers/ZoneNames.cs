@@ -1,80 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Interactions;
 using DiscordBot.Domain.Entities.Zones;
-using DiscordBot.Infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.AutocompleteHandlers
 {
     public class ZoneNames : AutocompleteHandler
     {
-        private static List<string> Zones = null;
-
-        /*
-        static ZoneNames()
-        {
-            Zones = new();
-            AddZone("Abilakk");
-            AddZone("Adia");
-            AddZone("Anzat");
-            AddZone("Aonad");
-            AddZone("Asiti");
-            AddZone("Avansa");
-            AddZone("Aylus");
-            AddZone("Barasa");
-            AddZone("Beku");
-            AddZone("Ber'Tho");
-            AddZone("Bimasa");
-            AddZone("Bolari");
-            AddZone("Brellan");
-            AddZone("Brijac");
-            AddZone("Burran");
-            AddZone("Comst");
-            AddZone("Corva");
-            AddZone("Crios");
-            AddZone("Duportas");
-            AddZone("Eldur");
-            AddZone("Ezla");
-            AddZone("Framtid");
-            AddZone("Gelida");
-            AddZone("Helvi");
-            AddZone("Hoobishan");
-            AddZone("Hrojost");
-            AddZone("Innlasn");
-            AddZone("Klefaski");
-            AddZone("Kolava");
-            AddZone("Lenara");
-            AddZone("Mak'ala");
-            AddZone("Nujord");
-            AddZone("Nyrheimur");
-            AddZone("Otima");
-            AddZone("Parturi");
-            AddZone("Perim");
-            AddZone("Qeyma");
-            AddZone("Roshar");
-            AddZone("Ruhe");
-            AddZone("Saldeti");
-            AddZone("Stilhe");
-            AddZone("Tazolka");
-            AddZone("Tefkari");
-            AddZone("Temeri");
-            AddZone("Tezera");
-            AddZone("Thaylen");
-            AddZone("Tholus");
-            AddZone("Thosz");
-            AddZone("Tigan");
-            AddZone("Triss");
-            AddZone("Vantar");
-            AddZone("Vemira");
-            AddZone("Zamaro");
-            AddZone("Zhian");
-        }
-        */
+        private static readonly List<string> Zones = new();
 
         private static void AddZone(string name)
         {
@@ -90,9 +22,8 @@ namespace DiscordBot.AutocompleteHandlers
             var logger = services.GetRequiredService<ILogger<ZoneNames>>();
             try
             {
-                if (Zones == null)
+                if (!Zones.Any())
                 {
-                    Zones = new List<string>();
                     using var thisServiceScope = services.CreateScope();
                     var zoneRepository = thisServiceScope.ServiceProvider.GetRequiredService<IZoneRepository>();
                     var allZones = await zoneRepository.GetLookupListAsync();

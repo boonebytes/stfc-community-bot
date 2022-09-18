@@ -15,10 +15,11 @@ public class QuartzLogger : ILogProvider
     
     public Logger GetLogger(string name)
     {
-        _logger.LogInformation($"GetLogger {name}");
+        _logger.LogInformation("GetLogger {Name}", name);
         return (level, func, ex, parameters) =>
         {
-            _logger.LogInformation($"GetLogger Function: {level.ToString()}, {parameters.ToString()}");
+            _logger.LogInformation("GetLogger Function: {Level}, {Parameters}",
+                level.ToString(), parameters.ToString());
             LogLevel logLevel;
             switch (level)
             {

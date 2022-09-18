@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Request;
-using DiscordBot.Domain.Exceptions;
 using DiscordBot.Domain.Seedwork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,7 +14,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             get
             {
-                return _context;
+                return Context;
             }
         }
 
@@ -28,7 +25,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             if (directMessage.IsTransient())
             {
-                return _context.DirectMessages
+                return Context.DirectMessages
                     .Add(directMessage)
                     .Entity;
             }
@@ -41,7 +38,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<DirectMessage> GetAsync(long id)
         {
-            var directMessage = await _context.DirectMessages.AsQueryable()
+            var directMessage = await Context.DirectMessages.AsQueryable()
                 .Where(a => a.Id == id)
                 .SingleOrDefaultAsync();
             return directMessage;

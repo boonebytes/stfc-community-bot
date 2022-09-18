@@ -13,7 +13,7 @@ namespace DiscordBot.Infrastructure.Repositories
 {
     public class ZoneRepository : BaseRepository, IZoneRepository
     {
-        public IUnitOfWork UnitOfWork => _context;
+        public IUnitOfWork UnitOfWork => Context;
 
         public ZoneRepository(ILogger<ZoneRepository> logger, BotContext context, RequestContext requestContext) : base(logger, context, requestContext)
         { }
@@ -22,7 +22,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             if (zone.IsTransient())
             {
-                return _context.Zones
+                return Context.Zones
                     .Add(zone)
                     .Entity;
             }
@@ -35,9 +35,9 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<Zone> GetAsync(long id)
         {
-            var povAllianceId = _requestContext.GetAllianceId();
+            var povAllianceId = RequestContext.GetAllianceId();
             
-            var zone = await _context.Zones
+            var zone = await Context.Zones
                 .Include(z => z.Owner)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
@@ -50,9 +50,9 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<Zone> GetByNameAsync(string name)
         {
-            var povAllianceId = _requestContext.GetAllianceId();
+            var povAllianceId = RequestContext.GetAllianceId();
         
-            var zone = await _context.Zones
+            var zone = await Context.Zones
                 .Include(z => z.Owner)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
@@ -68,13 +68,13 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             var results = new List<Alliance>();
 
-            var zone = _context.Zones
+            var zone = Context.Zones
                 .Include(z => z.Owner)
                 .FirstOrDefault(z => z.Id == zoneId);
 
             if (zone.Owner == null) return results;
             
-            var alliance = _context.Alliances
+            var alliance = Context.Alliances
                 .Include(a => a.AssignedDiplomacy)
                     .ThenInclude(ad => ad.Related)
                 .Include(a => a.AssignedDiplomacy)
@@ -108,23 +108,23 @@ namespace DiscordBot.Infrastructure.Repositories
         
         public List<Alliance> GetContenders(long zoneId)
         {
-            var povAllianceId = _requestContext.GetAllianceId();
+            var povAllianceId = RequestContext.GetAllianceId();
             
-            var thisZone = _context.Zones
+            var thisZone = Context.Zones
                 .Include(z => z.Owner)
                     .ThenInclude(o => o.AssignedDiplomacy)
                         .ThenInclude(ad => ad.Related)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
                         .ThenInclude(tz => tz.Owner)
-                .SingleOrDefault(z => z.Id == zoneId);;
+                .SingleOrDefault(z => z.Id == zoneId);
             
             if (thisZone == null) return null;
             
             var thisZoneOwner = thisZone.Owner;
             var zoneNeighbours = thisZone.ZoneNeighbours.Select(zn => zn.ToZone);
 
-            var povAlliance = _context.Alliances
+            var povAlliance = Context.Alliances
                 .FirstOrDefault(a => a.Id == povAllianceId);
 
             /*
@@ -197,11 +197,11 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Zone>> GetAllAsync(long? allianceId = null, bool withTracking = true)
         {
-            QueryTrackingBehavior tracking = _context.ChangeTracker.QueryTrackingBehavior;
+            QueryTrackingBehavior tracking = Context.ChangeTracker.QueryTrackingBehavior;
             if (!withTracking) tracking = QueryTrackingBehavior.NoTracking;
 
             List<long> interestedAlliances = GetInterestedAlliances(allianceId);
-            var results = await _context.Zones
+            var results = await Context.Zones
                             .Include(z => z.Owner)
                             .Include(z => z.ZoneNeighbours)
                                 .ThenInclude(zn => zn.ToZone)
@@ -221,7 +221,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Zone>> GetLookupListAsync()
         {
-            return await _context.Zones
+            return await Context.Zones
                 .Include(z => z.Owner)
                 .OrderBy(z => z.Name)
                 .ToListAsync();
@@ -229,7 +229,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public Zone Update(Zone zone)
         {
-            return _context.Zones
+            return Context.Zones
                     .Update(zone)
                     .Entity;
         }
@@ -237,7 +237,7 @@ namespace DiscordBot.Infrastructure.Repositories
         public Zone GetNextDefend(long? allianceId = null)
         {
             var interestedAlliances = GetInterestedAlliances(allianceId);
-            var next = _context.Zones
+            var next = Context.Zones
                             .Include(z => z.Owner)
                             .Include(z => z.ZoneNeighbours)
                                 .ThenInclude(zn => zn.ToZone)
@@ -259,7 +259,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             var interestedAlliances = GetInterestedAlliances(allianceId);
 
-            var results = _context.Zones
+            var results = Context.Zones
                 .Include(z => z.Owner)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
@@ -283,7 +283,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public List<Zone> GetNext24Hours(DateTime? fromDate = null, long? allianceId = null)
         {
-            if (!allianceId.HasValue) allianceId = _requestContext.GetAllianceId();
+            if (!allianceId.HasValue) allianceId = RequestContext.GetAllianceId();
 
             if (!fromDate.HasValue)
             {
@@ -292,7 +292,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
             var interestedAlliances = GetInterestedAlliances(allianceId);
 
-            var nextDefends = _context.Zones
+            var nextDefends = Context.Zones
                 .Include(z => z.Owner)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)
@@ -316,7 +316,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task InitZones(bool softUpdate = false)
         {
-            var allZones = _context.Zones
+            var allZones = Context.Zones
                     .ToList();
             if (softUpdate)
                 allZones = allZones.Where(z =>
@@ -341,7 +341,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 */
                 zone.SetNextDefend(true);
             }
-            await _context.SaveEntitiesAsync();
+            await Context.SaveEntitiesAsync();
         }
     }
 }

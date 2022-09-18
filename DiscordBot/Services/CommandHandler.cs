@@ -9,7 +9,6 @@ namespace DiscordBot.Services;
 public class CommandHandler
 {
     private readonly ILogger<CommandHandler> _logger;
-    private readonly Models.Config.Discord _discordConfig;
     private readonly IServiceProvider _serviceProvider;
     private readonly IServiceProvider _scopedProvider;
     private readonly DiscordSocketClient _client;
@@ -18,12 +17,11 @@ public class CommandHandler
     private IDMChannel _ownerChannel;
 
     // Retrieve client and CommandService instance via ctor
-    public CommandHandler(ILogger<CommandHandler> logger, DiscordSocketClient client, CommandService commands, Models.Config.Discord discordConfig, IServiceProvider serviceProvider)
+    public CommandHandler(ILogger<CommandHandler> logger, DiscordSocketClient client, CommandService commands, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _commands = commands;
         _client = client;
-        _discordConfig = discordConfig;
         _serviceProvider = serviceProvider;
 
         var serviceScope = _serviceProvider.CreateScope();
@@ -57,7 +55,7 @@ public class CommandHandler
             }
             */
             
-            var loadedModules = await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
         }
         catch (Exception ex)
         {

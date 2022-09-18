@@ -1,5 +1,4 @@
 using Quartz;
-using Quartz.Impl;
 
 namespace DiscordBot;
 

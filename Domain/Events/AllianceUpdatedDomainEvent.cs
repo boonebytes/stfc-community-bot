@@ -1,8 +1,5 @@
-﻿using System;
-using DiscordBot.Domain.Entities.Alliances;
-using DiscordBot.Domain.Entities.Zones;
+﻿using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Seedwork;
-using MediatR;
 
 namespace DiscordBot.Domain.Events
 {

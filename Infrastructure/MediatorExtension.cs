@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using DiscordBot.Domain.Events;
 using DiscordBot.Domain.Seedwork;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DiscordBot.Infrastructure

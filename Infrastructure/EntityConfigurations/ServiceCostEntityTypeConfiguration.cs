@@ -1,7 +1,4 @@
-﻿using System;
-using DiscordBot.Domain.Entities.Alliances;
-using DiscordBot.Domain.Entities.Services;
-using DiscordBot.Domain.Entities.Zones;
+﻿using DiscordBot.Domain.Entities.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

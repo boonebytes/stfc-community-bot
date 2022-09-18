@@ -19,8 +19,9 @@ public class LoggingService
     {
         if (message.Exception is CommandException cmdException)
         {
-            _logger.LogError($"[Command/{message.Severity}] {cmdException.Command.Aliases.First()}"
-                             + $" failed to execute in {cmdException.Context.Channel}.", cmdException);
+            _logger.LogError(cmdException,
+                "[Command/{MessageSeverity}] {CommandAlias} failed to execute in {ContextChannel}",
+                message.Severity, cmdException.Command.Aliases.First(), cmdException.Context.Channel);
         }
         else
         {

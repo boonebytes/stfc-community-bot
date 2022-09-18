@@ -11,12 +11,12 @@ public abstract class BaseJob : IJob
     }
     */
     
-    protected readonly ILogger _logger;
+    protected readonly ILogger Logger;
 
     protected BaseJob(
         ILogger logger)
     {
-        _logger = logger;
+        Logger = logger;
     }
 
     protected abstract Task DoWork(IJobExecutionContext context);
@@ -27,14 +27,15 @@ public abstract class BaseJob : IJob
         {
             await DoWork(context);
         }
-        catch (JobExecutionException ex)
+        catch (JobExecutionException)
         {
             throw;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,
-                $"Uncaught exception in job {context.JobDetail.Key.ToString()}");
+            Logger.LogError(ex,
+                "Uncaught exception in job {JobId}",
+                context.JobDetail.Key.ToString());
             throw new JobExecutionException(ex, false);
         }
     }

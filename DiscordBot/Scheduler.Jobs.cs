@@ -195,7 +195,8 @@ public partial class Scheduler
     /// <param name="isDaily"></param>
     private async Task AddOrUpdateJob<T>(DateTimeOffset triggerTime, long allianceId, long itemId = 0, bool isDaily = true) where T : BaseJob
     {
-        _logger.LogInformation($"Adding job {typeof(T).Name} for {triggerTime}, {allianceId}/{itemId}");
+        _logger.LogInformation("Adding job {JobType} for {TriggerTime}, {AllianceId}/{ItemId}",
+            typeof(T).Name, triggerTime, allianceId, itemId);
 
         var jobKey = GetJobKey<T>(allianceId, itemId);
         

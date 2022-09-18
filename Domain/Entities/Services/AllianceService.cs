@@ -1,5 +1,4 @@
 using DiscordBot.Domain.Entities.Alliances;
-using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Services

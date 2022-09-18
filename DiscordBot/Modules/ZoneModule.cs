@@ -9,7 +9,8 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("zone", "Show / Edit Zone Info")]
+[EnabledInDm(false)]
+[Group("zone", "Show / Edit Zone Info")]
 public class ZoneModule : BaseModule
 {
     public ZoneModule(ILogger<ZoneModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
@@ -26,7 +27,7 @@ public class ZoneModule : BaseModule
         string timeOfDayUtc = "",
         string notes = "")
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         await this.DeferAsync(ephemeral: true);
         try
         {
@@ -65,11 +66,10 @@ public class ZoneModule : BaseModule
 
             if (timeOfDayUtc != "")
             {
-                DateTime verifyTimeOfDay;
                 var culture = new CultureInfo("en-US");
 
                 if (!DateTime.TryParseExact(timeOfDayUtc, "h:mm tt", culture, DateTimeStyles.AssumeUniversal,
-                        out verifyTimeOfDay))
+                        out _))
                 {
                     await ModifyResponseAsync(
                         "The time of day could not be understood.",
@@ -111,7 +111,7 @@ public class ZoneModule : BaseModule
                     name,
                     level,
                     ownerAlliance,
-                    dayOfWeekUtc.ToString(),
+                    dayOfWeekUtc,
                     timeOfDayUtc,
                     notes
                 );
@@ -125,7 +125,6 @@ public class ZoneModule : BaseModule
             else
             {
                 // Update zone
-                var newLevel = (level == 0 ? zoneExists.Level : level);
                 var newDayOfWeek = (dayOfWeekUtc == "" || dayOfWeekUtc == "0"
                     ? zoneExists.DefendUtcDayOfWeek
                     : dayOfWeekUtc);
@@ -164,8 +163,9 @@ public class ZoneModule : BaseModule
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
-            _logger.LogError(ex,
-                $"An unexpected error has occured while trying to run Zone Create Update for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex,
+                "An unexpected error has occured while trying to run Zone Create Update for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
     }
 
@@ -241,7 +241,7 @@ public class ZoneModule : BaseModule
     [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         await this.DeferAsync(ephemeral: false);
         
         try
@@ -301,8 +301,9 @@ public class ZoneModule : BaseModule
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
-            _logger.LogError(ex,
-                $"An unexpected error has occured while trying to run Show Zone for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex,
+                "An unexpected error has occured while trying to run Show Zone for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
     }
 }

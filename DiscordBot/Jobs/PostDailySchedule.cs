@@ -2,7 +2,6 @@ using Discord;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
-using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Domain.Shared;
 using Quartz;
 
@@ -14,7 +13,6 @@ public class PostDailySchedule : BaseJob
     private readonly DiscordSocketClient _client;
     
     private IAllianceRepository _allianceRepository;
-    private IZoneRepository _zoneRepository;
     private Responses.Schedule _scheduleResponse;
     private RequestContext _requestContext;
 
@@ -22,14 +20,12 @@ public class PostDailySchedule : BaseJob
         ILogger<PostDailySchedule> logger,
         DiscordSocketClient client,
         IAllianceRepository allianceRepository,
-        IZoneRepository zoneRepository,
         Responses.Schedule scheduleResponse,
         RequestContext requestContext
         ) : base(logger)
     {
         _client = client;
         _allianceRepository = allianceRepository;
-        _zoneRepository = zoneRepository;
         _scheduleResponse = scheduleResponse;
         _requestContext = requestContext;
     }
@@ -44,11 +40,11 @@ public class PostDailySchedule : BaseJob
         _requestContext.Init(allianceId);
         
         var alliance = await _allianceRepository.GetAsync(allianceId);
-        _logger.LogInformation($"Preparing to post schedule for {alliance.Acronym}");
+        Logger.LogInformation("Preparing to post schedule for {Alliance}", alliance.Acronym);
 
         if (!alliance.GuildId.HasValue || !alliance.DefendSchedulePostChannel.HasValue)
         {
-            _logger.LogWarning($"Unable to post for {alliance.Acronym} - Guild or channel cannot be blank");
+            Logger.LogWarning("Unable to post for {Alliance} - Guild or channel cannot be blank", alliance.Acronym);
             return;
         }
 
@@ -57,8 +53,10 @@ public class PostDailySchedule : BaseJob
             var guild = _client.GetGuild(alliance.GuildId.Value);
             if (guild == null)
             {
-                _logger.LogError(
-                    $"Unable to post schedule to guild {alliance.GuildId.Value} for {alliance.Acronym} - Guild not found");
+                Logger.LogError(
+                    "Unable to post schedule to guild {GuildId} for {Alliance} - Guild not found",
+                    alliance.GuildId.Value, alliance.Acronym
+                    );
                 _allianceRepository.FlagSchedulePosted(alliance);
                 await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
             }
@@ -67,8 +65,9 @@ public class PostDailySchedule : BaseJob
                 var channel = guild.GetTextChannel(alliance.DefendSchedulePostChannel.Value);
                 if (channel == null)
                 {
-                    _logger.LogError(
-                        $"Unable to post schedule to guild {alliance.GuildId.Value} channel {alliance.DefendSchedulePostChannel.Value} for {alliance.Acronym} - Guild or channel not found");
+                    Logger.LogError(
+                        "Unable to post schedule to guild {GuildId} channel {DefendSchedulePostChannel} for {Alliance} - Guild or channel not found",
+                        alliance.GuildId.Value, alliance.DefendSchedulePostChannel.Value, alliance.Acronym);
                     _allianceRepository.FlagSchedulePosted(alliance);
                     await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
                 }
@@ -90,8 +89,9 @@ public class PostDailySchedule : BaseJob
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,
-                $"An unexpected error occurred while trying to post the schedule to guild {alliance.Acronym} ({alliance.GuildId.Value}), channel {alliance.DefendSchedulePostChannel.Value}");
+            Logger.LogError(ex,
+                "An unexpected error occurred while trying to post the schedule to guild {Alliance} ({GuildId}), channel {DefendSchedulePostChannel}",
+                alliance.Acronym, alliance.GuildId.Value, alliance.DefendSchedulePostChannel.Value);
             _allianceRepository.FlagSchedulePosted(alliance);
             await _allianceRepository.UnitOfWork.SaveEntitiesAsync();
         }
@@ -120,7 +120,7 @@ public class PostDailySchedule : BaseJob
                 message += $" in guild {alliance.GuildId.Value}";
             if (alliance.DefendSchedulePostChannel.HasValue)
                 message += $" channel {alliance.DefendSchedulePostChannel.Value}";
-            _logger.LogWarning(ex, message);
+            Logger.LogWarning(ex, message);
         }
     }
 }

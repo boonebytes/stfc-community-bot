@@ -15,7 +15,6 @@ public class PostAssistReminder : BaseJob
     
     private IAllianceRepository _allianceRepository;
     private IZoneRepository _zoneRepository;
-    private Responses.Schedule _scheduleResponse;
     private RequestContext _requestContext;
 
     public PostAssistReminder(
@@ -23,14 +22,12 @@ public class PostAssistReminder : BaseJob
         DiscordSocketClient client,
         IAllianceRepository allianceRepository,
         IZoneRepository zoneRepository,
-        Responses.Schedule scheduleResponse,
         RequestContext requestContext
         ) : base(logger)
     {
         _client = client;
         _allianceRepository = allianceRepository;
         _zoneRepository = zoneRepository;
-        _scheduleResponse = scheduleResponse;
         _requestContext = requestContext;
     }
     

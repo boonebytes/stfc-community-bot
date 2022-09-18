@@ -19,7 +19,7 @@ public class MonitorScheduler : BaseJob
 
     protected override async Task DoWork(IJobExecutionContext context)
     {
-        _logger.LogInformation("Running the MonitorScheduler job");
+        Logger.LogInformation("Running the MonitorScheduler job");
         await _allianceRepository.InitPostSchedule();
         await _zoneRepository.InitZones();
     }

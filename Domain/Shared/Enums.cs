@@ -1,5 +1,4 @@
-﻿using System;
-namespace DiscordBot.Domain.Shared
+﻿namespace DiscordBot.Domain.Shared
 {
     public class Enums
     {

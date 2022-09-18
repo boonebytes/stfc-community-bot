@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DiscordBot.Domain.Seedwork;
 
 namespace DiscordBot.Domain.Entities.Alliances

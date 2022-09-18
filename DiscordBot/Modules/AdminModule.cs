@@ -1,17 +1,14 @@
-using System.Collections.Immutable;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
-using DiscordBot.Domain.Entities.Zones;
-using DiscordBot.Domain.Exceptions;
 using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("admin", "Admin Commands")]
+[Group("admin", "Admin Commands")]
 public class AdminModule : BaseModule
 {
     
@@ -23,26 +20,27 @@ public class AdminModule : BaseModule
     [RequireOwner]
     public async Task ReloadAsync()
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         _ = DeferAsync(true);
         try
         {
             await ModifyResponseAsync(
                 "Reload initiated.",
                 true);
-            var cmdScheduler = _serviceProvider.GetService<Scheduler>();
+            var cmdScheduler = ServiceProvider.GetService<Scheduler>();
             await cmdScheduler.ReloadJobsAsync(CancellationToken.None);
             await ModifyResponseAsync("Reload complete.", true);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
+            Logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
         }
     }
     
+    [EnabledInDm(false)]
     [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
     [RequireOwner]
     public async Task EchoAsync(
@@ -137,6 +135,7 @@ public class AdminModule : BaseModule
     }
     */
 
+    [EnabledInDm(false)]
     [SlashCommand("get-role", "Get information about a specific role")]
     [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
@@ -166,13 +165,14 @@ public class AdminModule : BaseModule
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected exception getting timestamp for {Timezone} / {DateTime} on {Guild}", timezone, dateTime, Context.Guild.Id);
+            Logger.LogError(ex, "Unexpected exception getting timestamp for {Timezone} / {DateTime} on {Guild}", timezone, dateTime, Context.Guild.Id);
             await ModifyResponseAsync(
                 "An unexpected error has occurred. If this continues, please contact the developer for support.",
                 true);
         }
     }
     
+    [EnabledInDm(false)]
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
     [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
@@ -180,7 +180,7 @@ public class AdminModule : BaseModule
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         _ = DeferAsync(true);
         try
         {
@@ -245,7 +245,7 @@ public class AdminModule : BaseModule
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected exception running config for {Name} = {Value} on {Guild}", name, value, Context.Guild.Id);
+            Logger.LogError(ex, "Unexpected exception running config for {Name} = {Value} on {Guild}", name, value, Context.Guild.Id);
             await ModifyResponseAsync(
                 "An unexpected error has occurred. If this continues, please contact the developer for support.",
                 true);
@@ -253,6 +253,7 @@ public class AdminModule : BaseModule
         
     }
     
+    [EnabledInDm(false)]
     private async Task<string> ConfigAlliedBroadcastRole(string value, Alliance thisAlliance,
         IAllianceRepository allianceRepository)
     {
@@ -280,6 +281,7 @@ public class AdminModule : BaseModule
         return "Value updated successfully";
     }
     
+    [EnabledInDm(false)]
     private async Task<string> ConfigDefendBroadcastTimeAsync(string value, Alliance thisAlliance,
         IAllianceRepository allianceRepository)
     {
