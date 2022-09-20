@@ -9,6 +9,7 @@ using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Infrastructure;
 using DiscordBot.Infrastructure.Repositories;
+using DiscordBot.Jobs;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -50,6 +51,7 @@ public class Program
                 Models.Config.Discord discordConfig = configuration.GetSection(Models.Config.Discord.Section).Get<Models.Config.Discord>();
 
                 Models.Config.App appConfig = configuration.GetSection(Models.Config.App.Section).Get<Models.Config.App>();
+                Models.Config.Scheduler schedulerConfig = configuration.GetSection(Models.Config.Scheduler.Section).Get<Models.Config.Scheduler>();
                 
                 //services.ConfigureBotInfrastructure(configuration.GetSection("MySQL").GetValue<string>("ConnectionString"));
                 services.ConfigureBotInfrastructure(configuration.GetSection("Oracle").GetValue<string>("ConnectionString"));
@@ -63,7 +65,8 @@ public class Program
 
                 services.AddSingleton(discordConfig);
                 services.AddSingleton(appConfig);
-                
+                services.AddSingleton(schedulerConfig);
+
                 var clientConfig = new DiscordSocketConfig
                 {
                     //ExclusiveBulkDelete = false,
@@ -96,15 +99,46 @@ public class Program
                     typeof(Scheduler).Assembly,
                     typeof(Domain.Events.AllianceUpdatedDomainEvent).Assembly);
 
+                
                 services.AddQuartz(q =>
                 {
+                    //q.SchedulerName = schedulerConfig.RamName;
                     q.UseMicrosoftDependencyInjectionJobFactory();
+                    q.UseDefaultThreadPool(x => x.MaxConcurrency = schedulerConfig.RamMaxConcurrency);
+                    q.UseInMemoryStore();
                 });
 
+                // Only add jobs that go into persistent storage here.
+                // RAM stored jobs are loaded fine with the above AddQuartz block
+                services.AddTransient<TimerDirectMessage>();
+                
+                /*
+                services.AddQuartz(q =>
+                {
+                    q.SchedulerName = schedulerConfig.PersistentName;
+                    q.UseMicrosoftDependencyInjectionJobFactory();
+                    q.UseDedicatedThreadPool(x => x.MaxConcurrency = schedulerConfig.PersistentMaxConcurrency);
+                    q.UsePersistentStore(x =>
+                    {
+                        // force job data map values to be considered as strings
+                        // prevents nasty surprises if object is accidentally serialized and then 
+                        // serialization format breaks, defaults to false
+                        x.UseProperties = true;
+
+                        x.UseOracle(schedulerConfig.PersistentDbConnection);
+
+                        // this requires Quartz.Serialization.Json NuGet package
+                        x.UseJsonSerializer();
+                    });
+                });
+                */
+                
+                /*
                 services.AddQuartzHostedService(q =>
                 {
                     q.WaitForJobsToComplete = true;
                 });
+                */
 
                 services.BuildServiceProvider();
             });

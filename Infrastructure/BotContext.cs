@@ -13,6 +13,7 @@ using DiscordBot.Infrastructure.Entities;
 using DiscordBot.Infrastructure.EntityConfigurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Logging;
 
@@ -97,10 +98,15 @@ namespace DiscordBot.Infrastructure
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                entityType.SetTableName(entityType.GetTableName().ToUpper());
+                var schemaName = entityType.GetSchema();
+                var tableName = entityType.GetTableName().ToUpper();
+                entityType.SetTableName(tableName);
+                var tableIdentifier = StoreObjectIdentifier.Table(tableName, schemaName);
+                
+                
                 foreach(var property in entityType.GetProperties())
                 {
-                    property.SetColumnName(property.GetColumnName().ToUpper());
+                    property.SetColumnName(property.GetColumnName(tableIdentifier).ToUpper());
                 }
                 
                 if (entityType.IsKeyless)

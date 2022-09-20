@@ -26,6 +26,7 @@ namespace DiscordBot.Infrastructure.Repositories
             if (allianceId.HasValue)
             {
                 var thisAlliance = Context.Alliances
+                    .AsSplitQuery()
                     .Include(a => a.Group)
                         .ThenInclude(ag => ag.Alliances)
                     .Include(a => a.AssignedDiplomacy)

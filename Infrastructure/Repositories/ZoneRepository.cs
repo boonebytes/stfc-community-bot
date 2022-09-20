@@ -260,6 +260,7 @@ namespace DiscordBot.Infrastructure.Repositories
             var interestedAlliances = GetInterestedAlliances(allianceId);
 
             var results = Context.Zones
+                .AsSplitQuery()
                 .Include(z => z.Owner)
                 .Include(z => z.ZoneNeighbours)
                     .ThenInclude(zn => zn.ToZone)

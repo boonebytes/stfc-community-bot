@@ -2,6 +2,7 @@ using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Jobs;
 using Quartz;
+using Quartz.Impl.Matchers;
 
 namespace DiscordBot;
 
@@ -11,13 +12,15 @@ public partial class Scheduler
     {
         if (typeof(T) == typeof(PostDefendReminder))
         {
-            return new JobKey(typeof(T).Name + "-" + itemId);
+            //return new JobKey(typeof(T).Name + "-" + itemId, typeof(T).Name);
+            return new JobKey(typeof(T).Name + "-" + itemId, typeof(T).Name);
         }
         else
         {
             return new JobKey(typeof(T).Name
-                                    + "-" 
-                                    + (itemId == 0 ? allianceId : itemId + "-" + allianceId));
+                + "-" 
+                + (itemId == 0 ? allianceId : itemId + "-" + allianceId));
+            //, typeof(T).Name);
         }
         
     }
@@ -27,7 +30,21 @@ public partial class Scheduler
         try
         {
             _logger.LogInformation("Loading jobs");
-            await _quartzScheduler.Clear(cancellationToken);
+            await _ramScheduler.Clear(cancellationToken);
+            /*
+            var removeGroups = new string[]
+            {
+                nameof(MonitorScheduler),
+                nameof(PostAssistReminder),
+                nameof(PostDailySchedule),
+                nameof(PostDefendReminder)
+            };
+            foreach (var group in removeGroups)
+            {
+                var groupKeys = await _quartzScheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(group), cancellationToken);
+                await _quartzScheduler.DeleteJobs(groupKeys, cancellationToken);
+            }
+            */
             await AddMonitorJob();
             
             using var thisServiceScope = _serviceProvider.CreateScope();
@@ -102,11 +119,11 @@ public partial class Scheduler
         
         var jobTrigger = jobTriggerBuilder.Build();
 
-        if (await _quartzScheduler.CheckExists(jobKey))
+        if (await _ramScheduler.CheckExists(jobKey))
         {
-            await _quartzScheduler.DeleteJob(jobKey);
+            await _ramScheduler.DeleteJob(jobKey);
         }
-        await _quartzScheduler.ScheduleJob(job, jobTrigger);
+        await _ramScheduler.ScheduleJob(job, jobTrigger);
     }
     
     /// <summary>
@@ -180,9 +197,9 @@ public partial class Scheduler
     {
         var jobKey = GetJobKey<T>(allianceId, itemId);
         
-        if (await _quartzScheduler.CheckExists(jobKey))
+        if (await _ramScheduler.CheckExists(jobKey))
         {
-            await _quartzScheduler.DeleteJob(jobKey);
+            await _ramScheduler.DeleteJob(jobKey);
         }
     }
 
@@ -248,11 +265,11 @@ public partial class Scheduler
 
         var jobTrigger = jobTriggerBuilder.Build();
 
-        if (await _quartzScheduler.CheckExists(jobKey))
+        if (await _ramScheduler.CheckExists(jobKey))
         {
-            await _quartzScheduler.DeleteJob(jobKey);
+            await _ramScheduler.DeleteJob(jobKey);
         }
-        await _quartzScheduler.ScheduleJob(job, jobTrigger);
+        await _ramScheduler.ScheduleJob(job, jobTrigger);
         
     }
 }

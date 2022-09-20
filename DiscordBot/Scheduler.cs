@@ -8,15 +8,19 @@ public partial class Scheduler
 {
     private readonly ILogger<Scheduler> _logger;
     private readonly IServiceProvider _serviceProvider;
-    private IScheduler _quartzScheduler;
+    private readonly Models.Config.Scheduler _schedulerConfig;
+    private readonly ISchedulerFactory _schedulerFactory;
+    private IScheduler _ramScheduler;
+    private IScheduler _persistentScheduler;
 
     public Scheduler(
         ILogger<Scheduler> logger,
-        IServiceProvider serviceProvider
-    )
+        IServiceProvider serviceProvider, Models.Config.Scheduler schedulerConfig, ISchedulerFactory schedulerFactory)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _schedulerConfig = schedulerConfig;
+        _schedulerFactory = schedulerFactory;
     }
 
     public async Task HandleZoneUpdatedAsync(long zoneId)

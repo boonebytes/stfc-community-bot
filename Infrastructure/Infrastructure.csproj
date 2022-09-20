@@ -31,18 +31,18 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.21" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.21">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="MediatR" Version="10.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Oracle.EntityFrameworkCore" Version="3.21.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.21">
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.61" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.13.17" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.15.0" />
   </ItemGroup>
 </Project>
