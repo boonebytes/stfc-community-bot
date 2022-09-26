@@ -44,6 +44,7 @@ public class Worker : BackgroundService
 
         _client.Log += LogAsync;
         cmdService.Log += LogAsync;
+        
 
         await _client.LoginAsync(TokenType.Bot, _discordConfig.Token);
         await _client.StartAsync();

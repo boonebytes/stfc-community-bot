@@ -8,7 +8,7 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[EnabledInDm(false)]
+// [DefaultMemberPermissions(GuildPermission.ManageGuild)]
 [Group("alliance", "Show Alliance Info")]
 public class AllianceModule : BaseModule
 {
@@ -27,8 +27,16 @@ public class AllianceModule : BaseModule
         {
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
 
-            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            if (Context.Channel is IPrivateChannel)
+            {
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(null);
+            }
+            else
+            {
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            }
+            
             
             var alliance = await allianceRepository.GetByNameOrAcronymAsync(name);
             if (alliance == null)
@@ -62,6 +70,12 @@ public class AllianceModule : BaseModule
     [RequireOwner(Group = "Permission")]
     public async Task ServicesShowAsync()
     {
+        if (Context.Channel is IPrivateChannel channel)
+        {
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
+            return;
+        }
+        
         try
         {
             using var serviceScope = ServiceProvider.CreateScope();

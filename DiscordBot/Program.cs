@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Diagnostics;
+using Discord;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -18,8 +19,13 @@ namespace DiscordBot;
 
 public class Program
 {
+    //protected static HttpClientGlobalListener observer = new HttpClientGlobalListener();
+    //protected static IDisposable subscription = null; 
+
     public static void Main(string[] args)
     {
+        //subscription = DiagnosticListener.AllListeners.Subscribe(observer);
+
         CreateHostBuilder(args).Build().Run();
     }
 

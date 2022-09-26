@@ -8,6 +8,7 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
+// [DefaultMemberPermissions(GuildPermission.ManageGuild)]
 [Group("admin", "Admin Commands")]
 public class AdminModule : BaseModule
 {
@@ -40,7 +41,6 @@ public class AdminModule : BaseModule
         }
     }
     
-    [EnabledInDm(false)]
     [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
     [RequireOwner]
     public async Task EchoAsync(
@@ -61,86 +61,17 @@ public class AdminModule : BaseModule
         }
     }
     
-    /*
-    [SlashCommand("setup", "Admin - Check permissions, then configures the bot to post in this channel", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.Administrator)]
-    public async Task SetupAsync()
-    {
-        await DeferAsync(ephemeral: true);
-        
-        _logger.LogInformation($"Setup started from {Context.Guild.Id} / {Context.Channel.Id}");
-        using var serviceScope = _serviceProvider.CreateScope();
-        var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-        var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-
-        if (Context.Channel is not SocketTextChannel channel)
-        {
-            _logger.LogInformation($"Unable to determine channel");
-            await ModifyResponseAsync($"Unable to determine channel. Please ensure that a text channel is being used, then try again. Guild ${Context.Guild.Id}", ephemeral: true);
-            return;
-        }
-        
-        if (thisAlliance == null || thisAlliance.Id == 0)
-        {
-            _logger.LogInformation($"Server not initialized");
-            await ModifyResponseAsync($"Server hasn't been initialized in the bot. Please provide these two IDs to the bot developer, along with your alliance name: Guild ${Context.Guild.Id} / Channel ${channel.Id}", ephemeral: true);
-            return;
-        }
-        
-        serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
-
-        var guildUser = await Context.Guild.GetCurrentUserAsync();
-        var channelPerms = guildUser.GetPermissions(channel);
-
-        if (!(
-                channelPerms.Has(ChannelPermission.ViewChannel)
-                && channelPerms.Has(ChannelPermission.ReadMessageHistory)
-                && channelPerms.Has(ChannelPermission.SendMessages)
-                && channelPerms.Has(ChannelPermission.ManageMessages)
-                && channelPerms.Has(ChannelPermission.MentionEveryone)))
-        {
-            _logger.LogInformation($"Channel missing permissions");
-            await ModifyResponseAsync($"Bot doesn't have enough permissions in channel to post the schedule. Ensure these permissions have been granted: View Channel, Read Message History, Send Messages, Manage Messages, and Mention Everyone. Guild ${Context.Guild.Id} / Channel ${channel.Id}", ephemeral: true);
-            return;
-        }
-
-        if (!thisAlliance.DefendSchedulePostChannel.HasValue)
-        {
-            thisAlliance.SetDefendSchedulePostChannel(channel.Id);
-            allianceRepository.Update(thisAlliance);
-            await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-            
-            await ModifyResponseAsync(
-                $"Added the {thisAlliance.Acronym} defense schedule for channel {channel.Id}. Everything looks good! Now posting the starting schedule. Please delete any bot posts above this line.",
-                ephemeral: true);
-        }
-        else if (thisAlliance.DefendSchedulePostChannel.Value != channel.Id)
-        {
-            thisAlliance.SetDefendSchedulePostChannel(channel.Id);
-            allianceRepository.Update(thisAlliance);
-            await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-            
-            await ModifyResponseAsync(
-                $"Changed {thisAlliance.Acronym} defense schedule from Channel {thisAlliance.DefendSchedulePostChannel.Value} to {channel.Id}. Everything else looks good! Now posting the starting schedule. Please delete any bot posts above this line.",
-                ephemeral: true);
-        }
-        else
-        {
-            await ModifyResponseAsync($"Bot seems to be good to go with these permissions. Guild ${Context.Guild.Id} / Channel ${channel.Id}", ephemeral: true);
-        }
-        
-        var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
-        await schedule.PostAllAsync(Context.Guild.Id, channel.Id, thisAlliance.Id, true);
-        _logger.LogInformation($"Setup complete");
-    }
-    */
-
-    [EnabledInDm(false)]
     [SlashCommand("get-role", "Get information about a specific role")]
     [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
     public async Task GetRoleId([Summary("Role")] IRole role)
     {
+        if (Context.Channel is IPrivateChannel channel)
+        {
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
+            return;
+        }
+        
         await RespondAsync($"Role {role.Name} ID = {role.Id}", ephemeral: true);
     }
 
@@ -172,7 +103,6 @@ public class AdminModule : BaseModule
         }
     }
     
-    [EnabledInDm(false)]
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
     [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
@@ -180,6 +110,12 @@ public class AdminModule : BaseModule
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
     {
+        if (Context.Channel is IPrivateChannel channel)
+        {
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
+            return;
+        }
+
         using var serviceScope = ServiceProvider.CreateScope();
         _ = DeferAsync(true);
         try
@@ -253,7 +189,6 @@ public class AdminModule : BaseModule
         
     }
     
-    [EnabledInDm(false)]
     private async Task<string> ConfigAlliedBroadcastRole(string value, Alliance thisAlliance,
         IAllianceRepository allianceRepository)
     {

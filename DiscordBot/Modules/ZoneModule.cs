@@ -9,7 +9,6 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[EnabledInDm(false)]
 [Group("zone", "Show / Edit Zone Info")]
 public class ZoneModule : BaseModule
 {
@@ -249,9 +248,16 @@ public class ZoneModule : BaseModule
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
             
-            // TODO: Get current alliance from Guild ID, then filter results.
-            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            if (Context.Channel is IPrivateChannel)
+            {
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(null);
+            }
+            else
+            {
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            }
+
             
             var thisZone = await zoneRepository.GetByNameAsync(name);
             if (thisZone == null)
