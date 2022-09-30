@@ -1,3 +1,19 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using System.Globalization;
 using Discord;
 using Discord.Interactions;
@@ -9,7 +25,6 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[EnabledInDm(false)]
 [Group("zone", "Show / Edit Zone Info")]
 public class ZoneModule : BaseModule
 {
@@ -249,9 +264,16 @@ public class ZoneModule : BaseModule
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
             
-            // TODO: Get current alliance from Guild ID, then filter results.
-            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            if (Context.Channel is IPrivateChannel)
+            {
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(null);
+            }
+            else
+            {
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            }
+
             
             var thisZone = await zoneRepository.GetByNameAsync(name);
             if (thisZone == null)
