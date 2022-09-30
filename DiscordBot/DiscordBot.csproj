@@ -34,9 +34,9 @@
     <None Remove="CsvHelper" />
     <None Remove="Views\" />
     <None Remove="Microsoft.Extensions.Configuration.UserSecrets" />
+    <None Remove="Readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Components" />
     <Folder Include="Models\" />
     <Folder Include="Models\Config\" />
     <Folder Include="Modules\" />

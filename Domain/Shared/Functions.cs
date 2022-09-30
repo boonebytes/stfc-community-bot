@@ -5,8 +5,18 @@ namespace DiscordBot.Domain.Shared
     {
         public static DateTime ToEasternTime(this DateTime dateTime)
         {
-            var zone = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
-
+            TimeZoneInfo zone = null;
+            try
+            {
+                zone = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
+            }
+            catch (TimeZoneNotFoundException ex)
+            {
+                // This block may be reached on Windows hosts
+                // TODO: Verify this respects DST adjustments
+                zone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            }
+            
             return TimeZoneInfo.ConvertTimeFromUtc(dateTime.ToUniversalTime(), zone);
         }
 

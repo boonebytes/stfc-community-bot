@@ -10,7 +10,13 @@ namespace DiscordBot.Infrastructure
             serviceCollection.AddDbContext<BotContext>(options =>
                     {
                         //options.UseMySql(connectionString);
-                        options.UseOracle(connectionString);
+                        
+                        // TODO: Investigate query splitting behavior
+                        // (src: https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries)
+                        options.UseOracle(connectionString, oracleOptions =>
+                        {
+                            //oracleOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
+                        });
                     },
                     ServiceLifetime.Scoped
                 );
