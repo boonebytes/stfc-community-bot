@@ -11,12 +11,6 @@ would like to make a derivative of this code or if you find it useful.
   - 
 ## To-Do
 
-### Documentation
-
-- List bare minimum permissions for the bot to use.
-- List database grants for bot
-- Generate / populate tables
-
 ### Implementation / Road Map
 
 - Add functionality for alliances to quietly indicate interest in a
@@ -38,6 +32,33 @@ internal identifiers.
   stored as a configuration setting within the bot), then it is deleted
   in Discord, the bot won't pick up on a new item with the same name.
   In these instances, please provide the new IDs to the bot.
+
+#### Discord Permissions
+
+- Server invite settings (from the Discord Developer Portal URL Generator):
+  - Scopes:
+    - bot
+    - applications.commands
+  - Bot Permissions:
+    - Change Nickname
+    - Read Messages / View Channels
+    - Send Messages
+    - Read Message History
+    - Mention Everyone (unless defined explicitly on the channels)
+  - Sample URL parameters:
+    - permissions=67308544
+    - scope=bot%20applications.commands
+  
+- Territory Schedule channel:
+  - Send messages
+  - Mention everyone / all roles
+  - Manage messages
+  - Read message history
+
+- Other channels where the commands may be used:
+  - Send messages
+  - Read message history
+
 
 ### Command Usage
 
@@ -74,7 +95,9 @@ Steps to deploy:
 1. Create a schema to hold the data tables. This should not be
 the same as the bot's database user account.
 2. Create a database account to be used by the bot. It should
-have DML grants on the data schema. (TODO: Identify these grants)
+have select/insert/update/delete grants on all the tables identified
+or referenced in Entity Framework. The Entity Framework database
+generation script could be used as a reference point.
 3. Configure a development environment with a connection to an
 Oracle database. This is required for the Entity Framework commands 
 to work.
