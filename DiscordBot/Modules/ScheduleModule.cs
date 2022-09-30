@@ -34,7 +34,6 @@ public class ScheduleModule : BaseModule
     }
 
     [SlashCommand("today", "Prints the defense times for the rest of today")]
-    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task TodayAsync(bool shortVersion = false)
     {
         using var serviceScope = ServiceProvider.CreateScope();
@@ -52,7 +51,7 @@ public class ScheduleModule : BaseModule
         }
         catch (BotDomainException ex)
         {
-            await this.RespondAsync(ex.Message, ephemeral: true);
+            await this.RespondAsync(ex.Message, ephemeral: false);
             Logger.LogError(ex, "Exception when trying to run TODAY for {GuildName} in {ChannelName}",
                 Context.Guild.Name, Context.Channel.Name);
         }
@@ -62,12 +61,11 @@ public class ScheduleModule : BaseModule
                 Context.Guild.Name, Context.Channel.Name);
             await RespondAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
         }
     }
         
     [SlashCommand("tomorrow","Prints the defense times for tomorrow")]
-    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task TomorrowAsync(bool shortVersion = false)
     {
         using var serviceScope = ServiceProvider.CreateScope();
@@ -87,7 +85,7 @@ public class ScheduleModule : BaseModule
         {
             await this.RespondAsync(
                 ex.Message,
-                ephemeral: true);
+                ephemeral: false);
             Logger.LogError(ex, "Exception when trying to run TOMORROW for {GuildName} in {ChannelName}",
                 Context.Guild.Name, Context.Channel.Name);
         }
@@ -97,18 +95,17 @@ public class ScheduleModule : BaseModule
                 Context.Guild.Name, Context.Channel.Name);
             await RespondAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
         }
     }
 
     [SlashCommand("next","Prints the next item on the defend schedule")]
-    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task NextAsync()
     {
         using var serviceScope = ServiceProvider.CreateScope();
         try
         {
-            _ = this.DeferAsync(true);
+            _ = this.DeferAsync(false);
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
             var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
 
@@ -121,7 +118,7 @@ public class ScheduleModule : BaseModule
         }
         catch (BotDomainException ex)
         {
-            await this.RespondAsync(ex.Message, ephemeral: true);
+            await this.RespondAsync(ex.Message, ephemeral: false);
             Logger.LogError(ex, "Exception when trying to run NEXT for {GuildName} in {ChannelName}",
                 Context.Guild.Name, Context.Channel.Name);
         }
@@ -131,12 +128,11 @@ public class ScheduleModule : BaseModule
                 Context.Guild.Name, Context.Channel.Name);
             await RespondAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
         }
     }
 
     [SlashCommand("all", "Prints the full defense schedule", runMode: RunMode.Async)]
-    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task AllAsync(bool shortVersion = false)
     {
         using var serviceScope = ServiceProvider.CreateScope();
@@ -159,7 +155,7 @@ public class ScheduleModule : BaseModule
         {
             await this.RespondAsync(
                 ex.Message,
-                ephemeral: true);
+                ephemeral: false);
             Logger.LogError(ex, "Exception when trying to run ALL for {GuildName} in {ChannelName}",
                 Context.Guild.Name, Context.Channel.Name);
         }
@@ -167,19 +163,17 @@ public class ScheduleModule : BaseModule
         {
             await RespondAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
             Logger.LogError(ex, "An unexpected error has occured while trying to run ALL for {GuildName} in {ChannelName}",
                 Context.Guild.Name, Context.Channel.Name);
         }
     }
 
     [SlashCommand("refresh", "Refreshes any short posts for the entire week", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
-    [RequireOwner(Group = "Permission")]
     public async Task RefreshAsync()
     {
         using var serviceScope = ServiceProvider.CreateScope();
-        await this.DeferAsync(ephemeral: true);
+        await this.DeferAsync(ephemeral: false);
         try
         {
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
@@ -203,7 +197,7 @@ public class ScheduleModule : BaseModule
                     Context.Guild.Name, Context.Channel.Name);
                 await ModifyResponseAsync(
                     "An unexpected error has occured.",
-                    ephemeral: true);
+                    ephemeral: false);
             }
         }
         catch (Exception ex)
@@ -212,7 +206,7 @@ public class ScheduleModule : BaseModule
                 Context.Guild.Name, Context.Channel.Name);
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
         }
     }
 }

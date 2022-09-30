@@ -33,7 +33,6 @@ public class ZoneModule : BaseModule
     }
     
     [SlashCommand("set", "Bot Owner - Create or update a zone")]
-    [RequireOwner]
     public async Task ZoneCreateUpdateAsync(
         [Summary("Zone", "Zone Name")][Autocomplete(typeof(ZoneNames))] string name,
         [Summary("Owner", "Current owner, or None if unclaimed")] string owner,
@@ -43,7 +42,7 @@ public class ZoneModule : BaseModule
         string notes = "")
     {
         using var serviceScope = ServiceProvider.CreateScope();
-        await this.DeferAsync(ephemeral: true);
+        await this.DeferAsync(ephemeral: false);
         try
         {
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
@@ -53,7 +52,7 @@ public class ZoneModule : BaseModule
             {
                 await ModifyResponseAsync(
                     "Level must be between 1 and 3. Specify 0 if you do not wish to change an existing value.",
-                    ephemeral: true);
+                    ephemeral: false);
                 return;
             }
 
@@ -65,7 +64,7 @@ public class ZoneModule : BaseModule
                 {
                     await ModifyResponseAsync(
                         "The owner could not be found. Please check it and try again.",
-                        ephemeral: true);
+                        ephemeral: false);
                     return;
                 }
             }
@@ -75,7 +74,7 @@ public class ZoneModule : BaseModule
             {
                 await ModifyResponseAsync(
                     "The day of the week could not be determined.",
-                    ephemeral: true);
+                    ephemeral: false);
                 return;
             }
 
@@ -88,7 +87,7 @@ public class ZoneModule : BaseModule
                 {
                     await ModifyResponseAsync(
                         "The time of day could not be understood.",
-                        ephemeral: true);
+                        ephemeral: false);
                     return;
                 }
             }
@@ -101,7 +100,7 @@ public class ZoneModule : BaseModule
                 {
                     await ModifyResponseAsync(
                         "Level cannot be 0 for a new record.",
-                        ephemeral: true);
+                        ephemeral: false);
                     return;
                 }
 
@@ -109,7 +108,7 @@ public class ZoneModule : BaseModule
                 {
                     await ModifyResponseAsync(
                         "The day of the week cannot be blank for a new record.",
-                        ephemeral: true);
+                        ephemeral: false);
                     return;
                 }
 
@@ -117,7 +116,7 @@ public class ZoneModule : BaseModule
                 {
                     await ModifyResponseAsync(
                         "The time of day cannot be blank for a new record.",
-                        ephemeral: true);
+                        ephemeral: false);
                     return;
                 }
 
@@ -135,7 +134,7 @@ public class ZoneModule : BaseModule
                 await zoneRepository.InitZones();
                 await ModifyResponseAsync(
                     "Zone created",
-                    ephemeral: true);
+                    ephemeral: false);
             }
             else
             {
@@ -170,28 +169,27 @@ public class ZoneModule : BaseModule
                 await zoneRepository.InitZones();
                 await ModifyResponseAsync(
                     "Zone updated",
-                    ephemeral: true);
+                    ephemeral: false);
             }
         }
         catch (Exception ex)
         {
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
             Logger.LogError(ex,
                 "An unexpected error has occured while trying to run Zone Create Update for {GuildName} in {ChannelName}",
                 Context.Guild.Name, Context.Channel.Name);
         }
     }
 
-    /*
+    
     [SlashCommand("connect","Bot Owner - Register a connection between two zones")]
-    [RequireOwner]
     public async Task ConnectAsync(
         [Autocomplete(typeof(ZoneNames))] string zone1,
         [Autocomplete(typeof(ZoneNames))] string zone2)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         try
         {
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
@@ -202,7 +200,7 @@ public class ZoneModule : BaseModule
             {
                 await RespondAsync(
                     $"I'm sorry, I couldn't find a zone called {zone1}",
-                    ephemeral: true);
+                    ephemeral: false);
                 return;
             }
 
@@ -210,7 +208,7 @@ public class ZoneModule : BaseModule
             {
                 await RespondAsync(
                     $"I'm sorry, I couldn't find a zone called {zone2}",
-                    ephemeral: true);
+                    ephemeral: false);
                 return;
             }
 
@@ -242,18 +240,18 @@ public class ZoneModule : BaseModule
 
             await RespondAsync(
                 results,
-                ephemeral: true);
+                ephemeral: false);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,
-                $"An unexpected error has occured while trying to run Connect for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex,
+                "An unexpected error has occured while trying to run Connect for {GuildName} in {ChannelName}",
+                Context.Guild.Name,
+                Context.Channel.Name);
         }
     }
-    */
 
     [SlashCommand("show", "Shows current zone info from the database")]
-    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
     {
         using var serviceScope = ServiceProvider.CreateScope();
@@ -280,7 +278,7 @@ public class ZoneModule : BaseModule
             {
                 await ModifyResponseAsync(
                     "Zone not found.",
-                    ephemeral: true);
+                    ephemeral: false);
             }
             else
             {
@@ -322,7 +320,7 @@ public class ZoneModule : BaseModule
         {
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
             Logger.LogError(ex,
                 "An unexpected error has occured while trying to run Show Zone for {GuildName} in {ChannelName}",
                 Context.Guild.Name, Context.Channel.Name);

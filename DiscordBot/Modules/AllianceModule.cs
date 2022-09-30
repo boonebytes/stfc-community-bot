@@ -34,7 +34,6 @@ public class AllianceModule : BaseModule
     }
     
     [SlashCommand("show", "Shows information about an alliance")]
-    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task AllianceShowAsync(
         [Summary("Name", "Name or acronym of the alliance to display")] string name)
     {
@@ -59,7 +58,7 @@ public class AllianceModule : BaseModule
             {
                 await this.RespondAsync(
                     "The alliance could not be found.",
-                    ephemeral: true);
+                    ephemeral: false);
             }
             else
             {
@@ -76,14 +75,12 @@ public class AllianceModule : BaseModule
         {
             await RespondAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
             Logger.LogError(ex, "An unexpected error has occured while trying to run AllianceShowAsync");
         }
     }
     
     [SlashCommand("services", "Show alliance service costs")]
-    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
-    [RequireOwner(Group = "Permission")]
     public async Task ServicesShowAsync()
     {
         if (Context.Channel is IPrivateChannel channel)
@@ -104,7 +101,7 @@ public class AllianceModule : BaseModule
                 return;
             }
 
-            await DeferAsync(ephemeral: true);
+            await DeferAsync(ephemeral: false);
             
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
             
@@ -184,7 +181,7 @@ public class AllianceModule : BaseModule
             }
             */
             
-            await ModifyResponseAsync("Done!", true);
+            await ModifyResponseAsync("Done!", false);
         }
         catch (Exception e)
         {

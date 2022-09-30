@@ -38,27 +38,26 @@ public class AdminModule : BaseModule
     public async Task ReloadAsync()
     {
         using var serviceScope = ServiceProvider.CreateScope();
-        _ = DeferAsync(true);
+        _ = DeferAsync(false);
         try
         {
             await ModifyResponseAsync(
                 "Reload initiated.",
-                true);
+                false);
             var cmdScheduler = ServiceProvider.GetService<Scheduler>();
             await cmdScheduler.ReloadJobsAsync(CancellationToken.None);
-            await ModifyResponseAsync("Reload complete.", true);
+            await ModifyResponseAsync("Reload complete.", false);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
             await RespondAsync(
                 "An unexpected error has occured.",
-                ephemeral: true);
+                ephemeral: false);
         }
     }
     
     [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
-    [RequireOwner]
     public async Task EchoAsync(
         [Summary("Input", "Text to repeat")] string input)
     {
@@ -67,40 +66,36 @@ public class AdminModule : BaseModule
             await channel.SendMessageAsync(input);
             await RespondAsync(
                 "Done!",
-                ephemeral: true);
+                ephemeral: false);
         }
         else
         {
             await RespondAsync(
                 "I can't do that; this doesn't look like a message channel.",
-                ephemeral: true);
+                ephemeral: false);
         }
     }
     
     [SlashCommand("get-role", "Get information about a specific role")]
-    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
-    [RequireOwner(Group = "Permission")]
     public async Task GetRoleId([Summary("Role")] IRole role)
     {
         if (Context.Channel is IPrivateChannel channel)
         {
-            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: false);
             return;
         }
         
-        await RespondAsync($"Role {role.Name} ID = {role.Id}", ephemeral: true);
+        await RespondAsync($"Role {role.Name} ID = {role.Id}", ephemeral: false);
     }
 
     [SlashCommand("get-timestamp", "Converts a date/time to a timestamp to be used in Discord messages")]
-    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
-    [RequireOwner(Group = "Permission")]
     public async Task GetTimestamp(
         [Summary("Timezone", "Source timezone")] [Autocomplete(typeof(TimeZones))]
         string timezone,
         [Summary("Timestamp")] DateTime dateTime
     )
     {
-        _ = DeferAsync(true);
+        _ = DeferAsync(false);
         try
         {
             var sourceTimezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
@@ -108,32 +103,30 @@ public class AdminModule : BaseModule
             var utcTime = TimeZoneInfo.ConvertTime(dateTime, sourceTimezone, destinationTimezone);
             await ModifyResponseAsync(
                 $"Date/Time {dateTime} in {timezone} is {utcTime.ToUnixTimestamp()} seconds from Epoch; locally known as <t:{utcTime.ToUnixTimestamp()}>",
-                true);
+                false);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Unexpected exception getting timestamp for {Timezone} / {DateTime} on {Guild}", timezone, dateTime, Context.Guild.Id);
             await ModifyResponseAsync(
                 "An unexpected error has occurred. If this continues, please contact the developer for support.",
-                true);
+                false);
         }
     }
     
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
-    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
-    [RequireOwner(Group = "Permission")]
     public async Task ConfigAsync(
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
     {
         if (Context.Channel is IPrivateChannel channel)
         {
-            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: false);
             return;
         }
 
         using var serviceScope = ServiceProvider.CreateScope();
-        _ = DeferAsync(true);
+        _ = DeferAsync(false);
         try
         {
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
@@ -141,7 +134,7 @@ public class AdminModule : BaseModule
 
             if (thisAlliance == null)
             {
-                await ModifyResponseAsync("Unable to determine alliance from this channel", ephemeral: true);
+                await ModifyResponseAsync("Unable to determine alliance from this channel", ephemeral: false);
                 return;
             }
 
@@ -156,14 +149,14 @@ public class AdminModule : BaseModule
                     {
                         await ModifyResponseAsync(
                             "No response was returned. Please check the current value or contact the developer.",
-                            true);
+                            false);
                         //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
                     }
                     else
                     {
                         await ModifyResponseAsync(
                             responseBroadcastRole,
-                            true);
+                            false);
                         //await RespondAsync(response, ephemeral: true);
                     }
 
@@ -175,14 +168,14 @@ public class AdminModule : BaseModule
                     {
                         await ModifyResponseAsync(
                             "No response was returned. Please check the current value or contact the developer.",
-                            true);
+                            false);
                         //await RespondAsync("No response was returned. Please check the current value or contact the developer.", ephemeral: true);
                     }
                     else
                     {
                         await ModifyResponseAsync(
                             responseBroadcastLeadTime,
-                            true);
+                            false);
                         //await RespondAsync(response, ephemeral: true);
                     }
 
@@ -190,7 +183,7 @@ public class AdminModule : BaseModule
                 default:
                     await ModifyResponseAsync(
                         "The variable could not be identified.",
-                        true);
+                        false);
                     //await RespondAsync("The variable could not be identified.", ephemeral: true);
                     break;
             }
@@ -200,7 +193,7 @@ public class AdminModule : BaseModule
             Logger.LogError(ex, "Unexpected exception running config for {Name} = {Value} on {Guild}", name, value, Context.Guild.Id);
             await ModifyResponseAsync(
                 "An unexpected error has occurred. If this continues, please contact the developer for support.",
-                true);
+                false);
         }
         
     }
@@ -232,7 +225,6 @@ public class AdminModule : BaseModule
         return "Value updated successfully";
     }
     
-    [EnabledInDm(false)]
     private async Task<string> ConfigDefendBroadcastTimeAsync(string value, Alliance thisAlliance,
         IAllianceRepository allianceRepository)
     {
