@@ -1,3 +1,19 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using System.Diagnostics;
 using System.DirectoryServices.Protocols;
 using System.Reflection;
@@ -12,19 +28,17 @@ namespace DiscordBot.Services;
 public class InteractionHandler
 {
     private readonly ILogger<InteractionHandler> _logger;
-    private readonly Models.Config.Discord _discordConfig;
     private readonly IServiceProvider _serviceProvider;
     private readonly IServiceProvider _scopedProvider;
     private readonly DiscordSocketClient _client;
     private readonly InteractionService _interactionService;
 
     // Retrieve client and CommandService instance via ctor
-    public InteractionHandler(ILogger<InteractionHandler> logger, DiscordSocketClient client, InteractionService interactionService, Models.Config.Discord discordConfig, IServiceProvider serviceProvider)
+    public InteractionHandler(ILogger<InteractionHandler> logger, DiscordSocketClient client, InteractionService interactionService,  IServiceProvider serviceProvider)
     {
         _logger = logger;
         _interactionService = interactionService;
         _client = client;
-        _discordConfig = discordConfig;
         _serviceProvider = serviceProvider;
 
         var serviceScope = _serviceProvider.CreateScope();
@@ -57,7 +71,7 @@ public class InteractionHandler
         }
         */
             
-        var modules = await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
+        await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
 //#if DEBUG
 //            await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
 //#else
@@ -69,7 +83,10 @@ public class InteractionHandler
         
         foreach (var guildId in recognizedGuilds)
         {
-            await RegisterInteractionsWithGuild(guildId);
+            if (allDiscordServers.Where(a => a.GuildId.HasValue).Select(a => a.GuildId.Value).Contains(guildId))
+            {
+                await RegisterInteractionsWithGuild(guildId);
+            }
         }
         
         //foreach (var alliance in allDiscordServers)
@@ -84,14 +101,14 @@ public class InteractionHandler
     
     private async Task OnJoinedGuild(SocketGuild guild)
     {
-        _logger.LogInformation($"Joined guild {guild.Name} ({guild.Id})");  
+        _logger.LogInformation("Joined guild {GuildName} ({GuildId})", guild.Name, guild.Id);  
         await RegisterInteractionsWithGuild(guild.Id);
     }
 
     private async Task RegisterInteractionsWithGuild(ulong guildId)
     {
         await _interactionService.RegisterCommandsToGuildAsync(guildId);
-        _logger.LogInformation($"Registered interaction commands to {guildId}");
+        _logger.LogInformation("Registered interaction commands to {GuildId}", guildId);
     }
 
     private async Task InteractionCreatedAsync(SocketInteraction arg)
@@ -107,7 +124,7 @@ public class InteractionHandler
                 switch (result.Error)
                 {
                     case InteractionCommandError.UnmetPrecondition:
-                        _logger.LogError($"Unmet Precondition: {result.ErrorReason}");
+                        _logger.LogError("Unmet Precondition: {ErrorReason}", result.ErrorReason);
                         break;
                     case InteractionCommandError.UnknownCommand:
                         _logger.LogError("Unknown command");
@@ -116,7 +133,7 @@ public class InteractionHandler
                         _logger.LogError("Invalid number or arguments");
                         break;
                     case InteractionCommandError.Exception:
-                        _logger.LogError($"Command exception:{result.ErrorReason}");
+                        _logger.LogError("Command exception:{ErrorReason}", result.ErrorReason);
                         break;
                     case InteractionCommandError.Unsuccessful:
                         _logger.LogError("Command could not be executed");
@@ -145,7 +162,7 @@ public class InteractionHandler
             switch (result.Error)
             {
                 case InteractionCommandError.UnmetPrecondition:
-                    _logger.LogError($"Unmet Precondition: {result.ErrorReason}");
+                    _logger.LogError("Unmet Precondition: {ErrorReason}", result.ErrorReason);
                     break;
                 case InteractionCommandError.UnknownCommand:
                     _logger.LogError("Unknown command");
@@ -154,7 +171,7 @@ public class InteractionHandler
                     _logger.LogError("Invalid number or arguments");
                     break;
                 case InteractionCommandError.Exception:
-                    _logger.LogError($"Command exception:{result.ErrorReason}");
+                    _logger.LogError("Command exception:{ErrorReason}", result.ErrorReason);
                     break;
                 case InteractionCommandError.Unsuccessful:
                     _logger.LogError("Command could not be executed");

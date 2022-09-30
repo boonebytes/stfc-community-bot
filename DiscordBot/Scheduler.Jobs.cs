@@ -1,3 +1,19 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Jobs;
@@ -195,7 +211,8 @@ public partial class Scheduler
     /// <param name="isDaily"></param>
     private async Task AddOrUpdateJob<T>(DateTimeOffset triggerTime, long allianceId, long itemId = 0, bool isDaily = true) where T : BaseJob
     {
-        _logger.LogInformation($"Adding job {typeof(T).Name} for {triggerTime}, {allianceId}/{itemId}");
+        _logger.LogInformation("Adding job {JobType} for {TriggerTime}, {AllianceId}/{ItemId}",
+            typeof(T).Name, triggerTime, allianceId, itemId);
 
         var jobKey = GetJobKey<T>(allianceId, itemId);
         

@@ -1,34 +1,43 @@
-﻿using Discord.WebSocket;
+﻿/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using DiscordBot.Domain.Entities.Alliances;
-using DiscordBot.Domain.Entities.Services;
 using DiscordBot.Domain.Entities.Zones;
 using Quartz;
-using Quartz.Impl;
-using Quartz.Logging;
 
 namespace DiscordBot;
 
 public partial class Scheduler
 {
     private readonly ILogger<Scheduler> _logger;
-    private readonly DiscordSocketClient _client;
     private readonly IServiceProvider _serviceProvider;
-    private IScheduler _quartzScheduler = null;
+    private IScheduler _quartzScheduler;
 
     public Scheduler(
         ILogger<Scheduler> logger,
-        DiscordSocketClient client,
         IServiceProvider serviceProvider
     )
     {
         _logger = logger;
-        _client = client;
         _serviceProvider = serviceProvider;
     }
 
     public async Task HandleZoneUpdatedAsync(long zoneId)
     {
-        _logger.LogInformation($"Zone Update received: {zoneId}");
+        _logger.LogInformation("Zone Update received: {ZoneId}", zoneId);
         
         using var thisServiceScope = _serviceProvider.CreateScope();
         var zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();

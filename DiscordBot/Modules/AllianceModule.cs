@@ -1,3 +1,19 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using Discord;
 using Discord.Interactions;
 using DiscordBot.Domain.Entities.Alliances;
@@ -8,7 +24,8 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("alliance", "Show Alliance Info")]
+// [DefaultMemberPermissions(GuildPermission.ManageGuild)]
+[Group("alliance", "Show Alliance Info")]
 public class AllianceModule : BaseModule
 {
 
@@ -17,16 +34,25 @@ public class AllianceModule : BaseModule
     }
     
     [SlashCommand("show", "Shows information about an alliance")]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task AllianceShowAsync(
         [Summary("Name", "Name or acronym of the alliance to display")] string name)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         try
         {
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
 
-            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            if (Context.Channel is IPrivateChannel)
+            {
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(null);
+            }
+            else
+            {
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            }
+            
             
             var alliance = await allianceRepository.GetByNameOrAcronymAsync(name);
             if (alliance == null)
@@ -39,9 +65,9 @@ public class AllianceModule : BaseModule
             {
                 string response = $"Alliance: {alliance.Acronym} ({alliance.Name})\n"
                                   + $"Total Zones: {alliance.Zones.Count}\n";
-                foreach (var zone in alliance.Zones.OrderBy(z => z.Level).ThenBy(z => z.Name))
+                foreach (var zone in alliance.Zones.OrderBy(z => z.NextDefend).ThenBy(z => z.Name))
                 {
-                    response += $"- {zone.Name} ({zone.Level}^)\n";
+                    response += $"- {zone.Name} ({zone.Level}^) - {zone.NextDefend?.ToEasternTime().ToString("MMM d h:mm tt")} ET\n";
                 }
                 await RespondAsync(response);
             }
@@ -51,17 +77,24 @@ public class AllianceModule : BaseModule
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
-            _logger.LogError(ex, "An unexpected error has occured while trying to run AllianceShowAsync");
+            Logger.LogError(ex, "An unexpected error has occured while trying to run AllianceShowAsync");
         }
     }
     
     [SlashCommand("services", "Show alliance service costs")]
-    [RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
     public async Task ServicesShowAsync()
     {
+        if (Context.Channel is IPrivateChannel channel)
+        {
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
+            return;
+        }
+        
         try
         {
-            using var serviceScope = _serviceProvider.CreateScope();
+            using var serviceScope = ServiceProvider.CreateScope();
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
             var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
 
@@ -76,8 +109,6 @@ public class AllianceModule : BaseModule
             serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
             
             var serviceRepository = serviceScope.ServiceProvider.GetService<IServiceRepository>();
-
-            var countedServices = new List<long>();
 
             var basicServices =
                 await serviceRepository.GetCostByAllianceServiceLevelAsync(thisAlliance.Id, AllianceServiceLevel.Basic);
@@ -119,24 +150,25 @@ public class AllianceModule : BaseModule
             if (basicServices.Any())
             {
                 summary += "**Basic Services:**\n";
-                summary += getServiceCostSummary(basicServices) + "\n";
+                summary += GetServiceCostSummary(basicServices) + "\n";
             }
 
             if (preferredServices.Any())
             {
                 summary += "**Basic + Preferred Services:**\n";
-                summary += getServiceCostSummary(preferredServices) + "\n";
+                summary += GetServiceCostSummary(preferredServices) + "\n";
             }
 
             if (desiredServices.Any())
             {
                 summary += "**Basic + Preferred + Desired Services:**\n";
-                summary += getServiceCostSummary(desiredServices) + "\n";
+                summary += GetServiceCostSummary(desiredServices) + "\n";
             }
 
             summary = summary.TrimEnd('\n');
 
-
+            await Context.Channel.SendMessageAsync(summary);
+            /*
             var channelMessages = await Context.Channel.GetMessagesAsync().FlattenAsync();
             var botServiceSummaryMessage = (Discord.Rest.RestUserMessage)channelMessages.FirstOrDefault(m => 
                 m.Author.Id == Context.Client.CurrentUser.Id
@@ -150,16 +182,17 @@ public class AllianceModule : BaseModule
             {
                 await botServiceSummaryMessage.ModifyAsync(m => m.Content = summary);
             }
+            */
             
             await ModifyResponseAsync("Done!", true);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error in AllianceServiceCostSummary");
+            Logger.LogError(e, "Error in AllianceServiceCostSummary");
         }
     }
 
-    private static string getServiceCostSummary(Dictionary<Resource, long> allCosts)
+    private static string GetServiceCostSummary(Dictionary<Resource, long> allCosts)
     {
         string result = "";
         foreach (var res in new[]
@@ -176,137 +209,4 @@ public class AllianceModule : BaseModule
 
         return result;
     }
-
-    /*
-    [SlashCommand("alliance-set", "Bot Owner - Create or update an alliance")]
-    [RequireOwner]
-    public async Task AllianceCreateUpdateAsync(
-        [Summary("Acronym", "Acronym of the alliance to add or update")] string acronym,
-        [Summary("Name", "New name for the alliance")] string name,
-        [Summary("Group", "Name of group to associate with alliance, or blank for ungrouped")] string group = "")
-    {
-        using var serviceScope = _serviceProvider.CreateScope();
-        try
-        {
-            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
-            var allianceExists = await allianceRepository.GetByNameOrAcronymAsync(acronym);
-            if (allianceExists == null)
-            {
-                allianceExists = await allianceRepository.GetByNameOrAcronymAsync(name);
-            }
-
-
-            AllianceGroup allianceGroup = null;
-            if (@group != "" && @group != "0")
-            {
-                var allianceGroups = allianceRepository.GetAllianceGroups();
-                allianceGroup = allianceGroups.FirstOrDefault(g => g.Name == @group);
-            }
-
-            if (allianceExists == null)
-            {
-                // Create alliance
-                Alliance newAlliance = new(
-                    0,
-                    name,
-                    acronym,
-                    allianceGroup,
-                    null,
-                    null,
-                    null,
-                    null);
-                allianceRepository.Add(newAlliance);
-                await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                await RespondAsync(
-                    "Alliance created",
-                    ephemeral: true);
-            }
-            else
-            {
-                // Edit alliance
-                allianceExists.Update(
-                    name,
-                    acronym,
-                    allianceGroup,
-                    allianceExists.GuildId,
-                    allianceExists.DefendSchedulePostChannel,
-                    allianceExists.DefendSchedulePostTime,
-                    allianceExists.DefendBroadcastLeadTime);
-                allianceRepository.Update(allianceExists);
-                await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                await RespondAsync(
-                    "Alliance updated",
-                    ephemeral: true);
-            }
-        }
-        catch (Exception ex)
-        {
-            await RespondAsync(
-                "An unexpected error has occured.",
-                ephemeral: true);
-            _logger.LogError(ex, "An unexpected error has occured while trying to run AllianceCreateUpdateAsync");
-        }
-    }
-
-    [SlashCommand("alliance-rename","Bot Owner - Rename an alliance")]
-    [RequireOwner]
-    public async Task AllianceRenameAsync(
-        [Summary("Old-Name","Current name or acronym")] string oldNameOrAcronym,
-        [Summary("New-Acronym", "New Acronym")] string newAcronym,
-        [Summary("New-Name","New name for alliance")] string newName = "",
-        [Summary("New-Group", "New group for alliance, -1 to clear current group, blank to leave unchanged")] string newGroup = "")
-    {
-        using var serviceScope = _serviceProvider.CreateScope();
-        try
-        {
-            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-
-            var allianceExists = await allianceRepository.GetByNameOrAcronymAsync(oldNameOrAcronym);
-            if (allianceExists == null)
-            {
-                await RespondAsync(
-                    "Unable to find old alliance by provided acronym",
-                    ephemeral: true);
-            }
-            else
-            {
-                AllianceGroup allianceGroup = allianceExists.Group;
-
-                if (newGroup == "-1")
-                {
-                    allianceGroup = null;
-                }
-                else if (newGroup != "" && newGroup != "0")
-                {
-                    var allianceGroups = allianceRepository.GetAllianceGroups();
-                    allianceGroup = allianceGroups.FirstOrDefault(g => g.Name == newGroup);
-                }
-
-                // Edit alliance
-                allianceExists.Update(
-                    newName,
-                    newAcronym,
-                    allianceGroup,
-                    allianceExists.GuildId,
-                    allianceExists.DefendSchedulePostChannel,
-                    allianceExists.DefendSchedulePostTime,
-                    allianceExists.DefendBroadcastLeadTime);
-                allianceRepository.Update(allianceExists);
-                await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-                await RespondAsync(
-                    "Alliance updated",
-                    ephemeral: true);
-            }
-        }
-        catch (Exception ex)
-        {
-            await RespondAsync(
-                "An unexpected error has occured.",
-                ephemeral: true);
-            _logger.LogError(ex,
-                $"An unexpected error has occured while trying to rename the {oldNameOrAcronym} alliance.");
-        }
-    }
-    */
 }
