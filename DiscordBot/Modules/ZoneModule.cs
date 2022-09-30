@@ -1,3 +1,19 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using System.Globalization;
 using Discord;
 using Discord.Interactions;
@@ -9,7 +25,7 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("zone", "Show / Edit Zone Info")]
+[Group("zone", "Show / Edit Zone Info")]
 public class ZoneModule : BaseModule
 {
     public ZoneModule(ILogger<ZoneModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
@@ -26,7 +42,7 @@ public class ZoneModule : BaseModule
         string timeOfDayUtc = "",
         string notes = "")
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         await this.DeferAsync(ephemeral: true);
         try
         {
@@ -65,11 +81,10 @@ public class ZoneModule : BaseModule
 
             if (timeOfDayUtc != "")
             {
-                DateTime verifyTimeOfDay;
                 var culture = new CultureInfo("en-US");
 
                 if (!DateTime.TryParseExact(timeOfDayUtc, "h:mm tt", culture, DateTimeStyles.AssumeUniversal,
-                        out verifyTimeOfDay))
+                        out _))
                 {
                     await ModifyResponseAsync(
                         "The time of day could not be understood.",
@@ -111,7 +126,7 @@ public class ZoneModule : BaseModule
                     name,
                     level,
                     ownerAlliance,
-                    dayOfWeekUtc.ToString(),
+                    dayOfWeekUtc,
                     timeOfDayUtc,
                     notes
                 );
@@ -125,7 +140,6 @@ public class ZoneModule : BaseModule
             else
             {
                 // Update zone
-                var newLevel = (level == 0 ? zoneExists.Level : level);
                 var newDayOfWeek = (dayOfWeekUtc == "" || dayOfWeekUtc == "0"
                     ? zoneExists.DefendUtcDayOfWeek
                     : dayOfWeekUtc);
@@ -164,8 +178,9 @@ public class ZoneModule : BaseModule
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
-            _logger.LogError(ex,
-                $"An unexpected error has occured while trying to run Zone Create Update for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex,
+                "An unexpected error has occured while trying to run Zone Create Update for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
     }
 
@@ -238,9 +253,10 @@ public class ZoneModule : BaseModule
     */
 
     [SlashCommand("show", "Shows current zone info from the database")]
+    [RequireUserPermission(ChannelPermission.SendMessages)]
     public async Task ShowZoneAsync([Autocomplete(typeof(ZoneNames))] string name)
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         await this.DeferAsync(ephemeral: false);
         
         try
@@ -248,9 +264,16 @@ public class ZoneModule : BaseModule
             var zoneRepository = serviceScope.ServiceProvider.GetService<IZoneRepository>();
             var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
             
-            // TODO: Get current alliance from Guild ID, then filter results.
-            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            if (Context.Channel is IPrivateChannel)
+            {
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(null);
+            }
+            else
+            {
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            }
+
             
             var thisZone = await zoneRepository.GetByNameAsync(name);
             if (thisZone == null)
@@ -275,7 +298,7 @@ public class ZoneModule : BaseModule
                         : "None";
                 */
                 var potentialThreats = (
-                    thisZone.Threats == ""
+                    thisZone.Threats != ""
                         ? thisZone.Threats
                         : (
                             thisZone.Level == 1 ? "Anyone (1^)" : "None"
@@ -300,8 +323,9 @@ public class ZoneModule : BaseModule
             await ModifyResponseAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
-            _logger.LogError(ex,
-                $"An unexpected error has occured while trying to run Show Zone for {Context.Guild.Name} in {Context.Channel.Name}.");
+            Logger.LogError(ex,
+                "An unexpected error has occured while trying to run Show Zone for {GuildName} in {ChannelName}",
+                Context.Guild.Name, Context.Channel.Name);
         }
     }
 }

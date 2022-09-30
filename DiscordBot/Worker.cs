@@ -1,4 +1,20 @@
-﻿using Discord;
+﻿/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
@@ -37,14 +53,14 @@ public class Worker : BackgroundService
             IZoneRepository zoneRepository = thisServiceScope.ServiceProvider.GetService<IZoneRepository>();
             await zoneRepository.InitZones();
         }
-
-        var config = new DiscordSocketConfig { MessageCacheSize = 100 };
+        
         var cmdService = _serviceProvider.GetRequiredService<CommandService>();
         var cmdHandler = _serviceProvider.GetRequiredService<Services.CommandHandler>();
         var intHandler = _serviceProvider.GetRequiredService<Services.InteractionHandler>();
 
         _client.Log += LogAsync;
         cmdService.Log += LogAsync;
+        
 
         await _client.LoginAsync(TokenType.Bot, _discordConfig.Token);
         await _client.StartAsync();
@@ -63,7 +79,7 @@ public class Worker : BackgroundService
                         var cmdScheduler = _serviceProvider.GetService<Scheduler>();
                         _ = Task.Run(async () =>
                         {
-                            cmdScheduler.Run(stoppingToken);
+                            await cmdScheduler.Run(stoppingToken);
                         }, stoppingToken);
                     }
                     

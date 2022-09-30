@@ -1,4 +1,20 @@
-﻿using System.Reflection;
+﻿/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+using System.Reflection;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -9,7 +25,6 @@ namespace DiscordBot.Services;
 public class CommandHandler
 {
     private readonly ILogger<CommandHandler> _logger;
-    private readonly Models.Config.Discord _discordConfig;
     private readonly IServiceProvider _serviceProvider;
     private readonly IServiceProvider _scopedProvider;
     private readonly DiscordSocketClient _client;
@@ -18,12 +33,11 @@ public class CommandHandler
     private IDMChannel _ownerChannel;
 
     // Retrieve client and CommandService instance via ctor
-    public CommandHandler(ILogger<CommandHandler> logger, DiscordSocketClient client, CommandService commands, Models.Config.Discord discordConfig, IServiceProvider serviceProvider)
+    public CommandHandler(ILogger<CommandHandler> logger, DiscordSocketClient client, CommandService commands, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _commands = commands;
         _client = client;
-        _discordConfig = discordConfig;
         _serviceProvider = serviceProvider;
 
         var serviceScope = _serviceProvider.CreateScope();
@@ -57,7 +71,7 @@ public class CommandHandler
             }
             */
             
-            var loadedModules = await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
         }
         catch (Exception ex)
         {

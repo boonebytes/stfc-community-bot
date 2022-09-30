@@ -1,49 +1,64 @@
-using System.Collections.Immutable;
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.AutocompleteHandlers;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
-using DiscordBot.Domain.Entities.Zones;
-using DiscordBot.Domain.Exceptions;
+using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-[Discord.Interactions.Group("admin", "Admin Commands")]
+// [DefaultMemberPermissions(GuildPermission.ManageGuild)]
+[Group("admin", "Admin Commands")]
 public class AdminModule : BaseModule
 {
     
     public AdminModule(ILogger<AdminModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
     {
     }
-
-    [RequireOwner]
+    
     [SlashCommand("reload", "Bot Owner - Reload all data from database, without refreshing schedules.")]
+    [RequireOwner]
     public async Task ReloadAsync()
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        using var serviceScope = ServiceProvider.CreateScope();
         _ = DeferAsync(true);
         try
         {
             await ModifyResponseAsync(
                 "Reload initiated.",
                 true);
-            var cmdScheduler = _serviceProvider.GetService<Scheduler>();
+            var cmdScheduler = ServiceProvider.GetService<Scheduler>();
             await cmdScheduler.ReloadJobsAsync(CancellationToken.None);
             await ModifyResponseAsync("Reload complete.", true);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
+            Logger.LogError(ex, $"An unexpected error has occured while trying to run RELOAD.");
             await RespondAsync(
                 "An unexpected error has occured.",
                 ephemeral: true);
         }
     }
-        
-    [RequireOwner]
+    
     [SlashCommand("echo", "Bot Owner = Echo text back to this channel")]
+    [RequireOwner]
     public async Task EchoAsync(
         [Summary("Input", "Text to repeat")] string input)
     {
@@ -62,88 +77,62 @@ public class AdminModule : BaseModule
         }
     }
     
-    /*
-    [SlashCommand("setup", "Admin - Check permissions, then configures the bot to post in this channel", runMode: RunMode.Async)]
-    [RequireUserPermission(GuildPermission.Administrator)]
-    public async Task SetupAsync()
+    [SlashCommand("get-role", "Get information about a specific role")]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
+    public async Task GetRoleId([Summary("Role")] IRole role)
     {
-        await DeferAsync(ephemeral: true);
-        
-        _logger.LogInformation($"Setup started from {Context.Guild.Id} / {Context.Channel.Id}");
-        using var serviceScope = _serviceProvider.CreateScope();
-        var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
-        var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
-
-        if (Context.Channel is not SocketTextChannel channel)
+        if (Context.Channel is IPrivateChannel channel)
         {
-            _logger.LogInformation($"Unable to determine channel");
-            await ModifyResponseAsync($"Unable to determine channel. Please ensure that a text channel is being used, then try again. Guild ${Context.Guild.Id}", ephemeral: true);
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
             return;
         }
         
-        if (thisAlliance == null || thisAlliance.Id == 0)
-        {
-            _logger.LogInformation($"Server not initialized");
-            await ModifyResponseAsync($"Server hasn't been initialized in the bot. Please provide these two IDs to the bot developer, along with your alliance name: Guild ${Context.Guild.Id} / Channel ${channel.Id}", ephemeral: true);
-            return;
-        }
-        
-        serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
-
-        var guildUser = await Context.Guild.GetCurrentUserAsync();
-        var channelPerms = guildUser.GetPermissions(channel);
-
-        if (!(
-                channelPerms.Has(ChannelPermission.ViewChannel)
-                && channelPerms.Has(ChannelPermission.ReadMessageHistory)
-                && channelPerms.Has(ChannelPermission.SendMessages)
-                && channelPerms.Has(ChannelPermission.ManageMessages)
-                && channelPerms.Has(ChannelPermission.MentionEveryone)))
-        {
-            _logger.LogInformation($"Channel missing permissions");
-            await ModifyResponseAsync($"Bot doesn't have enough permissions in channel to post the schedule. Ensure these permissions have been granted: View Channel, Read Message History, Send Messages, Manage Messages, and Mention Everyone. Guild ${Context.Guild.Id} / Channel ${channel.Id}", ephemeral: true);
-            return;
-        }
-
-        if (!thisAlliance.DefendSchedulePostChannel.HasValue)
-        {
-            thisAlliance.SetDefendSchedulePostChannel(channel.Id);
-            allianceRepository.Update(thisAlliance);
-            await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-            
-            await ModifyResponseAsync(
-                $"Added the {thisAlliance.Acronym} defense schedule for channel {channel.Id}. Everything looks good! Now posting the starting schedule. Please delete any bot posts above this line.",
-                ephemeral: true);
-        }
-        else if (thisAlliance.DefendSchedulePostChannel.Value != channel.Id)
-        {
-            thisAlliance.SetDefendSchedulePostChannel(channel.Id);
-            allianceRepository.Update(thisAlliance);
-            await allianceRepository.UnitOfWork.SaveEntitiesAsync();
-            
-            await ModifyResponseAsync(
-                $"Changed {thisAlliance.Acronym} defense schedule from Channel {thisAlliance.DefendSchedulePostChannel.Value} to {channel.Id}. Everything else looks good! Now posting the starting schedule. Please delete any bot posts above this line.",
-                ephemeral: true);
-        }
-        else
-        {
-            await ModifyResponseAsync($"Bot seems to be good to go with these permissions. Guild ${Context.Guild.Id} / Channel ${channel.Id}", ephemeral: true);
-        }
-        
-        var schedule = serviceScope.ServiceProvider.GetService<Responses.Schedule>();
-        await schedule.PostAllAsync(Context.Guild.Id, channel.Id, thisAlliance.Id, true);
-        _logger.LogInformation($"Setup complete");
+        await RespondAsync($"Role {role.Name} ID = {role.Id}", ephemeral: true);
     }
-    */
 
+    [SlashCommand("get-timestamp", "Converts a date/time to a timestamp to be used in Discord messages")]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
+    public async Task GetTimestamp(
+        [Summary("Timezone", "Source timezone")] [Autocomplete(typeof(TimeZones))]
+        string timezone,
+        [Summary("Timestamp")] DateTime dateTime
+    )
+    {
+        _ = DeferAsync(true);
+        try
+        {
+            var sourceTimezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+            var destinationTimezone = TimeZoneInfo.Utc;
+            var utcTime = TimeZoneInfo.ConvertTime(dateTime, sourceTimezone, destinationTimezone);
+            await ModifyResponseAsync(
+                $"Date/Time {dateTime} in {timezone} is {utcTime.ToUnixTimestamp()} seconds from Epoch; locally known as <t:{utcTime.ToUnixTimestamp()}>",
+                true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected exception getting timestamp for {Timezone} / {DateTime} on {Guild}", timezone, dateTime, Context.Guild.Id);
+            await ModifyResponseAsync(
+                "An unexpected error has occurred. If this continues, please contact the developer for support.",
+                true);
+        }
+    }
+    
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
-    [RequireUserPermission(GuildPermission.ManageGuild)]
-    //[RequireOwner]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
     public async Task ConfigAsync(
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")
     {
-        using var serviceScope = _serviceProvider.CreateScope();
+        if (Context.Channel is IPrivateChannel channel)
+        {
+            await RespondAsync("That command isn't valid in DMs.", ephemeral: true);
+            return;
+        }
+
+        using var serviceScope = ServiceProvider.CreateScope();
         _ = DeferAsync(true);
         try
         {
@@ -208,7 +197,7 @@ public class AdminModule : BaseModule
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected exception running config for {Name} = {Value} on {Guild}", name, value, Context.Guild.Id);
+            Logger.LogError(ex, "Unexpected exception running config for {Name} = {Value} on {Guild}", name, value, Context.Guild.Id);
             await ModifyResponseAsync(
                 "An unexpected error has occurred. If this continues, please contact the developer for support.",
                 true);
@@ -243,6 +232,7 @@ public class AdminModule : BaseModule
         return "Value updated successfully";
     }
     
+    [EnabledInDm(false)]
     private async Task<string> ConfigDefendBroadcastTimeAsync(string value, Alliance thisAlliance,
         IAllianceRepository allianceRepository)
     {

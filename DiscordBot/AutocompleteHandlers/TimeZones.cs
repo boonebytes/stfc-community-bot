@@ -16,17 +16,29 @@ limitations under the License.
 
 using Discord;
 using Discord.Interactions;
-using DiscordBot.Domain.Entities.Zones;
 
 namespace DiscordBot.AutocompleteHandlers
 {
-    public class ZoneNames : AutocompleteHandler
+    public class TimeZones : AutocompleteHandler
     {
-        private static readonly List<string> Zones = new();
-
-        private static void AddZone(string name)
+        private static readonly List<string> Timezones;
+        
+        static TimeZones()
         {
-            Zones.Add(name);
+            Timezones = new();
+            
+            TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
+            var tzs = TimeZoneInfo.GetSystemTimeZones()
+                .OrderBy(z => z.Id);
+            foreach (var tz in tzs)
+            {
+                AddTimeZone(tz.Id);
+            }
+        }
+
+        private static void AddTimeZone(string name)
+        {
+            Timezones.Add(name);
         }
 
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(
@@ -35,25 +47,14 @@ namespace DiscordBot.AutocompleteHandlers
             IParameterInfo parameter,
             IServiceProvider services)
         {
-            var logger = services.GetRequiredService<ILogger<ZoneNames>>();
+            var logger = services.GetRequiredService<ILogger<TimeZones>>();
             try
             {
-                if (!Zones.Any())
-                {
-                    using var thisServiceScope = services.CreateScope();
-                    var zoneRepository = thisServiceScope.ServiceProvider.GetRequiredService<IZoneRepository>();
-                    var allZones = await zoneRepository.GetLookupListAsync();
-                    foreach (var z in allZones)
-                    {
-                        AddZone(z.Name);
-                    }
-                }
-
                 var data = autocompleteInteraction.Data.Current.Value as string;
                 if (string.IsNullOrEmpty(data))
                     return AutocompletionResult.FromSuccess();
                 
-                var matches = Zones.Where(z => z.ToUpper().StartsWith(data.ToUpper()));
+                var matches = Timezones.Where(z => z.ToUpper().Contains(data.ToUpper()));
                 return AutocompletionResult.FromSuccess(
                             matches.Select(m => new AutocompleteResult(m, m))
                         );

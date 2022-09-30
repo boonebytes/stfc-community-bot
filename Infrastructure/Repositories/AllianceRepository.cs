@@ -1,4 +1,19 @@
-﻿using System;
+﻿/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +28,7 @@ namespace DiscordBot.Infrastructure.Repositories
 {
     public class AllianceRepository : BaseRepository, IAllianceRepository
     {
-        public IUnitOfWork UnitOfWork => _context;
+        public IUnitOfWork UnitOfWork => Context;
 
         public AllianceRepository(ILogger<AllianceRepository> logger, BotContext context, RequestContext requestContext) : base(logger, context, requestContext)
         { }
@@ -22,7 +37,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             if (alliance.IsTransient())
             {
-                return _context.Alliances
+                return Context.Alliances
                     .Add(alliance)
                     .Entity;
             }
@@ -35,7 +50,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<Alliance> GetAsync(long id)
         {
-            var alliance = await _context.Alliances.AsQueryable()
+            var alliance = await Context.Alliances.AsQueryable()
                 .Include(a => a.AssignedDiplomacy)
                     .ThenInclude(ad => ad.Related)
                 .Where(a => a.Id == id)
@@ -45,7 +60,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<Alliance> GetByNameOrAcronymAsync(string value)
         {
-            var alliance = await _context.Alliances.AsQueryable()
+            var alliance = await Context.Alliances.AsQueryable()
                 .Include(a => a.Group)
                 .Include(a => a.Zones)
                 .Where(a => a.Acronym.ToUpper() == value.ToUpper())
@@ -53,7 +68,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
             if (alliance == null)
             {
-                alliance = await _context.Alliances.AsQueryable()
+                alliance = await Context.Alliances.AsQueryable()
                     .Where(a => a.Name.ToUpper() == value.ToUpper())
                     .SingleOrDefaultAsync();
             }
@@ -62,19 +77,19 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Alliance>> GetAllAsync()
         {
-            return await _context.Alliances.ToListAsync();
+            return await Context.Alliances.ToListAsync();
         }
 
         public Alliance Update(Alliance alliance)
         {
-            return _context.Alliances
+            return Context.Alliances
                     .Update(alliance)
                     .Entity;
         }
 
         public List<Alliance> GetAllWithServers()
         {
-            return _context.Alliances
+            return Context.Alliances
                 .AsQueryable()
                 .Include(a => a.Zones)
                 .Where(a => a.GuildId.HasValue)
@@ -84,7 +99,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public List<AllianceGroup> GetAllianceGroups()
         {
-            return _context.AllianceGroups
+            return Context.AllianceGroups
                 .AsQueryable()
                 .OrderBy(ag => ag.Name)
                 .ToList();
@@ -92,7 +107,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public Alliance GetNextOnPostSchedule()
         {
-            return _context.Alliances
+            return Context.Alliances
                 .AsQueryable()
                 .Where(a => a.GuildId.HasValue)
                 .Where(a => a.DefendSchedulePostChannel.HasValue)
@@ -103,7 +118,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public Alliance FindFromGuildId(ulong id)
         {
-            var result = _context.Alliances
+            var result = Context.Alliances
                 .Include(a => a.Group)
                 .Include(a => a.AssignedDiplomacy)
                     .ThenInclude(ad => ad.Related)
@@ -119,7 +134,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             var results = new List<Alliance>();
             
-            var alliance = _context.Alliances
+            var alliance = Context.Alliances
                 .Include(a => a.AssignedDiplomacy)
                     .ThenInclude(ad => ad.Related)
                 .Include(a => a.AssignedDiplomacy)
@@ -156,7 +171,7 @@ namespace DiscordBot.Infrastructure.Repositories
             
             var results = new List<Alliance>();
             
-            var alliance = _context.Alliances
+            var alliance = Context.Alliances
                 .Include(a => a.Group)
                 .ThenInclude(g => g.Alliances)
                 .FirstOrDefault(a => a.Id == allianceId);
@@ -168,7 +183,7 @@ namespace DiscordBot.Infrastructure.Repositories
                 results.AddRange(alliance.Group.Alliances);
             }
 
-            var allies = _context.Diplomacies
+            var allies = Context.Diplomacies
                 .Include(d => d.Owner)
                     .ThenInclude(o => o.Group)
                 .Include(d => d.Related)
@@ -195,7 +210,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task InitPostSchedule()
         {
-            var alliances = _context.Alliances
+            var alliances = Context.Alliances
                 .AsQueryable()
                 .Where(a =>
                     a.GuildId.HasValue
@@ -207,7 +222,7 @@ namespace DiscordBot.Infrastructure.Repositories
             {
                 alliance.SetNextScheduledPost();
             }
-            await _context.SaveEntitiesAsync();
+            await Context.SaveEntitiesAsync();
         }
     }
 }

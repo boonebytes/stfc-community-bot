@@ -1,3 +1,19 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +39,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             if (service.IsTransient())
             {
-                return _context.Services
+                return Context.Services
                     .Add(service)
                     .Entity;
             }
@@ -35,14 +51,14 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public Service Update(Service service)
         {
-            return _context.Services
+            return Context.Services
                 .Update(service)
                 .Entity;
         }
 
         public async Task<Service> GetAsync(long id)
         {
-            var service = await _context.Services
+            var service = await Context.Services
                 .Include(s => s.Zone)
                 .Include(s => s.Costs)
                     .ThenInclude(sc => sc.Resource)
@@ -52,7 +68,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Service>> GetByZoneIdAsync(long id)
         {
-            var services = await _context.Services
+            var services = await Context.Services
                 .Include(s => s.Zone)
                 .Include(s => s.Costs)
                     .ThenInclude(sc => sc.Resource)
@@ -63,7 +79,7 @@ namespace DiscordBot.Infrastructure.Repositories
 
         public async Task<List<Service>> GetByZoneNameAsync(string name)
         {
-            var zone = await _context.Zones
+            var zone = await Context.Zones
                 .AsQueryable()
                 .AsNoTracking()
                 .SingleOrDefaultAsync(z => z.Name.ToUpper() == name.ToUpper());
@@ -76,7 +92,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             if (allianceServiceLevel == null)
             {
-                return await _context.Services
+                return await Context.Services
                     .Include(s => s.Zone)
                     .Include(s => s.AllianceServices)
                         .ThenInclude(allianceService => allianceService.Alliance)
@@ -89,7 +105,7 @@ namespace DiscordBot.Infrastructure.Repositories
                     .OrderBy(s => s.Zone.Name)
                     .ToListAsync();
             }
-            return await _context.Services
+            return await Context.Services
                 .Include(s => s.Zone)
                 .Include(s => s.AllianceServices)
                     .ThenInclude(allianceService => allianceService.Alliance)
@@ -107,7 +123,7 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             try
             {
-                var results = _context.AllianceServices
+                var results = Context.AllianceServices
                     .Include(allianceService => allianceService.Service.Costs)
                     .ThenInclude(c => c.Resource)
                     .Where(allianceService =>
@@ -122,12 +138,12 @@ namespace DiscordBot.Infrastructure.Repositories
                     {
                         Resource = i.Key,
                         TotalCost = i.Sum(sc => sc.Cost)
-                    });;
+                    });
                 return groupedResults.ToDictionary(i => i.Resource, i => i.TotalCost);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error getting costs by alliance service level");
+                Logger.LogError(e, "Error getting costs by alliance service level");
                 return new Dictionary<Resource, long>();
             }
         }

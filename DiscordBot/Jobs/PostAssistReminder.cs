@@ -1,3 +1,19 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using Discord;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
@@ -15,7 +31,6 @@ public class PostAssistReminder : BaseJob
     
     private IAllianceRepository _allianceRepository;
     private IZoneRepository _zoneRepository;
-    private Responses.Schedule _scheduleResponse;
     private RequestContext _requestContext;
 
     public PostAssistReminder(
@@ -23,14 +38,12 @@ public class PostAssistReminder : BaseJob
         DiscordSocketClient client,
         IAllianceRepository allianceRepository,
         IZoneRepository zoneRepository,
-        Responses.Schedule scheduleResponse,
         RequestContext requestContext
         ) : base(logger)
     {
         _client = client;
         _allianceRepository = allianceRepository;
         _zoneRepository = zoneRepository;
-        _scheduleResponse = scheduleResponse;
         _requestContext = requestContext;
     }
     
@@ -76,14 +89,31 @@ public class PostAssistReminder : BaseJob
         var channel = guild.GetTextChannel(alliance.DefendSchedulePostChannel.Value);
         if (channel == null)
             throw new InvalidOperationException("Unable to access channel");
-
+        
         var risk = "";
         if (zone.LowRisk)
         {
             risk = "low risk ";
         }
+        
+        var rolePing = "";
+        if (!zone.LowRisk || (alliance.DefendBroadcastPingForLowRisk.HasValue &&
+                              alliance.DefendBroadcastPingForLowRisk.Value))
+        {
+            if (alliance.AlliedBroadcastRole.HasValue)
+            {
+                if (alliance.AlliedBroadcastRole.Value == ulong.MaxValue)
+                {
+                    rolePing = "@everyone ";
+                }
+                else
+                {
+                    rolePing = $"<@&{alliance.AlliedBroadcastRole.Value}> ";
+                }
+            }
+        }
         var reminder =
-            $"Reminder: Assist with the {risk}defend of {zone.Name} for {ownedAlliance.Acronym} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R> <@&{alliance.AlliedBroadcastRole}>";
+            $"Reminder: Assist with the {risk}defend of {zone.Name} for {ownedAlliance.Acronym} - <t:{zone.NextDefend.Value.ToUniversalTime().ToUnixTimestamp()}:R> " + rolePing;
 
         //var embedBuilder = new EmbedBuilder
         //{

@@ -1,4 +1,19 @@
-﻿using System;
+﻿/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 using System.Collections.Generic;
 using System.Linq;
 using DiscordBot.Domain.Entities.Alliances;
@@ -10,15 +25,15 @@ namespace DiscordBot.Infrastructure.Repositories
 {
     public abstract class BaseRepository
     {
-        protected readonly ILogger<BaseRepository> _logger;
-        protected readonly BotContext _context;
-        protected readonly RequestContext _requestContext;
+        protected readonly ILogger<BaseRepository> Logger;
+        protected readonly BotContext Context;
+        protected readonly RequestContext RequestContext;
 
-        public BaseRepository(ILogger<BaseRepository> logger, BotContext context, RequestContext requestContext)
+        protected BaseRepository(ILogger<BaseRepository> logger, BotContext context, RequestContext requestContext)
         {
-            _logger = logger;
-            _context = context;
-            _requestContext = requestContext;
+            Logger = logger;
+            Context = context;
+            RequestContext = requestContext;
         }
 
         protected List<long> GetInterestedAlliances(long? allianceId = null)
@@ -26,7 +41,7 @@ namespace DiscordBot.Infrastructure.Repositories
             List<long> interestedAlliances;
             if (allianceId.HasValue)
             {
-                var thisAlliance = _context.Alliances
+                var thisAlliance = Context.Alliances
                     .Include(a => a.Group)
                         .ThenInclude(ag => ag.Alliances)
                     .Include(a => a.AssignedDiplomacy)
@@ -46,7 +61,7 @@ namespace DiscordBot.Infrastructure.Repositories
                                                 .Select(gm => gm.Id).ToList();
                 }
 
-                var friendlies = _context.Diplomacies
+                var friendlies = Context.Diplomacies
                                 .AsQueryable()
                                 .Where(d =>
                                         d.Owner == thisAlliance
@@ -64,7 +79,7 @@ namespace DiscordBot.Infrastructure.Repositories
             }
             else
             {
-                interestedAlliances = _context.Alliances
+                interestedAlliances = Context.Alliances
                                             .AsQueryable()
                                             .Select(a => a.Id)
                                             .ToList();

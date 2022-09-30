@@ -3,15 +3,17 @@ using System;
 using DiscordBot.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
 namespace DiscordBot.Infrastructure.Migrations
 {
     [DbContext(typeof(BotContext))]
-    partial class BotContextModelSnapshot : ModelSnapshot
+    [Migration("20220909220353_9")]
+    partial class _9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -603,7 +605,7 @@ namespace DiscordBot.Infrastructure.Migrations
                         new
                         {
                             Id = 73,
-                            Label = "Subspace Superconductors",
+                            Label = "Subspace Superconductor",
                             Name = "SubspaceSuperconductor"
                         },
                         new
