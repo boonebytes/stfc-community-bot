@@ -65,38 +65,33 @@ public class InteractionHandler
         }
         */
             
+        
+#if DEBUG && false
+        // For debugging, just register them to the sandbox server.
         await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
-//#if DEBUG
-//            await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
-//#else
-        var allianceRepository = _scopedProvider.GetService<IAllianceRepository>();
-        var allDiscordServers = allianceRepository.GetAllWithServers();
+        await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
+#else
 
-        var recognizedGuilds = _client.Guilds.Select(g => g.Id).ToArray();
-        
-        
-        foreach (var guildId in recognizedGuilds)
-        {
-            if (allDiscordServers.Where(a => a.GuildId.HasValue).Select(a => a.GuildId.Value).Contains(guildId))
-            {
-                await RegisterInteractionsWithGuild(guildId);
-            }
-        }
-        
-        //foreach (var alliance in allDiscordServers)
+        // Single-use: Remove commands defined per-server
+        //var recognizedGuilds = _client.Guilds.Select(g => g.Id).ToArray();
+        //foreach (var guildId in recognizedGuilds)
         //{
-        //    if (alliance.GuildId.HasValue && recognizedGuilds.Contains(alliance.GuildId.Value))
-        //        await RegisterInteractionsWithGuild(alliance.GuildId.Value);
+        //    await _interactionService.RegisterCommandsToGuildAsync(guildId, true);
         //}
         
-        //await _interactionService.RegisterCommandsGloballyAsync();
-//#endif
+        // Load the commands from the DLL, to be registered as global commans
+        await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
+
+        // Register the global commands.
+        await _interactionService.RegisterCommandsGloballyAsync();
+        _logger.LogInformation("Registered global interaction commands");
+        
+#endif
     }
 
     private async Task OnJoinedGuild(SocketGuild guild)
     {
-        _logger.LogInformation("Joined guild {GuildName} ({GuildId})", guild.Name, guild.Id);  
-        await RegisterInteractionsWithGuild(guild.Id);
+        _logger.LogInformation("Joined guild {GuildName} ({GuildId})", guild.Name, guild.Id);
     }
 
     private async Task RegisterInteractionsWithGuild(ulong guildId)
