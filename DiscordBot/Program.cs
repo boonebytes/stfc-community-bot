@@ -89,10 +89,31 @@ public class Program
                 {
                     //ExclusiveBulkDelete = false,
                     AlwaysDownloadUsers = true,
-                    GatewayIntents =  GatewayIntents.AllUnprivileged
-                                      | GatewayIntents.GuildMembers
-                                      | GatewayIntents.GuildMessages
-                                      | GatewayIntents.DirectMessages,
+                    GatewayIntents =
+                        // All Unprivileged = 0001 0111 1110 1111 1101
+                        // 1, 4, 8, 16, 32, 64, 128, 512, 1024, 2048, 4096, 8192, 16384, 65536
+                        // WAS:
+                        // GatewayIntents =  GatewayIntents.AllUnprivileged
+                        //                   | GatewayIntents.GuildMembers
+                        //                   | GatewayIntents.GuildMessages
+                        //                   | GatewayIntents.DirectMessages,
+                        GatewayIntents.Guilds // 1
+                        | GatewayIntents.GuildMembers // 2
+                        // | GatewayIntents.GuildBans // 4
+                        // | GatewayIntents.GuildEmojis // 8
+                        | GatewayIntents.GuildIntegrations // 16
+                        | GatewayIntents.GuildWebhooks // 32
+                        // | GatewayIntents.GuildInvites // 64
+                        // | GatewayIntents.GuildVoiceStates // 128
+                        | GatewayIntents.GuildMessages // 512
+                        // | GatewayIntents.GuildMessageReactions // 1024
+                        // | GatewayIntents.GuildMessageTyping // 2048
+                        | GatewayIntents.DirectMessages // 4096
+                        // | GatewayIntents.DirectMessageReactions // 8192
+                        // | GatewayIntents.DirectMessageTyping // 16384
+                        | GatewayIntents.MessageContent // 32768
+                        // | GatewayIntents.GuildScheduledEvents // 655536
+                        ,
                     MessageCacheSize = 100
                 };
                 //clientConfig.GatewayIntents &= Discord.GatewayIntents.GuildMembers;
