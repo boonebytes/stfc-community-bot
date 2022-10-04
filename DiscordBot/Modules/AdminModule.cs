@@ -24,7 +24,7 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-// [DefaultMemberPermissions(GuildPermission.ManageGuild)]
+[DefaultMemberPermissions(GuildPermission.ManageGuild)]
 [Group("admin", "Admin Commands")]
 public class AdminModule : BaseModule
 {
@@ -92,8 +92,7 @@ public class AdminModule : BaseModule
     }
 
     [SlashCommand("get-timestamp", "Converts a date/time to a timestamp to be used in Discord messages")]
-    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
-    [RequireOwner(Group = "Permission")]
+    [RequireUserPermission(GuildPermission.SendMessages)]
     public async Task GetTimestamp(
         [Summary("Timezone", "Source timezone")] [Autocomplete(typeof(TimeZones))]
         string timezone,
@@ -232,7 +231,6 @@ public class AdminModule : BaseModule
         return "Value updated successfully";
     }
     
-    [EnabledInDm(false)]
     private async Task<string> ConfigDefendBroadcastTimeAsync(string value, Alliance thisAlliance,
         IAllianceRepository allianceRepository)
     {

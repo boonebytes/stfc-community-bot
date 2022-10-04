@@ -25,6 +25,7 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
+[DefaultMemberPermissions(GuildPermission.ManageGuild)]
 [Group("zone", "Show / Edit Zone Info")]
 public class ZoneModule : BaseModule
 {

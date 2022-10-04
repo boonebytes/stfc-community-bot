@@ -25,7 +25,8 @@ using DiscordBot.Domain.Exceptions;
 namespace DiscordBot.Modules;
 
 [EnabledInDm(false)]
-[Group("schedule", "Admin Commands")]
+[DefaultMemberPermissions(GuildPermission.ManageGuild)]
+[Group("schedule", "Print schedule, refresh, show next defend, etc.")]
 public class ScheduleModule : BaseModule
 {
     

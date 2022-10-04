@@ -24,7 +24,7 @@ using DiscordBot.Domain.Shared;
 
 namespace DiscordBot.Modules;
 
-// [DefaultMemberPermissions(GuildPermission.ManageGuild)]
+[DefaultMemberPermissions(GuildPermission.ManageGuild)]
 [Group("alliance", "Show Alliance Info")]
 public class AllianceModule : BaseModule
 {
@@ -82,7 +82,7 @@ public class AllianceModule : BaseModule
     }
     
     [SlashCommand("services", "Show alliance service costs")]
-    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireUserPermission(GuildPermission.SendMessages, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
     public async Task ServicesShowAsync()
     {
