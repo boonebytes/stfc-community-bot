@@ -1,0 +1,24 @@
+prompt --application/pages/page_groups
+begin
+--   Manifest
+--     PAGE GROUPS: 109
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.0'
+,p_default_workspace_id=>18900386187764698
+,p_default_application_id=>109
+,p_default_id_offset=>30400279703097675
+,p_default_owner=>'STFC'
+);
+wwv_flow_api.create_page_group(
+ p_id=>wwv_flow_api.id(54557183068995950)
+,p_group_name=>'Administration'
+);
+wwv_flow_api.create_page_group(
+ p_id=>wwv_flow_api.id(53300339989123476)
+,p_group_name=>'Code Tables'
+);
+wwv_flow_api.component_end;
+end;
+/

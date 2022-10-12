@@ -1,0 +1,27 @@
+prompt --application/shared_components/user_interface/lovs/officer_types
+begin
+--   Manifest
+--     OFFICER_TYPES
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.0'
+,p_default_workspace_id=>18900386187764698
+,p_default_application_id=>109
+,p_default_id_offset=>30400279703097675
+,p_default_owner=>'STFC'
+);
+wwv_flow_api.create_list_of_values(
+ p_id=>wwv_flow_api.id(56100433303253708)
+,p_lov_name=>'OFFICER_TYPES'
+,p_source_type=>'TABLE'
+,p_location=>'LOCAL'
+,p_query_table=>'CT_OFFICER_TYPE'
+,p_return_column_name=>'ID'
+,p_display_column_name=>'NAME'
+,p_default_sort_column_name=>'NAME'
+,p_default_sort_direction=>'ASC'
+);
+wwv_flow_api.component_end;
+end;
+/

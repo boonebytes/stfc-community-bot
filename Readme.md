@@ -8,7 +8,6 @@ would like to make a derivative of this code or if you find it useful.
   and do not check in those values into the source code.
   - If this happens, reset the credentials in Discord and/or change the
     database password immediately.
-  - 
 ## To-Do
 
 ### Implementation / Road Map
@@ -187,14 +186,20 @@ not be referenced by this project's licensing material.
 
 | Component                            | License                  |
 |:-------------------------------------|:-------------------------|
-| Discord.NET                          | The MIT License (MIT)    |
-| Docker                               | Apache License v2.0      |
-| MediatR v10                          | Apache License v2.0      |
+| [Discord.NET]                        | The MIT License (MIT)    |
+| [Docker]                             | Apache License v2.0      |
+| [MediatR] v10                        | Apache License v2.0      |
 | Microsoft C# .NET Core v6            | The MIT License (MIT)    |
 | Microsoft Entity Framework Core v3.1 | The MIT License (MIT)    | 
-| Newtonsoft.Json v13                  | The MIT License (MIT)    |
+| [Newtonsoft.Json] v13                | The MIT License (MIT)    |
 | Oracle Managed Data Access Core      | Oracle Free Use          |
 | Oracle Entity Framework Core v3.21   | Oracle Free Use          |
-| Quartz.NET                           | Apache License v2.0      |
-| Entity Framework Plus                | The MIT License (MIT)    | 
+| [Quartz.NET]                         | Apache License v2.0      |
+| [Entity Framework Plus]              | The MIT License (MIT)    | 
 
+[Discord.NET]:https://discordnet.dev/
+[Docker]:https://www.docker.com/
+[MediatR]:https://github.com/jbogard/MediatR
+[Newtonsoft.Json]:https://www.newtonsoft.com/json
+[Quartz.NET]:https://www.quartz-scheduler.net/
+[Entity Framework Plus]:https://entityframework-plus.net/
