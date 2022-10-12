@@ -14,15 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-create or replace PACKAGE STFC.PKG_OFFICER AS
-
-    PROCEDURE IMPORT_OFFICERS_FROM_TOOL(p_member_id MEMBERS.ID%type, p_data in out nocopy clob);
-
-    FUNCTION IMPORT_OFFICER_FROM_TOOL (p_member_id MEMBERS.ID%type, p_line varchar2)
-        RETURN MEMBER_OFFICERS%rowtype;
-
-    FUNCTION FIND_OFFICER_ID(p_officer_name CT_OFFICERS.NAME%type, p_rarity varchar2)
-        RETURN CT_OFFICERS.ID%type;
-
-END PKG_OFFICER;
+create table STFC.OAUTH_CONFIG
+(
+    name  varchar2(100)  not null
+        constraint OAUTH_CONFIG_PK
+            primary key,
+    value varchar2(1000) not null
+)
 /
