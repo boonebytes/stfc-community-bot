@@ -1,0 +1,321 @@
+{
+  "id":"10010"
+ ,"Identification":{
+    "Name":"Configure Access Control"
+   ,"Alias":"CONFIGURE-ACCESS-CONTROL"
+   ,"Title":"Configure Access Control"
+   ,"Page Group":"Administration (54557183068995950)"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+   ,"Page Mode":"Modal Dialog"
+   ,"Dialog Template":"Theme Default"
+  }
+ ,"Dialog":{
+    "Chained":true
+  }
+ ,"Navigation Menu":{
+    "Override User Interface Level":false
+  }
+ ,"Navigation":{
+    "Cursor Focus":"Do not focus cursor"
+   ,"Warn on Unsaved Changes":true
+  }
+ ,"Security":{
+    "Authorization Scheme":"Administration Rights (54555301792995935)"
+   ,"Authentication":"Page Requires Authentication"
+   ,"Deep Linking":"Application Default"
+   ,"Page Access Protection":"No Arguments Supported"
+   ,"Form Auto Complete":"Off"
+   ,"Browser Cache":"Application Default"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Application Default"
+  }
+ ,"Advanced":{
+    "Enable duplicate page submissions":"Yes - Enable page to be re-posted"
+   ,"Reload on Submit":"Only for Success"
+  }
+ ,"Server Cache":{
+    "Caching":"Disabled"
+  }
+ ,"Help":{
+    "Help Text":"\u003Cp\u003ESelect the appropriate choice for any authenticated users.\u003Cbr\u003E \nSelecting \u003Cstrong\u003ENo\u003C\/strong\u003E makes the application more secure as only specified users can access the application. \nHowever, if your application has a large user community then maintaining users may be onerous, and you may prefer to choose \u003Cstrong\u003EYes\u003C\/strong\u003E and only enter application Administrators, and possibly Contributors.\u003Cbr\u003E\nIf you select \u003Cstrong\u003EYes\u003C\/strong\u003E then you must also select how users not included in the users list are treated.\u003C\/p\u003E\n\u003Cp\u003ESelect between requiring email addresses and any alphanumeric value for Usernames.\u003Cbr\u003E\nGenerally, you should set this setting to \u003Cstrong\u003EE-mail Address\u003C\/strong\u003E if your application uses (or will be configured to use) a centralized authentication scheme such as Oracle Access Manager, or SSO.\u003C\/p\u003E\n\u003Cp\u003E\u003Cem\u003E\u003Cstrong\u003ENote:\u003C\/strong\u003E This application supports the following 3 access levels: Reader, Contributor, and Administrator.\n\u003Cul\u003E\n  \u003Cli\u003E\u003Cstrong\u003EReaders\u003C\/strong\u003E have read-only access to all information and can also view reports.\u003C\/li\u003E\n  \u003Cli\u003E\u003Cstrong\u003EContributors\u003C\/strong\u003E can create, edit and delete information and view reports.\u003C\/li\u003E\n  \u003Cli\u003E\u003Cstrong\u003EAdministrators\u003C\/strong\u003E, in addition to Contributors capability, can also perform configuration of the application by accessing the Administration section of the application.\u003C\/li\u003E\n\u003C\/ul\u003E\n\u003C\/em\u003E\u003C\/p\u003E"
+  }
+ ,"Configuration":{
+    "Build Option":"Feature: Access Control (54553266873995923)"
+  }
+ ,"Regions":[
+    {
+      "id":"54565437342996015"
+     ,"Identification":{
+        "Title":"Access Control Configuration"
+       ,"Type":"Static Content"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+   ,{
+      "id":"54565566524996015"
+     ,"Identification":{
+        "Title":"Dialog Buttons"
+       ,"Type":"Static Content"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"REGION_POSITION_03"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Buttons Container (54432201299995716)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+  ]
+ ,"Page Items":[
+    {
+      "id":"54567963845996021"
+     ,"Identification":{
+        "Name":"P10010_ALLOW_OTHER_USERS"
+       ,"Type":"Switch"
+      }
+     ,"Label":{
+        "Label":"Any authenticated user may access this application"
+       ,"Alignment":"Left"
+      }
+     ,"Settings":{
+        "Use Defaults":true
+      }
+     ,"Layout":{
+        "Sequence":30
+       ,"Region":"Access Control Configuration (54565437342996015)"
+       ,"Position":"BODY"
+       ,"Alignment":"Left"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+       ,"Label Column Span":"3"
+      }
+     ,"Appearance":{
+        "Template":"Optional (54524668250995797)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Validation":{
+        "Value Required":true
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"Function Body"
+       ,"Language":"PL\/SQL"
+       ,"PL\/SQL Function Body":"if apex_app_setting.get_value( p_name =\u003E \u0027ACCESS_CONTROL_SCOPE\u0027 ) = \u0027ACL_ONLY\u0027 then\n    return \u0027N\u0027;\nelse\n    return \u0027Y\u0027;\nend if;"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Security":{
+        "Session State Protection":"Unrestricted"
+       ,"Store value encrypted in session state":false
+       ,"Restricted Characters":"All characters can be saved."
+      }
+     ,"Help":{
+        "Inline Help Text":"Choose \u003Cstrong\u003ENo\u003C\/strong\u003E if all users are defined in the access control list. Choose \u003Cstrong\u003EYes\u003C\/strong\u003E if authenticated users not in the access control list may also use this application."
+      }
+    }
+  ]
+ ,"Buttons":[
+    {
+      "id":"54565617695996015"
+     ,"Identification":{
+        "Button Name":"CANCEL"
+       ,"Label":"Cancel"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Region":"Dialog Buttons (54565566524996015)"
+       ,"Position":"PREVIOUS"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Text (54527310383995804)"
+       ,"Hot":false
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Behavior":{
+        "Action":"Defined by Dynamic Action"
+       ,"Execute Validations":false
+      }
+    }
+   ,{
+      "id":"54566923743996019"
+     ,"Identification":{
+        "Button Name":"APPLY_CHANGES"
+       ,"Label":"Apply Changes"
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Region":"Dialog Buttons (54565566524996015)"
+       ,"Position":"CREATE"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Text (54527310383995804)"
+       ,"Hot":true
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Behavior":{
+        "Action":"Submit Page"
+       ,"Execute Validations":true
+       ,"Warn on Unsaved Changes":"Do Not Check"
+      }
+    }
+  ]
+ ,"Dynamic Actions":[
+    {
+      "id":"54565683230996015"
+     ,"Identification":{
+        "Name":"Cancel Modal"
+      }
+     ,"Execution Options":{
+        "Sequence":50
+      }
+     ,"When":{
+        "Event":"EVENT.EVENT.BROWSER.CLICK"
+       ,"Selection Type":"Button"
+       ,"Button":"CANCEL (54565617695996015)"
+      }
+     ,"Advanced":{
+        "Event Scope":"Static"
+      }
+     ,"Actions":[
+        {
+          "id":"54568666247996025"
+         ,"Identification":{
+            "Action":"Cancel Dialog"
+          }
+         ,"Execution Options":{
+            "Sequence":10
+           ,"Event":"Cancel Modal (54565683230996015)"
+           ,"Fire When Event Result Is":"True"
+           ,"Fire on Initialization":false
+          }
+        }
+      ]
+    }
+  ]
+ ,"Processes":[
+    {
+      "id":"54569172051996028"
+     ,"Identification":{
+        "Name":"ACCESS CONTROL ENABLED"
+       ,"Type":"Execute Code"
+      }
+     ,"Source":{
+        "Location":"Local Database"
+       ,"Language":"PL\/SQL"
+       ,"PL\/SQL Code":"begin\n    if :P10010_ALLOW_OTHER_USERS = \u0027Y\u0027 then\n        apex_app_setting.set_value (\n            p_name  =\u003E \u0027ACCESS_CONTROL_SCOPE\u0027,\n            p_value =\u003E \u0027ALL_USERS\u0027);\n    else\n        apex_app_setting.set_value (\n            p_name  =\u003E \u0027ACCESS_CONTROL_SCOPE\u0027,\n            p_value =\u003E \u0027ACL_ONLY\u0027);\n    end if;\nend;"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+       ,"Point":"Processing"
+       ,"Run Process":"Once Per Page Visit (default)"
+      }
+     ,"Success Message":{
+        "Success Message":"Access Control settings saved."
+      }
+     ,"Error":{
+        "Display Location":"Inline in Notification"
+      }
+    }
+  ]
+ ,"Branches":[
+    {
+      "id":"54567589105996020"
+     ,"Identification":{
+        "Name":"Go To Admin Page"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+       ,"Point":"After Processing"
+      }
+     ,"Behavior":{
+        "Type":"Page or URL (Redirect)"
+       ,"Target":{
+          "url":"f?p=\u0026APP_ID.:10000:\u0026SESSION.::\u0026DEBUG.:::\u0026success_msg=#SUCCESS_MSG#"
+         ,"Page":"10000"
+        }
+      }
+    }
+  ]
+}

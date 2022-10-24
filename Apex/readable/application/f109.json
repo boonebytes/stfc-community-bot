@@ -1,0 +1,186 @@
+{
+  "id":"109"
+ ,"Identification":{
+    "Name":"STFC"
+   ,"Alias":"STFC"
+   ,"Version":"Release 1.0"
+  }
+ ,"Row Search":{
+    "Tokenize":false
+  }
+ ,"Availability":{
+    "Status":"Available with Developer Toolbar"
+   ,"Build Status":"Run and Build Application"
+  }
+ ,"Error Handling":{
+    "Default Display Location":"Inline with Field and in Notification"
+  }
+ ,"Report Printing":{
+    "Type":"Native Printing"
+  }
+ ,"Advanced":{
+    "Friendly URLs":true
+   ,"Allow Feedback":true
+   ,"Logging":true
+   ,"Debugging":true
+   ,"Compatibility Mode":"21.2 \/ 22.1"
+  }
+ ,"Authentication":{
+    "Public User":"APEX_PUBLIC_USER"
+   ,"Authentication Scheme":"Custom Discord Auth (2626811672771794)"
+  }
+ ,"Authorization":{
+    "Authorization Scheme":"Reader Rights (54555478695995935)"
+   ,"Run on Public Pages":false
+   ,"Run on Background Job":true
+   ,"Source for Role or Group Schemes":"Access Control User Role Assignments"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Disabled"
+   ,"Maximum Session Length":172800
+   ,"Maximum Session Idle Time":21600
+   ,"Session Timeout Warning":300
+  }
+ ,"Session State Protection":{
+    "Enabled":true
+  }
+ ,"Security":{
+    "Deep Linking":"Disabled"
+   ,"Browser Cache":"Disabled"
+   ,"Embed in Frames":"Deny"
+   ,"Referrer Policy":"strict-origin"
+   ,"HTML Escaping Mode":"Extended"
+   ,"Runtime API Usage":[
+      "Modify This Application"
+    ]
+  }
+ ,"Database Session":{
+    "Parsing Schema":"STFC"
+  }
+ ,"Globalization":{
+    "Primary Language":"English (en)"
+   ,"Document Direction":"Left-To-Right"
+   ,"Language Derived From":"Application Primary Language"
+   ,"Automatic Time Zone":false
+   ,"Automatic CSV Encoding":true
+  }
+ ,"Application Format Masks":{
+    "Date":"DS"
+   ,"Timestamp":"DS"
+   ,"Timestamp Time Zone":"DS"
+  }
+ ,"Character Value Comparison":{
+    "Behavior":"Database session NLS setting (default)"
+  }
+ ,"Logo":{
+    "Type":"Text"
+   ,"Text":"STFC"
+  }
+ ,"Progressive Web App":{
+    "Enable":false
+  }
+ ,"Substitutions":[
+    {
+      "id":"1"
+     ,"Identification":{
+        "Name":"APP_NAME"
+      }
+     ,"Value":{
+        "Static Value":"STFC"
+      }
+    }
+  ]
+ ,"Application Settings":[
+    {
+      "id":"54556601403995946"
+     ,"Identification":{
+        "Name":"FEEDBACK_ATTACHMENTS_YN"
+      }
+     ,"Value":{
+        "Value":"Y"
+       ,"Required":false
+      }
+     ,"Advanced":{
+        "Valid Values":"Y, N"
+       ,"On Upgrade Keep Value":true
+      }
+     ,"Configuration":{
+        "Build Option":"Feature: Feedback (54553386857995923)"
+      }
+    }
+   ,{
+      "id":"54556959158995949"
+     ,"Identification":{
+        "Name":"ACCESS_CONTROL_SCOPE"
+      }
+     ,"Value":{
+        "Value":"ACL_ONLY"
+       ,"Required":false
+      }
+     ,"Advanced":{
+        "Valid Values":"ACL_ONLY, ALL_USERS"
+       ,"On Upgrade Keep Value":true
+      }
+     ,"Configuration":{
+        "Build Option":"Feature: Access Control (54553266873995923)"
+      }
+     ,"Comments":{
+        "Comments":"The default access level given to authenticated users who are not in the access control list"
+      }
+    }
+  ]
+ ,"User Interfaces":[
+    {
+      "id":"54551875302995858"
+     ,"Identification":{
+        "Name":"Desktop"
+      }
+     ,"Navigation":{
+        "Home URL":{
+          "url":"f?p=\u0026APP_ID.:1:\u0026SESSION."
+         ,"Page":"1"
+        }
+       ,"Login URL":{
+          "url":"f?p=\u0026APP_ID.:9998:\u0026SESSION."
+         ,"Page":"9998"
+        }
+      }
+     ,"Navigation Menu":{
+        "List Template":"Side Navigation Menu (54512083043995782)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"js-defaultCollapsed"
+         ,"js-navCollapsed--hidden"
+         ,"t-TreeNav--styleA"
+        ]
+       ,"List Position":"Side"
+       ,"List":"Desktop Navigation Menu (54405142762995641)"
+      }
+     ,"Navigation Bar":{
+        "Implementation":"List"
+       ,"List":"Desktop Navigation Bar (54551536994995857)"
+       ,"List Template":"Navigation Bar (54514976322995785)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"JavaScript":{
+        "File URLs":[
+          "#IMAGE_PREFIX#libraries\/jquery\/3.6.0\/jquery-3.6.0.min.js"
+        ]
+       ,"Include jQuery Migrate":false
+      }
+     ,"CSS":{
+        "File URLs":[
+          "#APP_IMAGES#app-icon.css?version=#APP_VERSION#"
+        ]
+      }
+     ,"Attributes":{
+        "Theme":"Universal Theme (42)"
+       ,"Global Page":"0"
+       ,"Enable End Users to choose Theme Style":false
+       ,"Add \"Built with APEX\" to Footer":false
+      }
+    }
+  ]
+}

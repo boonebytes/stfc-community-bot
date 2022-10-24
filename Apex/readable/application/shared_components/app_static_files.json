@@ -1,0 +1,72 @@
+[
+  {
+    "id":"2118448390057607"
+   ,"Identification":{
+      "File Name":"jstz.js"
+    }
+   ,"Attributes":{
+      "Mime Type":"text\/javascript"
+     ,"File Character Set":"Unicode UTF-8"
+    }
+  }
+ ,{
+    "id":"2118950071058648"
+   ,"Identification":{
+      "File Name":"jstz.min.js"
+    }
+   ,"Attributes":{
+      "Mime Type":"text\/javascript"
+     ,"File Character Set":"Unicode UTF-8"
+    }
+  }
+ ,{
+    "id":"2711806643647503"
+   ,"Identification":{
+      "File Name":"icons\/app-icon-32.png"
+    }
+   ,"Attributes":{
+      "Mime Type":"image\/png"
+     ,"File Character Set":"Unicode UTF-8"
+    }
+  }
+ ,{
+    "id":"2712012540647536"
+   ,"Identification":{
+      "File Name":"icons\/app-icon-192.png"
+    }
+   ,"Attributes":{
+      "Mime Type":"image\/png"
+     ,"File Character Set":"Unicode UTF-8"
+    }
+  }
+ ,{
+    "id":"2712343501647564"
+   ,"Identification":{
+      "File Name":"icons\/app-icon-512.png"
+    }
+   ,"Attributes":{
+      "Mime Type":"image\/png"
+     ,"File Character Set":"Unicode UTF-8"
+    }
+  }
+ ,{
+    "id":"30600837907462832"
+   ,"Identification":{
+      "File Name":"app-icon.svg"
+    }
+   ,"Attributes":{
+      "Mime Type":"image\/svg+xml"
+     ,"File Character Set":"Unicode UTF-8"
+    }
+  }
+ ,{
+    "id":"54553016492995922"
+   ,"Identification":{
+      "File Name":"app-icon.css"
+    }
+   ,"Attributes":{
+      "Mime Type":"text\/css"
+     ,"File Character Set":"Unicode UTF-8"
+    }
+  }
+]

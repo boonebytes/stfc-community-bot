@@ -3,43 +3,44 @@ begin
 --   Manifest
 --     PAGE: 10013
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.0'
-,p_default_workspace_id=>18900386187764698
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.0'
+,p_default_workspace_id=>2100437598979157
 ,p_default_application_id=>109
 ,p_default_id_offset=>30400279703097675
 ,p_default_owner=>'STFC'
 );
-wwv_flow_api.create_page(
+wwv_flow_imp_page.create_page(
  p_id=>10013
-,p_user_interface_id=>wwv_flow_api.id(54551875302995858)
+,p_user_interface_id=>wwv_flow_imp.id(54551875302995858)
 ,p_name=>'Add Multiple Users - Step 1'
 ,p_alias=>'ADD-MULTIPLE-USERS-STEP-1'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Add Multiple Users'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(54557183068995950)
+,p_group_id=>wwv_flow_imp.id(54557183068995950)
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '.helpText {',
 'padding: 8px;',
 'color: #707070;',
 '}'))
-,p_required_role=>wwv_flow_api.id(54555301792995935)
-,p_required_patch=>wwv_flow_api.id(54553266873995923)
+,p_required_role=>wwv_flow_imp.id(54555301792995935)
+,p_required_patch=>wwv_flow_imp.id(54553266873995923)
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_deep_linking=>'N'
+,p_page_component_map=>'16'
 ,p_last_updated_by=>'BOONEBYTES'
 ,p_last_upd_yyyymmddhh24miss=>'20220322205939'
 );
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(54582672969996073)
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(54582672969996073)
 ,p_plug_name=>'Button Bar'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'Y'
-,p_plug_template=>wwv_flow_api.id(54432201299995716)
+,p_plug_template=>wwv_flow_imp.id(54432201299995716)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_query_type=>'SQL'
@@ -48,61 +49,60 @@ wwv_flow_api.create_page_plug(
 ,p_attribute_02=>'HTML'
 ,p_attribute_03=>'Y'
 );
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(54582738210996073)
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(54582738210996073)
 ,p_plug_name=>'Wizard Container'
 ,p_region_template_options=>'#DEFAULT#:t-Form--stretchInputs'
 ,p_component_template_options=>'#DEFAULT#:t-WizardSteps--displayCurrentLabelOnly'
 ,p_escape_on_http_output=>'Y'
-,p_plug_template=>wwv_flow_api.id(54431268247995715)
+,p_plug_template=>wwv_flow_imp.id(54431268247995715)
 ,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_query_num_rows=>15
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 ,p_attribute_03=>'Y'
 );
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(54582829678996073)
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(54582829678996073)
 ,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_api.id(54582672969996073)
+,p_button_plug_id=>wwv_flow_imp.id(54582672969996073)
 ,p_button_name=>'NEXT'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_api.id(54527438844995804)
+,p_button_template_id=>wwv_flow_imp.id(54527438844995804)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Next'
-,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_position=>'NEXT'
 ,p_icon_css_classes=>'fa-chevron-right'
 );
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(54582973307996073)
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(54582973307996073)
 ,p_button_sequence=>20
-,p_button_plug_id=>wwv_flow_api.id(54582672969996073)
+,p_button_plug_id=>wwv_flow_imp.id(54582672969996073)
 ,p_button_name=>'CANCEL'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>wwv_flow_api.id(54527310383995804)
+,p_button_template_id=>wwv_flow_imp.id(54527310383995804)
 ,p_button_image_alt=>'Cancel'
-,p_button_position=>'REGION_TEMPLATE_PREVIOUS'
+,p_button_position=>'PREVIOUS'
 ,p_button_execute_validations=>'N'
 );
-wwv_flow_api.create_page_branch(
- p_id=>wwv_flow_api.id(54585526129996075)
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(54585526129996075)
 ,p_branch_name=>'Go To Next Step'
 ,p_branch_action=>'f?p=&APP_ID.:10014:&SESSION.::&DEBUG.:RP,10014::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
-,p_branch_when_button_id=>wwv_flow_api.id(54582829678996073)
+,p_branch_when_button_id=>wwv_flow_imp.id(54582829678996073)
 ,p_branch_sequence=>10
 );
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(54585910130996076)
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(54585910130996076)
 ,p_name=>'P10013_ROLE'
 ,p_is_required=>true
 ,p_item_sequence=>20
-,p_item_plug_id=>wwv_flow_api.id(54582738210996073)
+,p_item_plug_id=>wwv_flow_imp.id(54582738210996073)
 ,p_item_default=>'2'
 ,p_prompt=>'Role'
 ,p_display_as=>'NATIVE_CHECKBOX'
@@ -111,68 +111,71 @@ wwv_flow_api.create_page_item(
 'select role_name d, role_id r',
 'from APEX_APPL_ACL_ROLES where application_id = :APP_ID ',
 'order by 1'))
-,p_field_template=>wwv_flow_api.id(54526142179995799)
+,p_field_template=>wwv_flow_imp.id(54526142179995799)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'3'
 ,p_attribute_02=>'VERTICAL'
 );
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(54586308783996076)
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(54586308783996076)
 ,p_name=>'P10013_PRELIM_USERS'
 ,p_is_required=>true
 ,p_item_sequence=>30
-,p_item_plug_id=>wwv_flow_api.id(54582738210996073)
+,p_item_plug_id=>wwv_flow_imp.id(54582738210996073)
 ,p_prompt=>'Usernames'
 ,p_placeholder=>'Enter usernames here'
 ,p_display_as=>'NATIVE_TEXTAREA'
 ,p_cSize=>80
 ,p_cMaxlength=>4000
 ,p_cHeight=>5
-,p_field_template=>wwv_flow_api.id(54526142179995799)
+,p_field_template=>wwv_flow_imp.id(54526142179995799)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
 ,p_protection_level=>'I'
 ,p_inline_help_text=>'Enter usernames separated by commas, semicolons, or whitespace. Existing or duplicate usernames will automatically be ignored.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
 );
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(54586683304996076)
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(54586683304996076)
 ,p_name=>'P10013_USERNAME_FORMAT'
 ,p_item_sequence=>40
-,p_item_plug_id=>wwv_flow_api.id(54582738210996073)
+,p_item_plug_id=>wwv_flow_imp.id(54582738210996073)
 ,p_prompt=>'Username Format'
 ,p_display_as=>'NATIVE_CHECKBOX'
 ,p_named_lov=>'EMAIL_USERNAME_FORMAT'
-,p_lov=>'.'||wwv_flow_api.id(54586847959996076)||'.'
-,p_field_template=>wwv_flow_api.id(54526142179995799)
+,p_lov=>'.'||wwv_flow_imp.id(54586847959996076)||'.'
+,p_field_template=>wwv_flow_imp.id(54526142179995799)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'1'
 ,p_attribute_02=>'VERTICAL'
 );
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(54583073494996073)
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(54583073494996073)
 ,p_name=>'Cancel Modal'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'BUTTON'
-,p_triggering_button_id=>wwv_flow_api.id(54582973307996073)
+,p_triggering_button_id=>wwv_flow_imp.id(54582973307996073)
 ,p_bind_type=>'bind'
 ,p_bind_event_type=>'click'
 );
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(54588104269996078)
-,p_event_id=>wwv_flow_api.id(54583073494996073)
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(54588104269996078)
+,p_event_id=>wwv_flow_imp.id(54583073494996073)
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_DIALOG_CANCEL'
 );
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(54588634840996079)
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(54588634840996079)
 ,p_process_sequence=>10
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
@@ -324,8 +327,8 @@ wwv_flow_api.create_page_process(
 'end;'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_api.id(54582829678996073)
+,p_process_when_button_id=>wwv_flow_imp.id(54582829678996073)
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

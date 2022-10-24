@@ -3,16 +3,16 @@ begin
 --   Manifest
 --     SECURITY SCHEME: Administration Rights
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.0'
-,p_default_workspace_id=>18900386187764698
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.0'
+,p_default_workspace_id=>2100437598979157
 ,p_default_application_id=>109
 ,p_default_id_offset=>30400279703097675
 ,p_default_owner=>'STFC'
 );
-wwv_flow_api.create_security_scheme(
- p_id=>wwv_flow_api.id(54555301792995935)
+wwv_flow_imp_shared.create_security_scheme(
+ p_id=>wwv_flow_imp.id(54555301792995935)
 ,p_name=>'Administration Rights'
 ,p_scheme_type=>'NATIVE_IS_IN_GROUP'
 ,p_attribute_01=>'Administrator'
@@ -20,6 +20,6 @@ wwv_flow_api.create_security_scheme(
 ,p_error_message=>'Insufficient privileges, user is not an Administrator'
 ,p_caching=>'BY_USER_BY_PAGE_VIEW'
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

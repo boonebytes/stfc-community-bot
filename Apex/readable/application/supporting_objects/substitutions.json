@@ -1,0 +1,11 @@
+[
+  {
+    "id":"1"
+   ,"Identification":{
+      "Name":"APP_NAME"
+    }
+   ,"Installation":{
+      "Prompt Substitution":false
+    }
+  }
+]

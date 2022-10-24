@@ -1,0 +1,448 @@
+{
+  "id":"10013"
+ ,"Identification":{
+    "Name":"Add Multiple Users - Step 1"
+   ,"Alias":"ADD-MULTIPLE-USERS-STEP-1"
+   ,"Title":"Add Multiple Users"
+   ,"Page Group":"Administration (54557183068995950)"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+   ,"Page Mode":"Modal Dialog"
+   ,"Dialog Template":"Theme Default"
+  }
+ ,"Dialog":{
+    "Chained":false
+  }
+ ,"Navigation Menu":{
+    "Override User Interface Level":false
+  }
+ ,"Navigation":{
+    "Cursor Focus":"First item on page"
+   ,"Warn on Unsaved Changes":true
+  }
+ ,"CSS":{
+    "Inline":".helpText {\npadding: 8px;\ncolor: #707070;\n}"
+  }
+ ,"Security":{
+    "Authorization Scheme":"Administration Rights (54555301792995935)"
+   ,"Authentication":"Page Requires Authentication"
+   ,"Deep Linking":"Disabled"
+   ,"Page Access Protection":"Arguments Must Have Checksum"
+   ,"Form Auto Complete":"Off"
+   ,"Browser Cache":"Application Default"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Application Default"
+  }
+ ,"Advanced":{
+    "Enable duplicate page submissions":"Yes - Enable page to be re-posted"
+   ,"Reload on Submit":"Only for Success"
+  }
+ ,"Server Cache":{
+    "Caching":"Disabled"
+  }
+ ,"Configuration":{
+    "Build Option":"Feature: Access Control (54553266873995923)"
+  }
+ ,"Regions":[
+    {
+      "id":"54582672969996073"
+     ,"Identification":{
+        "Title":"Button Bar"
+       ,"Type":"Static Content"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"REGION_POSITION_03"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Buttons Container (54432201299995716)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+   ,{
+      "id":"54582738210996073"
+     ,"Identification":{
+        "Title":"Wizard Container"
+       ,"Type":"Static Content"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-Form--stretchInputs"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+  ]
+ ,"Page Items":[
+    {
+      "id":"54585910130996076"
+     ,"Identification":{
+        "Name":"P10013_ROLE"
+       ,"Type":"Checkbox Group"
+      }
+     ,"Label":{
+        "Label":"Role"
+       ,"Alignment":"Left"
+      }
+     ,"Settings":{
+        "Number of Columns":3
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Region":"Wizard Container (54582738210996073)"
+       ,"Position":"BODY"
+       ,"Alignment":"Left"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+       ,"Label Column Span":"Page Template Default"
+      }
+     ,"Appearance":{
+        "Template":"Required - Floating (54526142179995799)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Validation":{
+        "Value Required":true
+      }
+     ,"List of Values":{
+        "Type":"Shared Component"
+       ,"List of Values":"ACCESS_ROLES (54579108465996057)"
+       ,"Display Extra Values":false
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"Null"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Default":{
+        "Type":"Static"
+       ,"Static Value":"2"
+      }
+     ,"Security":{
+        "Session State Protection":"Unrestricted"
+       ,"Store value encrypted in session state":false
+       ,"Escape special characters":true
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+   ,{
+      "id":"54586308783996076"
+     ,"Identification":{
+        "Name":"P10013_PRELIM_USERS"
+       ,"Type":"Textarea"
+      }
+     ,"Label":{
+        "Label":"Usernames"
+       ,"Alignment":"Left"
+      }
+     ,"Settings":{
+        "Resizable":true
+       ,"Auto-Height":false
+       ,"Character Counter":false
+       ,"Trim Spaces":"Leading and Trailing"
+      }
+     ,"Layout":{
+        "Sequence":30
+       ,"Region":"Wizard Container (54582738210996073)"
+       ,"Position":"BODY"
+       ,"Alignment":"Left"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+       ,"Label Column Span":"Page Template Default"
+      }
+     ,"Appearance":{
+        "Template":"Required - Floating (54526142179995799)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Width":80
+       ,"Height":5
+       ,"Value Placeholder":"Enter usernames here"
+      }
+     ,"Validation":{
+        "Value Required":true
+       ,"Maximum Length":4000
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"Null"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Quick Picks":{
+        "Show Quick Picks":false
+      }
+     ,"Security":{
+        "Session State Protection":"Restricted - May not be set from browser"
+       ,"Store value encrypted in session state":false
+       ,"Restricted Characters":"All characters can be saved."
+      }
+     ,"Help":{
+        "Inline Help Text":"Enter usernames separated by commas, semicolons, or whitespace. Existing or duplicate usernames will automatically be ignored."
+      }
+    }
+   ,{
+      "id":"54586683304996076"
+     ,"Identification":{
+        "Name":"P10013_USERNAME_FORMAT"
+       ,"Type":"Checkbox Group"
+      }
+     ,"Label":{
+        "Label":"Username Format"
+       ,"Alignment":"Left"
+      }
+     ,"Settings":{
+        "Number of Columns":1
+      }
+     ,"Layout":{
+        "Sequence":40
+       ,"Region":"Wizard Container (54582738210996073)"
+       ,"Position":"BODY"
+       ,"Alignment":"Left"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+       ,"Label Column Span":"Page Template Default"
+      }
+     ,"Appearance":{
+        "Template":"Required - Floating (54526142179995799)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Validation":{
+        "Value Required":false
+      }
+     ,"List of Values":{
+        "Type":"Shared Component"
+       ,"List of Values":"EMAIL_USERNAME_FORMAT (54586847959996076)"
+       ,"Display Extra Values":false
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"Null"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Security":{
+        "Session State Protection":"Unrestricted"
+       ,"Store value encrypted in session state":false
+       ,"Escape special characters":true
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+  ]
+ ,"Buttons":[
+    {
+      "id":"54582829678996073"
+     ,"Identification":{
+        "Button Name":"NEXT"
+       ,"Label":"Next"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Region":"Button Bar (54582672969996073)"
+       ,"Position":"NEXT"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Text with Icon (54527438844995804)"
+       ,"Hot":true
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-Button--iconRight"
+        ]
+       ,"Icon":"fa-chevron-right"
+      }
+     ,"Behavior":{
+        "Action":"Submit Page"
+       ,"Execute Validations":true
+       ,"Warn on Unsaved Changes":"Do Not Check"
+      }
+    }
+   ,{
+      "id":"54582973307996073"
+     ,"Identification":{
+        "Button Name":"CANCEL"
+       ,"Label":"Cancel"
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Region":"Button Bar (54582672969996073)"
+       ,"Position":"PREVIOUS"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Text (54527310383995804)"
+       ,"Hot":false
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Behavior":{
+        "Action":"Defined by Dynamic Action"
+       ,"Execute Validations":false
+      }
+    }
+  ]
+ ,"Dynamic Actions":[
+    {
+      "id":"54583073494996073"
+     ,"Identification":{
+        "Name":"Cancel Modal"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+      }
+     ,"When":{
+        "Event":"EVENT.EVENT.BROWSER.CLICK"
+       ,"Selection Type":"Button"
+       ,"Button":"CANCEL (54582973307996073)"
+      }
+     ,"Advanced":{
+        "Event Scope":"Static"
+      }
+     ,"Actions":[
+        {
+          "id":"54588104269996078"
+         ,"Identification":{
+            "Action":"Cancel Dialog"
+          }
+         ,"Execution Options":{
+            "Sequence":10
+           ,"Event":"Cancel Modal (54583073494996073)"
+           ,"Fire When Event Result Is":"True"
+           ,"Fire on Initialization":false
+          }
+        }
+      ]
+    }
+  ]
+ ,"Processes":[
+    {
+      "id":"54588634840996079"
+     ,"Identification":{
+        "Name":"Create Collections"
+       ,"Type":"Execute Code"
+      }
+     ,"Source":{
+        "Location":"Local Database"
+       ,"Language":"PL\/SQL"
+       ,"PL\/SQL Code":"declare\n    l_line      varchar2(32767);\n    l_emails    apex_t_varchar2;\n    l_username  varchar2(4000);\n    l_at        number;\n    l_dot       number;\n    l_valid     boolean := true;\n    l_domain    varchar2(4000);\nbegin\n    ---------------------\n    -- create collections\n    --\n    apex_collection.CREATE_OR_TRUNCATE_COLLECTION (\u0027ACL_BULK_USER_INVALID\u0027);\n    apex_collection.CREATE_OR_TRUNCATE_COLLECTION (\u0027ACL_BULK_USER_VALID\u0027);\n\n    --------------------------------------------\n    -- replace delimiting characters with commas\n    --\n    l_line := :P10013_PRELIM_USERS;\n    l_line := replace(l_line,chr(10),\u0027 \u0027);\n    l_line := replace(l_line,chr(13),\u0027 \u0027);\n    l_line := replace(l_line,chr(9),\u0027 \u0027);\n    l_line := replace(l_line,\u0027\u003C\u0027,\u0027 \u0027);\n    l_line := replace(l_line,\u0027\u003E\u0027,\u0027 \u0027);\n    l_line := replace(l_line,\u0027;\u0027,\u0027 \u0027);\n    l_line := replace(l_line,\u0027:\u0027,\u0027 \u0027);\n    l_line := replace(l_line,\u0027(\u0027,\u0027 \u0027);\n    l_line := replace(l_line,\u0027)\u0027,\u0027 \u0027);\n    l_line := replace(l_line,\u0027 \u0027,\u0027,\u0027);\n\n    -----------------------------------------\n    -- get one comma separated line of emails\n    --\n    for j in 1..1000 loop\n        if instr(l_line,\u0027,,\u0027) \u003E 0 then\n           l_line := replace(l_line,\u0027,,\u0027,\u0027,\u0027);\n        else\n           exit;\n        end if;\n    end loop;\n\n    -------------------------\n    -- get an array of emails\n    --\n    l_emails := apex_string.split(l_line,\u0027,\u0027);\n\n    -----------------------------\n    -- add emails to a collection\n    --\n    l_username := null;\n    l_domain := null;\n    l_at := 0;\n    l_dot := 0;\n    for j in 1..l_emails.count loop\n        l_valid := true;\n        l_username := upper(trim(l_emails(j)));\n        l_username := trim(both \u0027.\u0027 from l_username);\n        l_username := replace(l_username,\u0027 \u0027,null);\n        l_username := replace(l_username,chr(10),null);\n        l_username := replace(l_username,chr(9),null);\n        l_username := replace(l_username,chr(13),null);\n        l_username := replace(l_username,chr(49824),null);\n\n        if l_username is not null then\n            if NVL(:P10013_USERNAME_FORMAT,\u0027x\u0027) = \u0027EMAIL\u0027 then\n              -----------\n              -- Validate\n              --\n              l_at := instr(nvl(l_username,\u0027x\u0027),\u0027@\u0027);\n              l_domain := substr(l_username,l_at+1);\n              l_dot := instr(l_domain,\u0027.\u0027);\n              if l_at \u003C 2 then\n                  -- invalid email\n                  apex_collection.add_member(\n                      p_collection_name =\u003E \u0027ACL_BULK_USER_INVALID\u0027,\n                      p_c001            =\u003E l_username,\n                      p_c002            =\u003E apex_lang.message(\u0027APEX.FEATURE.ACL.BULK_USER.MISSING_AT_SIGN\u0027));\n                  commit;\n                  l_valid := false;\n              end if;\n\n              if l_dot = 0 and l_valid then\n                  apex_collection.add_member(\n                      p_collection_name =\u003E \u0027ACL_BULK_USER_INVALID\u0027,\n                      p_c001            =\u003E l_username,\n                      p_c002            =\u003E apex_lang.message(\u0027APEX.FEATURE.ACL.BULK_USER.MISSING_DOT\u0027));\n                  commit;\n                  l_valid := false;\n              end if;\n            end if;\n\n            if l_valid and length(l_username) \u003E 255 then\n                apex_collection.add_member(\n                    p_collection_name =\u003E \u0027ACL_BULK_USER_INVALID\u0027,\n                    p_c001            =\u003E l_username,\n                    p_c002            =\u003E apex_lang.message(\u0027APEX.FEATURE.ACL.BULK_USER.USERNAME_TOO_LONG\u0027));\n                commit;\n                l_valid := false;\n            end if;\n\n            if l_valid then\n                for c1 in (select user_name username\n                             from APEX_APPL_ACL_USERS\n                            where user_name = l_username and application_id = :APP_ID)\n                loop\n                    apex_collection.add_member(\n                        p_collection_name =\u003E \u0027ACL_BULK_USER_INVALID\u0027,\n                        p_c001            =\u003E l_username,\n                        p_c002            =\u003E apex_lang.message(\u0027APEX.FEATURE.ACL.BULK_USER.ALREADY_IN_ACL\u0027));\n                    commit;\n                    l_valid := false;\n                    exit;\n                end loop;\n            end if;\n\n            if l_valid then\n                for c1 in (select c001\n                             from apex_collections\n                            where collection_name = \u0027ACL_BULK_USER_VALID\u0027\n                              and c001 = l_username)\n                loop\n                    apex_collection.add_member(\n                        p_collection_name =\u003E \u0027ACL_BULK_USER_INVALID\u0027,\n                        p_c001            =\u003E l_username,\n                        p_c002            =\u003E apex_lang.message(\u0027APEX.FEATURE.ACL.BULK_USER.DUPLICATE_USER\u0027));\n                        commit;\n                    l_valid := false;\n                    exit;\n                end loop;\n            end if;\n\n            if l_valid then\n                apex_collection.add_member(\n                    p_collection_name =\u003E \u0027ACL_BULK_USER_VALID\u0027,\n                    p_c001            =\u003E l_username,\n                    p_c002            =\u003E null,\n                    p_c003            =\u003E :P10013_ROLE);\n                    commit;\n            end if;\n\n        end if;\n        l_username := null;\n    end loop;\nend;"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+       ,"Point":"Processing"
+       ,"Run Process":"Once Per Page Visit (default)"
+      }
+     ,"Error":{
+        "Display Location":"Inline in Notification"
+      }
+     ,"Server-side Condition":{
+        "When Button Pressed":"NEXT (54582829678996073)"
+      }
+    }
+  ]
+ ,"Branches":[
+    {
+      "id":"54585526129996075"
+     ,"Identification":{
+        "Name":"Go To Next Step"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+       ,"Point":"After Processing"
+      }
+     ,"Behavior":{
+        "Type":"Page or URL (Redirect)"
+       ,"Target":{
+          "url":"f?p=\u0026APP_ID.:10014:\u0026SESSION.::\u0026DEBUG.:RP,10014::\u0026success_msg=#SUCCESS_MSG#"
+         ,"Page":"10014"
+         ,"Clear Cache":"RP,10014"
+        }
+      }
+     ,"Server-side Condition":{
+        "When Button Pressed":"NEXT (54582829678996073)"
+      }
+    }
+  ]
+}

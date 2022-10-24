@@ -1,0 +1,45 @@
+{
+  "id":"0"
+ ,"Identification":{
+    "Name":"Global Page - Desktop"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+  }
+ ,"Dynamic Actions":[
+    {
+      "id":"75004906356727546"
+     ,"Identification":{
+        "Name":"Auto-Select Number"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+      }
+     ,"When":{
+        "Event":"EVENT.EVENT.BROWSER.FOCUSIN"
+       ,"Selection Type":"jQuery Selector"
+       ,"jQuery Selector":"input.number_field, input.apex-item-text"
+      }
+     ,"Advanced":{
+        "Event Scope":"Dynamic"
+      }
+     ,"Actions":[
+        {
+          "id":"75005011154727547"
+         ,"Identification":{
+            "Action":"Execute JavaScript Code"
+          }
+         ,"Settings":{
+            "Code":"var fieldLength = Number(this.triggeringElement.value.length); \/\/Get the content\u2019s length\n\n\/\/select the whole content of the field\nthis.triggeringElement.selectionStart = 0;\nthis.triggeringElement.selectionEnd = fieldLength;"
+          }
+         ,"Execution Options":{
+            "Sequence":10
+           ,"Event":"Auto-Select Number (75004906356727546)"
+           ,"Fire When Event Result Is":"True"
+           ,"Fire on Initialization":false
+          }
+        }
+      ]
+    }
+  ]
+}

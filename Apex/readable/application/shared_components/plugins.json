@@ -1,0 +1,11 @@
+[
+  {
+    "id":"2200693170108998"
+   ,"Identification":{
+      "Name":"Discord Authentication"
+    }
+   ,"Source":{
+      "PL\/SQL Code":"FUNCTION discord_session_sentry (\r\n    p_authentication in apex_plugin.t_authentication,\r\n    p_plugin         in apex_plugin.t_plugin,\r\n    p_is_public_page in boolean )\r\n    return apex_plugin.t_authentication_sentry_result\r\nAS\r\nBEGIN\r\n    NULL;\r\nEND discord_session_sentry;\r\n\r\nFUNCTION discord_session_invalid (\r\n    p_authentication in apex_plugin.t_authentication,\r\n    p_plugin         in apex_plugin.t_plugin )\r\n    return apex_plugin.t_authentication_inval_result\r\nAS\r\nBEGIN\r\n    NULL;\r\nEND discord_session_invalid;\r\n\r\nFUNCTION discord_auth (\r\n    p_authentication in apex_plugin.t_authentication,\r\n    p_plugin         in apex_plugin.t_plugin,\r\n    p_password       in varchar2 )\r\n    return apex_plugin.t_authentication_auth_result\r\nAS\r\nBEGIN\r\n    NULL;\r\nEND discord_auth;\r\n\r\nFUNCTION discord_logout (\r\n    p_authentication in apex_plugin.t_authentication,\r\n    p_plugin         in apex_plugin.t_plugin )\r\n    return apex_plugin.t_authentication_logout_resul\r\nAS\r\nBEGIN\r\n    NULL;\r\nEND discord_logout;"
+    }
+  }
+]

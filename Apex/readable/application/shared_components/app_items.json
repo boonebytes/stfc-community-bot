@@ -1,0 +1,57 @@
+[
+  {
+    "id":"2509179943165236"
+   ,"Identification":{
+      "Name":"USER_DISCORD_ID"
+     ,"Scope":"Application"
+    }
+   ,"Security":{
+      "Session State Protection":"Restricted - May not be set from browser"
+     ,"Escape special characters":true
+    }
+  }
+ ,{
+    "id":"2509366704167654"
+   ,"Identification":{
+      "Name":"USER_DISCORD_NAME"
+     ,"Scope":"Application"
+    }
+   ,"Security":{
+      "Session State Protection":"Restricted - May not be set from browser"
+     ,"Escape special characters":true
+    }
+  }
+ ,{
+    "id":"2622725671370341"
+   ,"Identification":{
+      "Name":"LOGIN_MESSAGE"
+     ,"Scope":"Application"
+    }
+   ,"Security":{
+      "Session State Protection":"Restricted - May not be set from browser"
+     ,"Escape special characters":true
+    }
+  }
+ ,{
+    "id":"37300390841446874"
+   ,"Identification":{
+      "Name":"USER_ALLIANCE"
+     ,"Scope":"Application"
+    }
+   ,"Security":{
+      "Session State Protection":"Restricted - May not be set from browser"
+     ,"Escape special characters":true
+    }
+  }
+ ,{
+    "id":"79601552623308477"
+   ,"Identification":{
+      "Name":"G_USERID"
+     ,"Scope":"Application"
+    }
+   ,"Security":{
+      "Session State Protection":"Restricted - May not be set from browser"
+     ,"Escape special characters":true
+    }
+  }
+]

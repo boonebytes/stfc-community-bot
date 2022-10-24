@@ -30,3 +30,24 @@ create index STFC.USERS_I1
     on STFC.USERS (ALLIANCE_ID)
 /
 
+alter table STFC.USERS
+add DISCORD_ID NUMBER(20) default null;
+/
+
+create unique index STFC.USERS_DISCORD
+    on STFC.USERS (discord_id)
+/
+
+alter table STFC.USERS
+add DISCORD_DATA CLOB default null;
+/
+
+alter table STFC.USERS
+add USER_STATUS NUMBER(19) default 1 NOT NULL
+    constraint FK_USERS_USER_STATUS
+        references STFC.CT_USER_STATUS
+/
+
+create index STFC.USERS_I2
+    on STFC.USERS (USER_STATUS)
+/

@@ -1,12 +1,33 @@
+/*
+Copyright 2022 Boonebytes
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 prompt --install
 @@application/set_environment.sql
 @@application/delete_application.sql
 @@application/create_application.sql
-@@application/shared_components/credentials/discord_oauth2.sql
+@@workspace/credentials/discord_oauth2.sql
 @@application/shared_components/navigation/lists/desktop_navigation_menu.sql
 @@application/shared_components/navigation/lists/desktop_navigation_bar.sql
 @@application/shared_components/navigation/lists/access_control.sql
 @@application/shared_components/navigation/lists/feedback.sql
+@@application/shared_components/files/jstz_js.sql
+@@application/shared_components/files/jstz_min_js.sql
+@@application/shared_components/files/icons_app_icon_32_png.sql
+@@application/shared_components/files/icons_app_icon_192_png.sql
+@@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/plugin_settings.sql
@@ -18,7 +39,10 @@ prompt --install
 @@application/shared_components/security/app_access_control/reader.sql
 @@application/shared_components/navigation/navigation_bar.sql
 @@application/shared_components/logic/application_items/g_userid.sql
+@@application/shared_components/logic/application_items/login_message.sql
 @@application/shared_components/logic/application_items/user_alliance.sql
+@@application/shared_components/logic/application_items/user_discord_id.sql
+@@application/shared_components/logic/application_items/user_discord_name.sql
 @@application/shared_components/logic/application_settings.sql
 @@application/shared_components/navigation/tabs/standard.sql
 @@application/shared_components/navigation/tabs/parent.sql
@@ -47,6 +71,7 @@ prompt --install
 @@application/comments.sql
 @@application/shared_components/navigation/breadcrumbs/breadcrumb.sql
 @@application/shared_components/navigation/breadcrumbentry.sql
+@@application/shared_components/user_interface/templates/page/drawer.sql
 @@application/shared_components/user_interface/templates/page/master_detail.sql
 @@application/shared_components/user_interface/templates/page/modal_dialog.sql
 @@application/shared_components/user_interface/templates/page/login.sql
@@ -61,6 +86,8 @@ prompt --install
 @@application/shared_components/user_interface/templates/button/icon.sql
 @@application/shared_components/user_interface/templates/button/text.sql
 @@application/shared_components/user_interface/templates/button/text_with_icon.sql
+@@application/shared_components/user_interface/templates/region/inline_drawer.sql
+@@application/shared_components/user_interface/templates/region/image.sql
 @@application/shared_components/user_interface/templates/region/interactive_report_red_negatives.sql
 @@application/shared_components/user_interface/templates/region/alert.sql
 @@application/shared_components/user_interface/templates/region/blank_with_attributes.sql
@@ -117,7 +144,6 @@ prompt --install
 @@application/shared_components/user_interface/themes.sql
 @@application/shared_components/user_interface/theme_style.sql
 @@application/shared_components/user_interface/theme_files.sql
-@@application/shared_components/user_interface/theme_display_points.sql
 @@application/shared_components/user_interface/template_opt_groups.sql
 @@application/shared_components/user_interface/template_options.sql
 @@application/shared_components/globalization/language.sql
@@ -126,8 +152,10 @@ prompt --install
 @@application/shared_components/globalization/messages.sql
 @@application/shared_components/globalization/dyntranslations.sql
 @@application/shared_components/user_interface/shortcuts/delete_confirm_msg.sql
+@@application/shared_components/security/authentications/custom_discord_auth.sql
 @@application/shared_components/security/authentications/application_express_accounts.sql
 @@application/shared_components/security/authentications/discord.sql
+@@application/shared_components/plugins/authentication_type/com_boonebytes_discordauth.sql
 @@application/user_interfaces.sql
 @@application/user_interfaces/combined_files.sql
 @@application/pages/page_00000.sql
@@ -152,6 +180,9 @@ prompt --install
 @@application/pages/page_00019.sql
 @@application/pages/page_00020.sql
 @@application/pages/page_00021.sql
+@@application/pages/page_00022.sql
+@@application/pages/page_00023.sql
+@@application/pages/page_09998.sql
 @@application/pages/page_09999.sql
 @@application/pages/page_10000.sql
 @@application/pages/page_10010.sql

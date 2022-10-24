@@ -1,0 +1,282 @@
+{
+  "id":"9998"
+ ,"Identification":{
+    "Name":"Discord Login"
+   ,"Alias":"DISCORD-LOGIN"
+   ,"Title":"Discord Login"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+   ,"Page Mode":"Normal"
+   ,"Page Template":"Login (54410073767995681)"
+   ,"Template Options":[
+      "#DEFAULT#"
+    ]
+  }
+ ,"Navigation Menu":{
+    "Override User Interface Level":false
+  }
+ ,"Navigation":{
+    "Cursor Focus":"Do not focus cursor"
+   ,"Warn on Unsaved Changes":true
+  }
+ ,"Security":{
+    "Authentication":"Page Is Public"
+   ,"Deep Linking":"Application Default"
+   ,"Page Access Protection":"Unrestricted"
+   ,"Form Auto Complete":"Off"
+   ,"Browser Cache":"Application Default"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Application Default"
+  }
+ ,"Advanced":{
+    "Enable duplicate page submissions":"Yes - Enable page to be re-posted"
+   ,"Reload on Submit":"Only for Success"
+  }
+ ,"Server Cache":{
+    "Caching":"Disabled"
+  }
+ ,"Regions":[
+    {
+      "id":"2311809892727701"
+     ,"Identification":{
+        "Title":"Login"
+       ,"Type":"Static Content"
+      }
+     ,"Source":{
+        "HTML Code":"\u003Cp\u003EThis site uses Discord to authenticate.\u003C\/p\u003E\n\u003Col\u003E\n    \u003Cli\u003EClick on the buton below to be redircted to Discord.\u003C\/li\u003E\n    \u003Cli\u003EYou may be prompted for your Discord credentials. You can verify\n        that the credentials are going to Discord by looking at the URL.\n        Your Discord credentials are never received by this application.\u003C\/li\u003E\n    \u003Cli\u003EIf this is your first time accessing this website, Discord will show\n        a list of permissions being requested.\n        \u003Cul\u003E\n            \u003Cli\u003EIdentify - This is required for core functionality, to\n                associate you to an account in this application. Your email\n                address will not be included in the data received from Discord.\u003C\/li\u003E\n            \u003Cli\u003EList of Servers - This permission is intended for future development;\n                specifically to provide a web interface to manage server-specific\n                settings on the STFC Community Bot.\u003C\/li\u003E\n        \u003C\/ul\u003E\u003C\/li\u003E\n    \u003Cli\u003EIf you accept the authorization prompt from Discord, you will be returned to this\n        website automatically. If there\u0027s an account for you here, you will be logged in.\u003C\/li\u003E\n\u003C\/ol\u003E\n\u003Cp\u003EIf you encounter any problems or require further information, please contact Boonebytes#0570\u003C\/p\u003E"
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Standard (54462243687995736)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-Region--scrollBody"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":true
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+  ]
+ ,"Page Items":[
+    {
+      "id":"2312236914727705"
+     ,"Identification":{
+        "Name":"CODE"
+       ,"Type":"Hidden"
+      }
+     ,"Settings":{
+        "Value Protected":false
+      }
+     ,"Layout":{
+        "Sequence":40
+       ,"Region":"No Parent"
+       ,"Position":"BODY"
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"Null"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Security":{
+        "Session State Protection":"Unrestricted"
+       ,"Store value encrypted in session state":true
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+   ,{
+      "id":"2313778603727720"
+     ,"Identification":{
+        "Name":"P9998_LOGIN_MESSAGE"
+       ,"Type":"Display Only"
+      }
+     ,"Label":{
+        "Label":"Login Message"
+       ,"Alignment":"Left"
+      }
+     ,"Settings":{
+        "Format":"Plain Text"
+       ,"Based On":"Item Value"
+       ,"Show Line Breaks":true
+       ,"Send On Page Submit":false
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Alignment":"Left"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+       ,"Label Column Span":"Page Template Default"
+      }
+     ,"Appearance":{
+        "Template":"Optional - Floating (54524856483995797)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"Null"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Server-side Condition":{
+        "Type":"Item is NOT NULL"
+       ,"Item":"P9998_LOGIN_MESSAGE"
+      }
+     ,"Security":{
+        "Session State Protection":"Unrestricted"
+       ,"Store value encrypted in session state":true
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+  ]
+ ,"Buttons":[
+    {
+      "id":"2311938661727702"
+     ,"Identification":{
+        "Button Name":"LoginWithDiscord"
+       ,"Label":"Login with Discord"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Region":"Login (2311809892727701)"
+       ,"Position":"CHANGE"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Text with Icon (54527438844995804)"
+       ,"Hot":false
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-Button--large"
+         ,"t-Button--primary"
+         ,"t-Button--iconLeft"
+        ]
+       ,"Icon":"fa-key"
+      }
+     ,"Behavior":{
+        "Action":"Submit Page"
+       ,"Execute Validations":true
+       ,"Warn on Unsaved Changes":"Do Not Check"
+      }
+    }
+  ]
+ ,"Computations":[
+    {
+      "id":"2314591549727728"
+     ,"Identification":{
+        "Item Name":"P9998_LOGIN_MESSAGE"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+       ,"Point":"After Header"
+      }
+     ,"Computation":{
+        "Type":"Item"
+       ,"Item Name":"LOGIN_MESSAGE"
+      }
+     ,"Server-side Condition":{
+        "Type":"Item is NOT NULL"
+       ,"Item":"LOGIN_MESSAGE"
+      }
+    }
+   ,{
+      "id":"2314759214727730"
+     ,"Identification":{
+        "Item Name":"LOGIN_MESSAGE"
+      }
+     ,"Execution Options":{
+        "Sequence":20
+       ,"Point":"After Header"
+      }
+     ,"Computation":{
+        "Type":"Static Value"
+      }
+    }
+  ]
+ ,"Processes":[
+    {
+      "id":"2312135100727704"
+     ,"Identification":{
+        "Name":"StartDiscordLogin"
+       ,"Type":"Execute Code"
+      }
+     ,"Source":{
+        "Location":"Local Database"
+       ,"Language":"PL\/SQL"
+       ,"PL\/SQL Code":"PKG_AUTH.START_AUTH();\n"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+       ,"Point":"Processing"
+       ,"Run Process":"Once Per Page Visit (default)"
+      }
+     ,"Error":{
+        "Display Location":"Inline in Notification"
+      }
+     ,"Server-side Condition":{
+        "When Button Pressed":"LoginWithDiscord (2311938661727702)"
+      }
+    }
+   ,{
+      "id":"2314645320727729"
+     ,"Identification":{
+        "Name":"FinishDiscordLogin"
+       ,"Type":"Execute Code"
+      }
+     ,"Source":{
+        "Location":"Local Database"
+       ,"Language":"PL\/SQL"
+       ,"PL\/SQL Code":"PKG_AUTH.END_AUTH(:CODE);"
+      }
+     ,"Execution Options":{
+        "Sequence":20
+       ,"Point":"Before Header"
+       ,"Run Process":"Once Per Page Visit (default)"
+      }
+     ,"Server-side Condition":{
+        "Type":"Item is NOT NULL"
+       ,"Item":"CODE"
+      }
+    }
+  ]
+}

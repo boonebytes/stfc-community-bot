@@ -1,0 +1,44 @@
+[
+  {
+    "id":"54553266873995923"
+   ,"Identification":{
+      "Name":"Feature: Access Control"
+    }
+   ,"Status":{
+      "Status":"Include"
+     ,"Default on Export":"Same as Current Status"
+     ,"On Upgrade Keep Status":false
+    }
+   ,"Comments":{
+      "Comments":"Incorporate role based user authentication within your application and manage username mappings to application roles."
+    }
+  }
+ ,{
+    "id":"54553386857995923"
+   ,"Identification":{
+      "Name":"Feature: Feedback"
+    }
+   ,"Status":{
+      "Status":"Include"
+     ,"Default on Export":"Same as Current Status"
+     ,"On Upgrade Keep Status":false
+    }
+   ,"Comments":{
+      "Comments":"Provide a mechanism for end users to post general comments back to the application administrators and developers."
+    }
+  }
+ ,{
+    "id":"54553957513995923"
+   ,"Identification":{
+      "Name":"Feature: About Page"
+    }
+   ,"Status":{
+      "Status":"Include"
+     ,"Default on Export":"Same as Current Status"
+     ,"On Upgrade Keep Status":false
+    }
+   ,"Comments":{
+      "Comments":"About this application page."
+    }
+  }
+]

@@ -1,0 +1,384 @@
+[
+  {
+    "id":"54404663861995635"
+   ,"Identification":{
+      "Name":"Breadcrumb"
+    }
+   ,"Entries":[
+      {
+        "id":"35009768669221976"
+       ,"Identification":{
+          "Name":"Services"
+         ,"Page Number":"7"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Home (54404782778995639)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:7:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"7"
+          }
+        }
+      }
+     ,{
+        "id":"35010976373221982"
+       ,"Identification":{
+          "Name":"Service"
+         ,"Page Number":"8"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Services (35009768669221976)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:8:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"8"
+          }
+        }
+      }
+     ,{
+        "id":"36820039966204106"
+       ,"Identification":{
+          "Name":"Players"
+         ,"Page Number":"10"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Home (54404782778995639)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"10"
+          }
+        }
+      }
+     ,{
+        "id":"36821252731204115"
+       ,"Identification":{
+          "Name":"Edit Player"
+         ,"Page Number":"11"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Players (36820039966204106)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:11:\u0026SESSION.::\u0026DEBUG.:::"
+           ,"Page":"11"
+          }
+        }
+      }
+     ,{
+        "id":"53410869213137861"
+       ,"Identification":{
+          "Name":"Officers"
+         ,"Page Number":"12"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Home (54404782778995639)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:12:\u0026SESSION.::\u0026DEBUG.:::"
+           ,"Page":"12"
+          }
+        }
+      }
+     ,{
+        "id":"53412087250137866"
+       ,"Identification":{
+          "Name":"Officer"
+         ,"Page Number":"13"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Officers (53410869213137861)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:13:\u0026SESSION.::\u0026DEBUG.:::"
+           ,"Page":"13"
+          }
+        }
+      }
+     ,{
+        "id":"53502103834152576"
+       ,"Identification":{
+          "Name":"Code Tables"
+         ,"Page Number":"14"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:14:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"14"
+          }
+        }
+      }
+     ,{
+        "id":"54404782778995639"
+       ,"Identification":{
+          "Name":"Home"
+         ,"Page Number":"1"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:1:\u0026APP_SESSION.::\u0026DEBUG."
+           ,"Page":"1"
+          }
+        }
+      }
+     ,{
+        "id":"54634908814996175"
+       ,"Identification":{
+          "Name":"Administration"
+         ,"Page Number":"10000"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10000:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"10000"
+          }
+        }
+      }
+     ,{
+        "id":"54813369509062521"
+       ,"Identification":{
+          "Name":"Alliances"
+         ,"Page Number":"4"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Home (54404782778995639)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:4:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"4"
+          }
+        }
+      }
+     ,{
+        "id":"54814506612062526"
+       ,"Identification":{
+          "Name":"Edit Alliance"
+         ,"Page Number":"5"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Alliances (54813369509062521)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:5:\u0026SESSION.::\u0026DEBUG.:::"
+           ,"Page":"5"
+          }
+        }
+      }
+     ,{
+        "id":"55011193537112310"
+       ,"Identification":{
+          "Name":"Officer Groups"
+         ,"Page Number":"2"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Code Tables (53502103834152576)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:2:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"2"
+          }
+        }
+      }
+     ,{
+        "id":"55012360054112316"
+       ,"Identification":{
+          "Name":"Officer Group"
+         ,"Page Number":"3"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Officer Groups (55011193537112310)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:3:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"3"
+          }
+        }
+      }
+     ,{
+        "id":"55211231442198260"
+       ,"Identification":{
+          "Name":"Officer Rarities"
+         ,"Page Number":"15"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Code Tables (53502103834152576)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:15:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"15"
+          }
+        }
+      }
+     ,{
+        "id":"55212403962198265"
+       ,"Identification":{
+          "Name":"Officer Rarity"
+         ,"Page Number":"16"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Officer Rarities (55211231442198260)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:16:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"16"
+          }
+        }
+      }
+     ,{
+        "id":"55301785917180845"
+       ,"Identification":{
+          "Name":"Territories"
+         ,"Page Number":"6"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Home (54404782778995639)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:6:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"6"
+          }
+        }
+      }
+     ,{
+        "id":"55811172555546236"
+       ,"Identification":{
+          "Name":"Officer Factions"
+         ,"Page Number":"17"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Code Tables (53502103834152576)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:17:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"17"
+          }
+        }
+      }
+     ,{
+        "id":"55812368632546241"
+       ,"Identification":{
+          "Name":"Officer Faction"
+         ,"Page Number":"18"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Officer Factions (55811172555546236)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:18:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"18"
+          }
+        }
+      }
+     ,{
+        "id":"81001481579844713"
+       ,"Identification":{
+          "Name":"Alliance Inventory"
+         ,"Page Number":"19"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Alliances (54813369509062521)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:19:\u0026SESSION.::\u0026DEBUG.:::"
+           ,"Page":"19"
+          }
+        }
+       ,"Security":{
+          "Authorization Scheme":"Administration Rights (54555301792995935)"
+        }
+      }
+     ,{
+        "id":"83601373387815866"
+       ,"Identification":{
+          "Name":"Territory"
+         ,"Page Number":"21"
+        }
+       ,"Execution Options":{
+          "Sequence":10
+        }
+       ,"Appearance":{
+          "Parent Entry":"Territories (55301785917180845)"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:21:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"21"
+          }
+        }
+      }
+    ]
+  }
+]

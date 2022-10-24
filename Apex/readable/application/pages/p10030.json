@@ -1,0 +1,92 @@
+{
+  "id":"10030"
+ ,"Identification":{
+    "Name":"About"
+   ,"Alias":"HELP"
+   ,"Title":"About"
+   ,"Page Group":"Administration (54557183068995950)"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+   ,"Page Mode":"Normal"
+   ,"Page Template":"Theme Default"
+  }
+ ,"Navigation Menu":{
+    "Override User Interface Level":false
+  }
+ ,"Navigation":{
+    "Cursor Focus":"First item on page"
+   ,"Warn on Unsaved Changes":true
+  }
+ ,"Security":{
+    "Authentication":"Page Requires Authentication"
+   ,"Deep Linking":"Application Default"
+   ,"Page Access Protection":"Arguments Must Have Checksum"
+   ,"Form Auto Complete":"Off"
+   ,"Browser Cache":"Application Default"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Application Default"
+  }
+ ,"Advanced":{
+    "Enable duplicate page submissions":"Yes - Enable page to be re-posted"
+   ,"Reload on Submit":"Only for Success"
+  }
+ ,"Server Cache":{
+    "Caching":"Disabled"
+  }
+ ,"Help":{
+    "Help Text":"All application help text can be accessed from this page. The links in the \"Documentation\" region give a much more in-depth explanation of the application\u0027s features and functionality."
+  }
+ ,"Configuration":{
+    "Build Option":"Feature: About Page (54553957513995923)"
+  }
+ ,"Regions":[
+    {
+      "id":"54629008361996166"
+     ,"Identification":{
+        "Title":"About Page"
+       ,"Type":"Static Content"
+      }
+     ,"Source":{
+        "HTML Code":"Text about this application can be placed here."
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Content Block (54450065892995729)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-ContentBlock--padded"
+         ,"t-ContentBlock--h1"
+         ,"t-ContentBlock--lightBG"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+  ]
+}

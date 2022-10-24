@@ -3,16 +3,16 @@ begin
 --   Manifest
 --     OFFICER_FACTIONS
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.0'
-,p_default_workspace_id=>18900386187764698
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.0'
+,p_default_workspace_id=>2100437598979157
 ,p_default_application_id=>109
 ,p_default_id_offset=>30400279703097675
 ,p_default_owner=>'STFC'
 );
-wwv_flow_api.create_list_of_values(
- p_id=>wwv_flow_api.id(55837476362564703)
+wwv_flow_imp_shared.create_list_of_values(
+ p_id=>wwv_flow_imp.id(55837476362564703)
 ,p_lov_name=>'OFFICER_FACTIONS'
 ,p_source_type=>'TABLE'
 ,p_location=>'LOCAL'
@@ -22,6 +22,6 @@ wwv_flow_api.create_list_of_values(
 ,p_default_sort_column_name=>'NAME'
 ,p_default_sort_direction=>'ASC'
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

@@ -3,121 +3,121 @@ begin
 --   Manifest
 --     LIST: Desktop Navigation Menu
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.0'
-,p_default_workspace_id=>18900386187764698
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.0'
+,p_default_workspace_id=>2100437598979157
 ,p_default_application_id=>109
 ,p_default_id_offset=>30400279703097675
 ,p_default_owner=>'STFC'
 );
-wwv_flow_api.create_list(
- p_id=>wwv_flow_api.id(54405142762995641)
+wwv_flow_imp_shared.create_list(
+ p_id=>wwv_flow_imp.id(54405142762995641)
 ,p_name=>'Desktop Navigation Menu'
 ,p_list_status=>'PUBLIC'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(54563953826995998)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(54563953826995998)
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Home'
 ,p_list_item_link_target=>'f?p=&APP_ID.:1:&APP_SESSION.::&DEBUG.:'
 ,p_list_item_icon=>'fa-home'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(54812668661062517)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(54812668661062517)
 ,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'Alliances'
 ,p_list_item_link_target=>'f?p=&APP_ID.:4:&APP_SESSION.::&DEBUG.:::'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'4,5,19'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(81000376794844694)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(81000376794844694)
 ,p_list_item_display_sequence=>110
 ,p_list_item_link_text=>'Inventory'
 ,p_list_item_link_target=>'f?p=&APP_ID.:19:&SESSION.::&DEBUG.::::'
-,p_parent_list_item_id=>wwv_flow_api.id(54812668661062517)
-,p_security_scheme=>wwv_flow_api.id(54555301792995935)
+,p_parent_list_item_id=>wwv_flow_imp.id(54812668661062517)
+,p_security_scheme=>wwv_flow_imp.id(54555301792995935)
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'19'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(55300946144180823)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(55300946144180823)
 ,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Territories'
 ,p_list_item_link_target=>'f?p=&APP_ID.:6:&APP_SESSION.::&DEBUG.:::'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'6'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(35009082004221969)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(35009082004221969)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Services'
 ,p_list_item_link_target=>'f?p=&APP_ID.:7:&APP_SESSION.::&DEBUG.:::'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'7,8'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(36819337356204098)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(36819337356204098)
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Players'
 ,p_list_item_link_target=>'f?p=&APP_ID.:10:&APP_SESSION.::&DEBUG.:::'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'10,11'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(53410195620137856)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(53410195620137856)
 ,p_list_item_display_sequence=>60
 ,p_list_item_link_text=>'Officers'
 ,p_list_item_link_target=>'f?p=&APP_ID.:12:&SESSION.::&DEBUG.::::'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'12,13'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(53501210245152561)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(53501210245152561)
 ,p_list_item_display_sequence=>70
 ,p_list_item_link_text=>'Code Tables'
 ,p_list_item_link_target=>'f?p=&APP_ID.:14:&SESSION.::&DEBUG.::::'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'14,2,15,17'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(55010150108112305)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(55010150108112305)
 ,p_list_item_display_sequence=>80
 ,p_list_item_link_text=>'Officer Groups'
 ,p_list_item_link_target=>'f?p=&APP_ID.:2:&APP_SESSION.::&DEBUG.:::'
-,p_parent_list_item_id=>wwv_flow_api.id(53501210245152561)
+,p_parent_list_item_id=>wwv_flow_imp.id(53501210245152561)
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'2,3'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(55210248339198256)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(55210248339198256)
 ,p_list_item_display_sequence=>90
 ,p_list_item_link_text=>'Officer Rarities'
 ,p_list_item_link_target=>'f?p=&APP_ID.:15:&APP_SESSION.::&DEBUG.:::'
-,p_parent_list_item_id=>wwv_flow_api.id(53501210245152561)
+,p_parent_list_item_id=>wwv_flow_imp.id(53501210245152561)
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'15,16'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(55810197909546232)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(55810197909546232)
 ,p_list_item_display_sequence=>100
 ,p_list_item_link_text=>'Officer Factions'
 ,p_list_item_link_target=>'f?p=&APP_ID.:17:&APP_SESSION.::&DEBUG.:::'
-,p_parent_list_item_id=>wwv_flow_api.id(53501210245152561)
+,p_parent_list_item_id=>wwv_flow_imp.id(53501210245152561)
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'17,18'
 );
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(54634030741996171)
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(54634030741996171)
 ,p_list_item_display_sequence=>10000
 ,p_list_item_link_text=>'Administration'
 ,p_list_item_link_target=>'f?p=&APP_ID.:10000:&APP_SESSION.::&DEBUG.:'
 ,p_list_item_icon=>'fa-user-wrench'
-,p_security_scheme=>wwv_flow_api.id(54555301792995935)
+,p_security_scheme=>wwv_flow_imp.id(54555301792995935)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

@@ -1,0 +1,693 @@
+[
+  {
+    "id":"54405142762995641"
+   ,"Identification":{
+      "Name":"Desktop Navigation Menu"
+     ,"Type":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"35009082004221969"
+       ,"Label":{
+          "Label":"Services"
+        }
+       ,"Layout":{
+          "Sequence":40
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "7"
+           ,"8"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:7:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"7"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"36819337356204098"
+       ,"Label":{
+          "Label":"Players"
+        }
+       ,"Layout":{
+          "Sequence":50
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "10"
+           ,"11"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"10"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"53410195620137856"
+       ,"Label":{
+          "Label":"Officers"
+        }
+       ,"Layout":{
+          "Sequence":60
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "12"
+           ,"13"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:12:\u0026SESSION.::\u0026DEBUG.::::"
+           ,"Page":"12"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"53501210245152561"
+       ,"Label":{
+          "Label":"Code Tables"
+        }
+       ,"Layout":{
+          "Sequence":70
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "14"
+           ,"2"
+           ,"15"
+           ,"17"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:14:\u0026SESSION.::\u0026DEBUG.::::"
+           ,"Page":"14"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"54563953826995998"
+       ,"Label":{
+          "Label":"Home"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-home"
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:1:\u0026APP_SESSION.::\u0026DEBUG.:"
+           ,"Page":"1"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"54634030741996171"
+       ,"Label":{
+          "Label":"Administration"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-user-wrench"
+        }
+       ,"Layout":{
+          "Sequence":10000
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10000:\u0026APP_SESSION.::\u0026DEBUG.:"
+           ,"Page":"10000"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+       ,"Security":{
+          "Authorization Scheme":"Administration Rights (54555301792995935)"
+        }
+      }
+     ,{
+        "id":"54812668661062517"
+       ,"Label":{
+          "Label":"Alliances"
+        }
+       ,"Layout":{
+          "Sequence":20
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "4"
+           ,"5"
+           ,"19"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:4:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"4"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"55010150108112305"
+       ,"Label":{
+          "Label":"Officer Groups"
+        }
+       ,"Layout":{
+          "Sequence":80
+         ,"Parent Entry":"Code Tables (53501210245152561)"
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "2"
+           ,"3"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:2:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"2"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"55210248339198256"
+       ,"Label":{
+          "Label":"Officer Rarities"
+        }
+       ,"Layout":{
+          "Sequence":90
+         ,"Parent Entry":"Code Tables (53501210245152561)"
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "15"
+           ,"16"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:15:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"15"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"55300946144180823"
+       ,"Label":{
+          "Label":"Territories"
+        }
+       ,"Layout":{
+          "Sequence":30
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "6"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:6:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"6"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"55810197909546232"
+       ,"Label":{
+          "Label":"Officer Factions"
+        }
+       ,"Layout":{
+          "Sequence":100
+         ,"Parent Entry":"Code Tables (53501210245152561)"
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "17"
+           ,"18"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:17:\u0026APP_SESSION.::\u0026DEBUG.:::"
+           ,"Page":"17"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"81000376794844694"
+       ,"Label":{
+          "Label":"Inventory"
+        }
+       ,"Layout":{
+          "Sequence":110
+         ,"Parent Entry":"Alliances (54812668661062517)"
+        }
+       ,"Is Current":{
+          "Type":"Pages"
+         ,"Pages":[
+            "19"
+          ]
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:19:\u0026SESSION.::\u0026DEBUG.::::"
+           ,"Page":"19"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+       ,"Security":{
+          "Authorization Scheme":"Administration Rights (54555301792995935)"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54551536994995857"
+   ,"Identification":{
+      "Name":"Desktop Navigation Bar"
+     ,"Type":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"54630664237996168"
+       ,"Label":{
+          "Label":"Feedback"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-comment-o"
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10020:\u0026SESSION.::\u0026DEBUG.:RP,10020:P10020_PAGE_ID:\u0026APP_PAGE_ID.:"
+           ,"Page":"10020"
+           ,"Clear Cache":"RP,10020"
+           ,"Values":{
+              "P10020_PAGE_ID":"\u0026APP_PAGE_ID."
+            }
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+         ,"2.":"icon-only"
+        }
+       ,"Configuration":{
+          "Build Option":"Feature: Feedback (54553386857995923)"
+        }
+      }
+     ,{
+        "id":"54630896973996168"
+       ,"Label":{
+          "Label":"About"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-question-circle-o"
+        }
+       ,"Layout":{
+          "Sequence":20
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+         ,"2.":"icon-only"
+        }
+       ,"Configuration":{
+          "Build Option":"Feature: About Page (54553957513995923)"
+        }
+      }
+     ,{
+        "id":"54631474628996169"
+       ,"Label":{
+          "Label":"Page Help"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-question-circle-o"
+        }
+       ,"Layout":{
+          "Sequence":30
+         ,"Parent Entry":"About (54630896973996168)"
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10031:\u0026SESSION.::\u0026DEBUG.::P10031_PAGE_ID:\u0026APP_PAGE_ID.:"
+           ,"Page":"10031"
+           ,"Values":{
+              "P10031_PAGE_ID":"\u0026APP_PAGE_ID."
+            }
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+         ,"2.":"icon-only"
+        }
+       ,"Configuration":{
+          "Build Option":"Feature: About Page (54553957513995923)"
+        }
+      }
+     ,{
+        "id":"54631812184996170"
+       ,"Label":{
+          "Label":"---"
+        }
+       ,"Layout":{
+          "Sequence":40
+         ,"Parent Entry":"About (54630896973996168)"
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":"separator"
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"54632190511996170"
+       ,"Label":{
+          "Label":"About Page"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-info-circle-o"
+        }
+       ,"Layout":{
+          "Sequence":50
+         ,"Parent Entry":"About (54630896973996168)"
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10030:\u0026SESSION.::\u0026DEBUG.:10030"
+           ,"Page":"10030"
+           ,"Clear Cache":"10030"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+       ,"Configuration":{
+          "Build Option":"Feature: About Page (54553957513995923)"
+        }
+      }
+     ,{
+        "id":"54632487378996170"
+       ,"Label":{
+          "Label":"\u0026APP_USER."
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-user"
+        }
+       ,"Layout":{
+          "Sequence":60
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":"#"
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+         ,"2.":"has-username"
+        }
+      }
+     ,{
+        "id":"54633077305996171"
+       ,"Label":{
+          "Label":"---"
+        }
+       ,"Layout":{
+          "Sequence":70
+         ,"Parent Entry":"\u0026APP_USER. (54632487378996170)"
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":"separator"
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+     ,{
+        "id":"54633441899996171"
+       ,"Label":{
+          "Label":"Sign Out"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-sign-out"
+        }
+       ,"Layout":{
+          "Sequence":80
+         ,"Parent Entry":"\u0026APP_USER. (54632487378996170)"
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":"\u0026LOGOUT_URL."
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54635177089996176"
+   ,"Identification":{
+      "Name":"Access Control"
+     ,"Type":"Static Values"
+    }
+   ,"Configuration":{
+      "Build Option":"Feature: Access Control (54553266873995923)"
+    }
+   ,"Entries":[
+      {
+        "id":"54635573475996177"
+       ,"Label":{
+          "Label":"Users"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-users"
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10011:\u0026SESSION.::\u0026DEBUG.:RP:::"
+           ,"Page":"10011"
+           ,"Clear Cache":"RP"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+         ,"1.":"Change access control settings and disable access control"
+        }
+      }
+     ,{
+        "id":"54635960864996177"
+       ,"Label":{
+          "Label":"Access Control"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-key"
+        }
+       ,"Layout":{
+          "Sequence":20
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10010:\u0026SESSION.::\u0026DEBUG.::::"
+           ,"Page":"10010"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+         ,"1.":"Set level of access for authenticated users of this application"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54636205603996177"
+   ,"Identification":{
+      "Name":"Feedback"
+     ,"Type":"Static Values"
+    }
+   ,"Configuration":{
+      "Build Option":"Feature: Feedback (54553386857995923)"
+    }
+   ,"Entries":[
+      {
+        "id":"54636643673996177"
+       ,"Label":{
+          "Label":"User Feedback"
+        }
+       ,"Icon":{
+          "Image\/Icon CSS Classes":"fa-comment-o"
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Is Current":{
+          "Type":"Target Page"
+        }
+       ,"Link":{
+          "Target":{
+            "url":"f?p=\u0026APP_ID.:10023:\u0026SESSION.::\u0026DEBUG.:10023:::"
+           ,"Page":"10023"
+           ,"Clear Cache":"10023"
+          }
+        }
+       ,"Click Counting":{
+          "Count Clicks":false
+        }
+       ,"User Defined Attributes":{
+          "Translatable":false
+         ,"1.":"Report of all feedback submitted by application users"
+        }
+      }
+    ]
+  }
+]
