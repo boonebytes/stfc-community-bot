@@ -1,0 +1,70 @@
+[
+  {
+    "id":"2626811672771794"
+   ,"Identification":{
+      "Name":"Custom Discord Auth"
+    }
+   ,"Settings":{
+      "Type":"Custom"
+     ,"Enable Legacy Authentication Attributes":false
+    }
+   ,"Session Not Valid":{
+      "Redirect to":"Login Page"
+    }
+   ,"Login Processing":{
+      "Switch in Session":false
+    }
+   ,"Real Application Security":{
+      "RAS Mode":"Disabled"
+    }
+  }
+ ,{
+    "id":"54404368615995633"
+   ,"Identification":{
+      "Name":"Application Express Accounts"
+    }
+   ,"Settings":{
+      "Type":"Oracle APEX Accounts"
+    }
+   ,"Session Not Valid":{
+      "Redirect to":"Login Page"
+    }
+   ,"Login Processing":{
+      "Post-Authentication Procedure Name":"PKG_AUTH.POST_AUTH"
+     ,"Switch in Session":false
+    }
+   ,"Real Application Security":{
+      "RAS Mode":"Disabled"
+    }
+  }
+ ,{
+    "id":"78200610038588567"
+   ,"Identification":{
+      "Name":"Discord"
+    }
+   ,"Settings":{
+      "Type":"Social Sign-In"
+     ,"Credential Store":"78200400785586706"
+     ,"Authentication Provider":"Generic OAuth2 Provider"
+     ,"Authorization Endpoint URL":"https:\/\/discord.com\/api\/oauth2\/authorize"
+     ,"Token Endpoint URL":"https:\/\/discord.com\/api\/oauth2\/token"
+     ,"User Info Endpoint URL":"https:\/\/discord.com\/api\/users\/@me"
+     ,"Token Authentication Method":"Basic Authentication and Client ID in Body"
+     ,"Scope":"guilds,identify"
+     ,"Username":"username"
+     ,"Convert Username To Upper Case":true
+     ,"Additional User Attributes":"id"
+     ,"Map Additional User Attributes To":"G_USERID"
+     ,"Verify Attributes":true
+    }
+   ,"Session Not Valid":{
+      "Redirect to":"Login Page"
+    }
+   ,"Login Processing":{
+      "Switch in Session":false
+    }
+   ,"Real Application Security":{
+      "RAS Mode":"Disabled"
+    }
+  }
+]

@@ -1,0 +1,115 @@
+{
+  "id":"10031"
+ ,"Identification":{
+    "Name":"Help"
+   ,"Alias":"PAGE_HELP"
+   ,"Title":"Help"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+   ,"Page Mode":"Modal Dialog"
+   ,"Dialog Template":"Theme Default"
+   ,"Template Options":[
+      "#DEFAULT#"
+    ]
+  }
+ ,"Dialog":{
+    "Chained":false
+  }
+ ,"Navigation Menu":{
+    "Override User Interface Level":false
+  }
+ ,"Navigation":{
+    "Cursor Focus":"Do not focus cursor"
+   ,"Warn on Unsaved Changes":true
+  }
+ ,"Security":{
+    "Authentication":"Page Requires Authentication"
+   ,"Deep Linking":"Application Default"
+   ,"Page Access Protection":"Arguments Must Have Checksum"
+   ,"Form Auto Complete":"Off"
+   ,"Browser Cache":"Application Default"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Application Default"
+  }
+ ,"Advanced":{
+    "Enable duplicate page submissions":"Yes - Enable page to be re-posted"
+   ,"Reload on Submit":"Only for Success"
+  }
+ ,"Server Cache":{
+    "Caching":"Disabled"
+  }
+ ,"Configuration":{
+    "Build Option":"Feature: About Page (54553957513995923)"
+  }
+ ,"Regions":[
+    {
+      "id":"54629710164996167"
+     ,"Identification":{
+        "Title":"Search Dialog"
+       ,"Type":"PL\/SQL Dynamic Content"
+      }
+     ,"Source":{
+        "PL\/SQL Code":"for c1 in \n(\n    select page_title, help_text \n      from apex_application_pages\n     where page_id = :P10031_PAGE_ID \n       and application_id = :APP_ID\n)\nloop\n    if c1.help_text is null then\n        sys.htp.p(\u0027No help is available for this page.\u0027);\n    else\n        if substr(c1.help_text, 1, 3) != \u0027\u003Cp\u003E\u0027 then\n            sys.htp.p(\u0027\u003Cp\u003E\u0027);\n        end if;\n\n        sys.htp.p(apex_application.do_substitutions(c1.help_text));\n\n        if substr(trim(c1.help_text), -4) != \u0027\u003C\/p\u003E\u0027 then\n            sys.htp.p(\u0027\u003C\/p\u003E\u0027);\n        end if;\n    end if;\nend loop;"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+    }
+  ]
+ ,"Page Items":[
+    {
+      "id":"54630179617996167"
+     ,"Identification":{
+        "Name":"P10031_PAGE_ID"
+       ,"Type":"Hidden"
+      }
+     ,"Settings":{
+        "Value Protected":true
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Region":"Search Dialog (54629710164996167)"
+       ,"Position":"BODY"
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"Null"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Security":{
+        "Session State Protection":"Checksum Required - Session Level"
+       ,"Store value encrypted in session state":false
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+  ]
+}

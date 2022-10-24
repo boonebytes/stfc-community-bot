@@ -1,0 +1,726 @@
+[
+  {
+    "id":"33005320941237571"
+   ,"Identification":{
+      "Name":"STATUS CODE"
+    }
+   ,"Source":{
+      "Location":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"33005616752237615"
+       ,"Entry":{
+          "Sequence":1
+         ,"Display":"Active"
+         ,"Return":"A"
+        }
+      }
+     ,{
+        "id":"33006004120237620"
+       ,"Entry":{
+          "Sequence":2
+         ,"Display":"Inactive"
+         ,"Return":"I"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"34400191691974834"
+   ,"Identification":{
+      "Name":"TERRITORIES"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"SQL Query"
+     ,"SQL Query":"select z.ID, z.NAME, z.OWNER_ID, a.NAME OWNER\nfrom ZONES z\nleft outer join ALLIANCES a ON (z.OWNER_ID = a.ID)\n"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"NAME"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+   ,"Columns":[
+      {
+        "id":"34700314497128978"
+       ,"Identification":{
+          "Column Name":"ID"
+         ,"Show":false
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Source":{
+          "Data Type":"NUMBER"
+        }
+       ,"Advanced":{
+          "Searchable":false
+        }
+      }
+     ,{
+        "id":"34700715732128980"
+       ,"Identification":{
+          "Column Name":"NAME"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Name"
+        }
+       ,"Layout":{
+          "Sequence":20
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+     ,{
+        "id":"34701176073128980"
+       ,"Identification":{
+          "Column Name":"OWNER"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Owner"
+        }
+       ,"Layout":{
+          "Sequence":30
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+     ,{
+        "id":"34701570682128980"
+       ,"Identification":{
+          "Column Name":"OWNER_ID"
+         ,"Show":false
+        }
+       ,"Heading":{
+          "Heading":"Owner Id"
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Source":{
+          "Data Type":"NUMBER"
+        }
+       ,"Advanced":{
+          "Searchable":false
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"35100199900275442"
+   ,"Identification":{
+      "Name":"RESOURCES"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_RESOURCES"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"LABEL"
+     ,"Default Sort":"LABEL"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"36802022205204047"
+   ,"Identification":{
+      "Name":"P11_MEMBERS_ALLIANCE_ID"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"SQL Query"
+     ,"SQL Query":"select ALLIANCES.ID as ID,\n    ALLIANCES.ACRONYM as ACRONYM \n from ALLIANCES ALLIANCES\norder by acronym"
+    }
+   ,"Column Mapping":{
+      "Return":"ACRONYM"
+     ,"Display":"ID"
+     ,"Default Sort":"Use Order By from Query"
+    }
+  }
+ ,{
+    "id":"39900241382583043"
+   ,"Identification":{
+      "Name":"SERVICE LEVEL"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_ALLIANCE_SERVICE_LEVEL"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"LABEL"
+     ,"Default Sort":"ID"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"53800117673188502"
+   ,"Identification":{
+      "Name":"OFFICER_RANK"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_OFFICER_RANK"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"SORT_ORDER"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"54100113978275640"
+   ,"Identification":{
+      "Name":"OFFICERS"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_OFFICERS"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"NAME"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+   ,"Columns":[
+      {
+        "id":"54100567275279492"
+       ,"Identification":{
+          "Column Name":"ID"
+         ,"Show":false
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Source":{
+          "Data Type":"NUMBER"
+        }
+       ,"Advanced":{
+          "Searchable":false
+        }
+      }
+     ,{
+        "id":"54100818556279493"
+       ,"Identification":{
+          "Column Name":"NAME"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Name"
+        }
+       ,"Layout":{
+          "Sequence":20
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+     ,{
+        "id":"54101229145279493"
+       ,"Identification":{
+          "Column Name":"CAPTAIN_ABILITY"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Captain Ability"
+        }
+       ,"Layout":{
+          "Sequence":30
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+     ,{
+        "id":"54101637727279494"
+       ,"Identification":{
+          "Column Name":"BRIDGE_ABILITY"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Bridge Ability"
+        }
+       ,"Layout":{
+          "Sequence":40
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+     ,{
+        "id":"54102077512279494"
+       ,"Identification":{
+          "Column Name":"LOWER_DECK_ABILITY"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Lower Deck Ability"
+        }
+       ,"Layout":{
+          "Sequence":50
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54200105134345747"
+   ,"Identification":{
+      "Name":"MEMBERS"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"SQL Query"
+     ,"SQL Query":"SELECT MEMBERS.ID, MEMBERS.NAME, ALLIANCES.NAME ALLIANCE, THE_LEVEL\nFROM MEMBERS\nLEFT OUTER JOIN ALLIANCES ON (MEMBERS.ALLIANCE_ID = ALLIANCES.ID)\nORDER BY NAME"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"Use Order By from Query"
+    }
+   ,"Columns":[
+      {
+        "id":"54200519852360580"
+       ,"Identification":{
+          "Column Name":"ID"
+         ,"Show":false
+        }
+       ,"Layout":{
+          "Sequence":10
+        }
+       ,"Source":{
+          "Data Type":"NUMBER"
+        }
+       ,"Advanced":{
+          "Searchable":false
+        }
+      }
+     ,{
+        "id":"54200953348360581"
+       ,"Identification":{
+          "Column Name":"NAME"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Name"
+        }
+       ,"Layout":{
+          "Sequence":20
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+     ,{
+        "id":"54201353979360581"
+       ,"Identification":{
+          "Column Name":"ALLIANCE"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Alliance"
+        }
+       ,"Layout":{
+          "Sequence":30
+        }
+       ,"Source":{
+          "Data Type":"VARCHAR2"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+     ,{
+        "id":"54201723645360581"
+       ,"Identification":{
+          "Column Name":"THE_LEVEL"
+         ,"Show":true
+        }
+       ,"Heading":{
+          "Heading":"Level"
+        }
+       ,"Layout":{
+          "Sequence":40
+        }
+       ,"Source":{
+          "Data Type":"NUMBER"
+        }
+       ,"Advanced":{
+          "Searchable":true
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54559227589995971"
+   ,"Identification":{
+      "Name":"LOGIN_REMEMBER_USERNAME"
+    }
+   ,"Source":{
+      "Location":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"54559608308995975"
+       ,"Entry":{
+          "Sequence":10
+         ,"Display":"Remember username"
+         ,"Return":"Y"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54579108465996057"
+   ,"Identification":{
+      "Name":"ACCESS_ROLES"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"SQL Query"
+     ,"SQL Query":"select role_name d, role_id r\nfrom APEX_APPL_ACL_ROLES where application_id = :APP_ID \norder by 1"
+    }
+   ,"Column Mapping":{
+      "Return":"R"
+     ,"Display":"D"
+     ,"Default Sort":"Use Order By from Query"
+    }
+  }
+ ,{
+    "id":"54586847959996076"
+   ,"Identification":{
+      "Name":"EMAIL_USERNAME_FORMAT"
+    }
+   ,"Source":{
+      "Location":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"54587147018996077"
+       ,"Entry":{
+          "Sequence":1
+         ,"Display":"Email Addresses"
+         ,"Return":"EMAIL"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54603856057996135"
+   ,"Identification":{
+      "Name":"FEEDBACK_RATING"
+    }
+   ,"Source":{
+      "Location":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"54604169677996135"
+       ,"Entry":{
+          "Sequence":1
+         ,"Display":"Positive"
+         ,"Return":"3"
+        }
+       ,"Globalization":{
+          "Template":"\u003Cspan title=\"#DISPLAY_VALUE#\" aria-label=\"#DISPLAY_VALUE#\"\u003E\u003Cspan class=\"fa fa-smile-o fa-2x feedback-positive\" aria-hidden=\"true\" \u003E\u003C\/span\u003E\u003C\/span\u003E"
+        }
+      }
+     ,{
+        "id":"54604497660996136"
+       ,"Entry":{
+          "Sequence":2
+         ,"Display":"Neutral"
+         ,"Return":"2"
+        }
+       ,"Globalization":{
+          "Template":"\u003Cspan title=\"#DISPLAY_VALUE#\" aria-label=\"#DISPLAY_VALUE#\"\u003E\u003Cspan class=\"fa fa-emoji-neutral fa-2x feedback-neutral\" aria-hidden=\"true\" \u003E\u003C\/span\u003E\u003C\/span\u003E"
+        }
+      }
+     ,{
+        "id":"54604887569996136"
+       ,"Entry":{
+          "Sequence":3
+         ,"Display":"Negative"
+         ,"Return":"1"
+        }
+       ,"Globalization":{
+          "Template":"\u003Cspan title=\"#DISPLAY_VALUE#\" aria-label=\"#DISPLAY_VALUE#\"\u003E\u003Cspan class=\"fa fa-frown-o fa-2x feedback-negative\" aria-hidden=\"true\" \u003E\u003C\/span\u003E\u003C\/span\u003E"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54614072353996148"
+   ,"Identification":{
+      "Name":"FEEDBACK_STATUS"
+    }
+   ,"Source":{
+      "Location":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"54614324374996148"
+       ,"Entry":{
+          "Sequence":1
+         ,"Display":"No Action"
+         ,"Return":"0"
+        }
+      }
+     ,{
+        "id":"54614690208996148"
+       ,"Entry":{
+          "Sequence":2
+         ,"Display":"Acknowledged"
+         ,"Return":"1"
+        }
+      }
+     ,{
+        "id":"54615168591996148"
+       ,"Entry":{
+          "Sequence":3
+         ,"Display":"Open"
+         ,"Return":"3"
+        }
+      }
+     ,{
+        "id":"54615564273996148"
+       ,"Entry":{
+          "Sequence":4
+         ,"Display":"Closed"
+         ,"Return":"4"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"54700401318017067"
+   ,"Identification":{
+      "Name":"ALLIANCES"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"SQL Query"
+     ,"SQL Query":"SELECT ID, ACRONYM || \u0027 - \u0027 || NAME \"DISPLAY\"\nFROM alliances\nWHERE status = \u0027A\u0027\nORDER BY ACRONYM"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"DISPLAY"
+     ,"Default Sort":"Use Order By from Query"
+    }
+  }
+ ,{
+    "id":"54824985257083259"
+   ,"Identification":{
+      "Name":"ALLIANCE GROUPS"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"ALLIANCE_GROUPS"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"NAME"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"55102233791144954"
+   ,"Identification":{
+      "Name":"OFFICER_GROUPS"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_OFFICER_GROUP"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"NAME"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"55233826856234561"
+   ,"Identification":{
+      "Name":"OFFICER_RARITIES"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_OFFICER_RARITY"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"ID"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"55837476362564703"
+   ,"Identification":{
+      "Name":"OFFICER_FACTIONS"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_OFFICER_FACTION"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"NAME"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"56100433303253708"
+   ,"Identification":{
+      "Name":"OFFICER_TYPES"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_OFFICER_TYPE"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"NAME"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+ ,{
+    "id":"83801096997934991"
+   ,"Identification":{
+      "Name":"DAY_OF_WEEK"
+    }
+   ,"Source":{
+      "Location":"Static Values"
+    }
+   ,"Entries":[
+      {
+        "id":"83801336020935024"
+       ,"Entry":{
+          "Sequence":1
+         ,"Display":"Sunday"
+         ,"Return":"0"
+        }
+      }
+     ,{
+        "id":"83801705328935029"
+       ,"Entry":{
+          "Sequence":2
+         ,"Display":"Monday"
+         ,"Return":"1"
+        }
+      }
+     ,{
+        "id":"83802151951935029"
+       ,"Entry":{
+          "Sequence":3
+         ,"Display":"Tuesday"
+         ,"Return":"2"
+        }
+      }
+     ,{
+        "id":"83802527777935030"
+       ,"Entry":{
+          "Sequence":4
+         ,"Display":"Wednesday"
+         ,"Return":"3"
+        }
+      }
+     ,{
+        "id":"83802909026935030"
+       ,"Entry":{
+          "Sequence":5
+         ,"Display":"Thursday"
+         ,"Return":"4"
+        }
+      }
+     ,{
+        "id":"83803351683935030"
+       ,"Entry":{
+          "Sequence":6
+         ,"Display":"Friday"
+         ,"Return":"5"
+        }
+      }
+     ,{
+        "id":"83803758733935030"
+       ,"Entry":{
+          "Sequence":7
+         ,"Display":"Saturday"
+         ,"Return":"6"
+        }
+      }
+    ]
+  }
+ ,{
+    "id":"85100240116319140"
+   ,"Identification":{
+      "Name":"DIPLOMACY"
+    }
+   ,"Source":{
+      "Location":"Local Database"
+     ,"Type":"Table \/ View"
+     ,"Table Owner":"Parsing Schema"
+     ,"Table Name":"CT_DIPLOMATIC_RELATION"
+    }
+   ,"Column Mapping":{
+      "Return":"ID"
+     ,"Display":"NAME"
+     ,"Default Sort":"ID"
+     ,"Sort Direction":"Ascending (Nulls Last)"
+    }
+  }
+]

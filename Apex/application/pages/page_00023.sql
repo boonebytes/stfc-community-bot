@@ -1,0 +1,221 @@
+prompt --application/pages/page_00023
+begin
+--   Manifest
+--     PAGE: 00023
+--   Manifest End
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.0'
+,p_default_workspace_id=>2100437598979157
+,p_default_application_id=>109
+,p_default_id_offset=>30400279703097675
+,p_default_owner=>'STFC'
+);
+wwv_flow_imp_page.create_page(
+ p_id=>23
+,p_user_interface_id=>wwv_flow_imp.id(54551875302995858)
+,p_name=>'Terms of Use'
+,p_alias=>'TERMS-OF-USE'
+,p_step_title=>'Terms of Use'
+,p_autocomplete_on_off=>'OFF'
+,p_page_template_options=>'#DEFAULT#'
+,p_page_is_public_y_n=>'Y'
+,p_protection_level=>'C'
+,p_page_component_map=>'11'
+,p_last_updated_by=>'BOONEBYTES'
+,p_last_upd_yyyymmddhh24miss=>'20221018082254'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(2314958723727732)
+,p_plug_name=>'Terms of Use'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_imp.id(54462243687995736)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<p><i>Last Updated: October 17, 2022</i></p>',
+'',
+'<p>Boonebytes ("us" or "we" or "our") owns and operates the STFC World site ("Site")',
+unistr('    and the STFC World Discord Bot ("Bot"). The following Terms of Use (\201CTOU\201D) govern'),
+'    your use of the site and the bot.</p>',
+'',
+'<p>Using STFC World is at-will and can be terminated at any time by either us or you',
+'    for any reason. By using STFC World, you agree to be bound by these TOU. If you do',
+'    not agree to be so bound, you are not authorized to use the site or the bot. These',
+'    TOU are a legal contract between you and STFC World and govern your access to and',
+'    use of the site together with any services offered through the site.</p>',
+'',
+'<p>STFC World is not affiliated with Discord or Scopely</p>',
+'',
+'',
+'<h2>STFC World</h2>',
+'',
+'<p>The purpose of STFC World is to provide alliances with tools to help support their',
+'    membership and territories.</p>',
+'',
+'<p>The information supplied by STFC World is provided for informational purposes only.',
+'    You agree that you will only use STFC World, or data/information provided by it,',
+'    for its intended purposes, and not for other commercial ventures without first',
+'    seeking approval from STFC World.</p>',
+'',
+'<p>By using STFC World, you may need to interact with other site users. You are solely',
+'    responsible for any such interaction and agree to do so in a manner that is legal,',
+'    respectable, and consistent with these TOU. STFC World is not responsible for the',
+'    conduct of any other user who may interact with you, regardless of whether or not',
+'    it is done through the site or through STFC World''s own Discord channels.</p>',
+'',
+'<h2>License</h2>',
+'',
+'<p>STFC World hereby grants you a revocable and nonexclusive right and license to use',
+'    the STFC World website (including any underlying software) and bot in a manner that',
+'    is consistent with the other terms in these TOU and STFC World''s intended purposes.',
+'    STFC World reserves the right to terminate this License for any or no reason and at',
+'    any time without notice to you, including, but not limited to, for breach of any term',
+'    contained in these TOU.</p>',
+'',
+'<p>If termination is required by STFC World due to a wide termination of services, a',
+'    best-effort attempt will be made (if possible) to send a notification of the',
+'    discontinuation of services. If such a notice is possible, users may use this window',
+'    to obtain a copy of their alliance''s data from the database.</p>',
+'',
+'',
+'<h2>Content Disclaimers</h2>',
+'',
+'<p>STFC World does not warrant or guarantee the accuracy, completeness, timeliness,',
+'    or fitness for a particular purpose of the information and data contained on the site',
+'    or distributed by the bot. In no event shall STFC World be liable to you or anyone else',
+'    for any decision made or action taken by you in reliance of any information or data found',
+'    on the site or provided by the bot.</p>',
+'',
+'',
+'<h2>Terms of Use Changes</h2>',
+'',
+'<p>STFC World reserves the right to modify these TOU at any time without prior notice. You',
+'    should visit the site from time to time to review the current TOU. By using the site',
+'    subsequent to any modification of these TOU, you agree to be bound by such modification(s).',
+'    STFC World will highlight any change to these TOU for 30 days after such changes are made.',
+'    STFC World does not represent that any of the site or bot content is completely accurate, and',
+'    therefore any reliance on the site or bot is done at your own risk.</p>',
+'',
+'',
+'<h2>Other Prohibited Conduct</h2>',
+'',
+'<p>In connection with your access and/or use of the site, bot, or any related services,',
+'    you agree not to:</p>',
+'',
+'<ul>',
+'    <li>Violate any laws or regulations.</li>',
+'    <li>Upload/post anything that imposes an unreasonable or disproportionately large strain on',
+'        STFC World''s network or computer infrastructure.</li>',
+'    <li>Engage in any behavior that is designed to hack into or gain unauthorized access to protected',
+'        areas of the site and/or STFC World''s computers, servers or networks, and/or any computers',
+'        or systems used by other users of the site.</li>',
+'    <li>Upload/post anything that could destroy, damage, or impair any portion of the site or',
+'        any computers, systems, hardware, or software used by STFC World or other users.</li>',
+'    <li>Make unauthorized attempts to modify any information stored on the site.</li>',
+'    <li>Make attempts to defeat or circumvent security features, or to utilize the site',
+'        for any other purpose other than its intended purposes.</li>',
+'    <li>Discuss, incite, or promote illegal activity.</li>',
+'    <li>Upload/post any unsolicited or unauthorized advertising, promotional materials,',
+'        spam emails, chain letters, pyramid schemes, or any other form of such solicitations.</li>',
+'    <li>Use any automated technology such as a robot, spider, or scraper to access,',
+'        scrape, or data-mine the aite.<li>',
+'    <li>Use the site to send spam or unsolicited bulk email.</li>',
+'    <li>Provide false or misleading information when signing up for an account or',
+'        otherwise upload/post any false or misleading information or content through the aite.</li>',
+'</ul>',
+'',
+'<p>The previous list of prohibitions is not exclusive. STFC World reserves the right to',
+'    terminate your access to the site or services for any reason. STFC World reserves',
+'    the right to refuse, delete, or edit any user generated content without cause and',
+'    without notice for any or no reason including, but not limited to, for any action',
+'    that STFC World determines is inappropriate or disruptive to the site or services,',
+'    or to any other user of the site.</p>',
+'',
+'<p>STFC World is under no duty to, and does not represent it will, monitor and/or remove',
+'    any user generated content.</p>',
+'',
+'<p>By accepting these TOU, you waive and hold harmless STFC World from any claims',
+'    resulting from any action taken by STFC World during or as a result of STFC World''s',
+'    investigation and/or from any actions taken as a consequence of investigations by either',
+'    STFC World or law enforcement related to your use of the site and services.</p>',
+'',
+'',
+'<h2>Indemnity</h2>',
+'',
+'<p>You agree to indemnify, defend, and hold harmless STFC World, including its developers,',
+'    affiliates, agents, representatives, attorneys, and business partners ("Indemnified Parties"),',
+'    from and against any and all claims, demands, losses, costs, damages, liabilities,',
+'    judgments, awards, and expenses (including attorney fees, costs of defense,',
+'    and direct, indirect, punitive, special, individual, consequential, or exemplary damages)',
+'    STFC World or any of the Indemnified Parties suffer in relation to, arising from, or for',
+'    the purpose of avoiding, any claim or demand from a third party that relates to',
+'    your use of the site or services, your breach of these TOU, the use of the site',
+'    or services by any person using your credentials, or any violation of an applicable',
+'    law or regulation by you. Your indemnification obligation shall survive the termination',
+'    of these TOU.</p>',
+'',
+'<h2>Disclaimer of Warranties</h2>',
+'',
+'<p>YOUR USE OF THE SITE IS AT YOUR OWN RISK.</p>',
+'',
+'<p>STFC WORLD MAKES NO EXPRESS OR IMPLIED WARRANTIES, REPRESENTATIONS OR ENDORSEMENTS',
+'    WHATSOEVER WITH RESPECT TO THE SITE OR ANY SERVICES OFFERED ON OR THROUGH THE SITE.',
+'    STFC WORLD EXPRESSLY DISCLAIMS ALL WARRANTIES OF ANY KIND, (EXPRESS, IMPLIED, STATUTORY,',
+'    OR OTHERWISE), INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF SECURITY, COMPLETENESS,',
+'    TIMELINESS, APPROPRIATENESS, ACCURACY, FITNESS FOR A PARTICULAR PURPOSE, FREEDOM FROM',
+'    COMPUTER VIRUSES, TITLE, AND NON-INFRINGEMENT. THE DISCLAIMER OF WARRANTIES APPLIES TO THE',
+'    SITE, ITS CONTENT, THE BOT, AND ANY GOODS OR SERVICES OFFERED ON OR THROUGH THE SITE OR BOT.',
+'    STFC WORLD DOES NOT WARRANT THAT THE SITE FUNCTIONS OR CONTENT WILL BE UNINTERRUPTED, TIMELY,',
+'    OR SECURE. STFC WORLD DOES NOT WARRANT THE ACCURACY OR COMPLETENESS OF THE SITE. STFC WORLD',
+'    DOES NOT WARRANT THAT THE SITE AND/OR CONTENT WILL BE ERROR-FREE, THAT ANY ERRORS ON THE SITE',
+'    WILL BE CORRECTED, OR THAT THE SITE/SERVERS ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.</p>',
+'',
+'<p>THE SITE AND RELATED CONTENT, INCLUDING ANY SERVICES OR INFORMATION PROVIDED ON OR THROUGH',
+'    THE SITE, ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT WARRANTIES OF ANY',
+'    KIND, EITHER EXPRESS OR IMPLIED. YOU ASSUME THE ENTIRE COST OF ALL NECESSARY REPAIRS IN',
+'    THE EVENT YOU EXPERIENCE ANY LOSS OR DAMAGE ARISING FROM THE USE OF THE SITE OR ANY SITE',
+'    SERVICES. STFC WORLD MAKES NO WARRANTIES THAT YOUR USE OF THE SITE WILL NOT INFRINGE THE',
+'    RIGHTS OF OTHERS AND ASSUMES NO LIABILITY FOR SUCH INFRINGEMENT.</p>',
+'',
+'',
+'<h2>Limitation of Liability</h2>',
+'',
+'<p>IN NO EVENT WILL STFC WORLD OR ITS DEVELOPERS, AFFILIATES, AGENTS, REPRESENTATIVES,',
+'    ATTORNEYS, AND BUSINESS PARTNERS BE LIABLE FOR ANY DAMAGES WHATSOEVER, INCLUDING,',
+'    BUT NOT LIMITED TO, ANY DIRECT, INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL,',
+'    EXEMPLARY, PUNITIVE, ACTUAL, OR OTHER INDIRECT DAMAGES, INCLUDING LOSS OF REVENUE',
+'    OR INCOME, LOST DATA, LOSS OF GOODWILL, PAIN AND SUFFERING, EMOTIONAL DISTRESS,',
+'    OR SIMILAR DAMAGES, EVEN IF STFC WORLD HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH',
+'    DAMAGES, ARISING OUT OF:</p>',
+'',
+'<ol>',
+'    <li>THE USE OR INABILITY TO USE THE SITE OR SERVICES</li>',
+'    <li>ANY TRANSACTION CONDUCTED THROUGH OR FACILITATED BY THE SITE</li>',
+'    <li>ANY CLAIM ATTRIBUTABLE TO ERRORS, OMISSIONS, OR INACCURACIES ON THE SITE</li>',
+'    <li>ANY OTHER MATTER RELATING TO THE SITE OR ANY SERVICES OFFERED ON OR THROUGH THE SITE</li>',
+'</ul>',
+'',
+'<p>IN NO EVENT WILL THE COLLECTIVE LIABILITY OF STFC WORLD OR ITS DEVELOPERS, AFFILIATES,',
+'    AGENTS, REPRESENTATIVES, ATTORNEYS, AND BUSINESS PARTNERS TO ANY PARTY, REGARDLESS OF',
+'    THE TYPE OF ACTION WHETHER IN CONTRACT, TORT, OR OTHERWISE, EXCEED THE GREATER OF',
+'    $10.00 CDN OR THE AMOUNT YOU PAID TO STFC WORLD  FOR THE APPLICABLE GOOD OR SERVICE',
+'    OUT OF WHICH THE LIABILITY AROSE.</p>',
+'',
+'<p>IF YOU ARE DISSATISFIED WITH THESE TOU, THE SITE, OR ANY SERVICES OFFERED ON OR',
+'    THROUGH THE SITE, YOUR SOLE AND EXCLUSIVE REMEDY IS TO DISCONTINUE USING THE SITE AND',
+'    THE BOT.</p>',
+'',
+'<p>GIVEN THAT SOME LOCATIONS DO NOT ALLOW FOR THE EXCLUSION OR LIMITATION OF LIABILITY',
+'    FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, SOME OF THE ABOVE LIMITATIONS MAY NOT',
+'    APPLY TO YOU. THE LIMITATION OF LIABILITY WILL APPLY TO THE GREATEST EXTENT',
+'    ALLOWED UNDER THE LAW.</p>',
+'',
+''))
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp.component_end;
+end;
+/
