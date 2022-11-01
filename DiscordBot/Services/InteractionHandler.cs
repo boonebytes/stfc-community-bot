@@ -73,17 +73,19 @@ public class InteractionHandler
 #else
 
         // Single-use: Remove commands defined per-server
-        //var recognizedGuilds = _client.Guilds.Select(g => g.Id).ToArray();
-        //foreach (var guildId in recognizedGuilds)
-        //{
-        //    await _interactionService.RegisterCommandsToGuildAsync(guildId, true);
-        //}
+        /*
+        var recognizedGuilds = _client.Guilds.Select(g => g.Id).ToArray();
+        foreach (var guildId in recognizedGuilds)
+        {
+            await _interactionService.RegisterCommandsToGuildAsync(guildId, true);
+        }
+        */
         
         // Load the commands from the DLL, to be registered as global commans
         await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
 
         // Register the global commands.
-        await _interactionService.RegisterCommandsGloballyAsync();
+        await _interactionService.RegisterCommandsGloballyAsync(true);
         _logger.LogInformation("Registered global interaction commands");
         
 #endif
