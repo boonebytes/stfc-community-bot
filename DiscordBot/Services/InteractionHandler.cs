@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 using System.Reflection;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
@@ -88,6 +89,19 @@ public class InteractionHandler
         await _interactionService.RegisterCommandsGloballyAsync(true);
         _logger.LogInformation("Registered global interaction commands");
         
+        var globalCommands = await _client.GetGlobalApplicationCommandsAsync();
+        foreach (var cmd in globalCommands)
+        {
+            if (cmd.IsGlobalCommand)
+            {
+                _logger.LogInformation("Global Command {Id}: {Name} - {Description} (Created {Created})", cmd.Id, cmd.Name, cmd.Description, cmd.CreatedAt);
+            }
+            else
+            {
+                _logger.LogInformation("Command {Id}: {Name} - {Description} (Created {Created} / Guild {Guild})", cmd.Id, cmd.Name, cmd.Description, cmd.CreatedAt, cmd.Guild?.Id);
+            }
+        }
+
 #endif
     }
 
@@ -106,7 +120,13 @@ public class InteractionHandler
     {
         _ = Task.Run(async () =>
         {
-            //_logger.LogInformation("Interaction started");
+            _logger.LogInformation("Interaction started. ID = {ID} / Type = {Type} / Guild {Guild} ", arg.Id, arg.Type, arg.GuildId);
+            if (arg is ISlashCommandInteraction slashCommandInteraction)
+            {
+                _logger.LogInformation("Slash command ID = {ID} / Name {Name}", 
+                    slashCommandInteraction.Data.Id,
+                    slashCommandInteraction.Data.Name);
+            }
             var context = new SocketInteractionContext(_client, arg);
             var result = await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
 
