@@ -16,6 +16,7 @@ limitations under the License.
 
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
+using DiscordBot.Services;
 using Quartz;
 
 namespace DiscordBot.Jobs;
@@ -35,6 +36,8 @@ public class MonitorScheduler : BaseJob
 
     protected override async Task DoWork(IJobExecutionContext context)
     {
+        Logger.LogInformation("Cleaning up interaction response cache");
+        _ = InteractionHandler.CleanRespondingInteractionCache();
         Logger.LogInformation("Running the MonitorScheduler job");
         await _allianceRepository.InitPostSchedule();
         await _zoneRepository.InitZones();

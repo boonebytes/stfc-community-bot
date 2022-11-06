@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System.Collections.Concurrent;
 using System.Reflection;
 using Discord;
 using Discord.Interactions;
@@ -29,6 +30,8 @@ public class InteractionHandler
     private readonly IServiceProvider _scopedProvider;
     private readonly DiscordSocketClient _client;
     private readonly InteractionService _interactionService;
+
+    private static readonly ConcurrentDictionary<ulong, DateTime> _respondingInteractions = new();
 
     // Retrieve client and CommandService instance via ctor
     public InteractionHandler(ILogger<InteractionHandler> logger, DiscordSocketClient client, InteractionService interactionService,  IServiceProvider serviceProvider)
@@ -105,6 +108,15 @@ public class InteractionHandler
 #endif
     }
 
+    public static async Task CleanRespondingInteractionCache()
+    {
+        var removeItems = _respondingInteractions.Where(kvp => kvp.Value < DateTime.Now.AddHours(-2));
+        foreach (var item in removeItems)
+        {
+            _respondingInteractions.TryRemove(item);
+        }
+    }
+
     private async Task OnJoinedGuild(SocketGuild guild)
     {
         _logger.LogInformation("Joined guild {GuildName} ({GuildId})", guild.Name, guild.Id);
@@ -118,6 +130,8 @@ public class InteractionHandler
 
     private async Task InteractionCreatedAsync(SocketInteraction arg)
     {
+        var handling = _respondingInteractions.TryAdd(arg.Id, DateTime.Now);
+        if (!handling) return;
         _ = Task.Run(async () =>
         {
             _logger.LogInformation("Interaction started. ID = {ID} / Type = {Type} / Guild {Guild} ", arg.Id, arg.Type, arg.GuildId);
