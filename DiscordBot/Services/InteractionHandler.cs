@@ -47,6 +47,7 @@ public class InteractionHandler
         
     public async Task InstallCommandsAsync()
     {
+        _logger.LogInformation("Initializing the interaction handler");
         // Hook the event into our command handler
         _client.InteractionCreated += InteractionCreatedAsync;
         _client.JoinedGuild += OnJoinedGuild;

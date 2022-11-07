@@ -48,6 +48,7 @@ public class CommandHandler
     {
         try
         {
+            _logger.LogInformation("Initializing the command handler");
             _commands.Log += LogCommandMessage;
             _ownerChannel = await Common.DiscordOwner.CreateDMChannelAsync();
 

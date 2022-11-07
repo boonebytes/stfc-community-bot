@@ -32,6 +32,8 @@ public class Worker : BackgroundService
     private readonly Models.Config.App _appConfig;
     private readonly DiscordSocketClient _client;
 
+    private bool _appInitialized = false;
+
     public Worker(ILogger<Worker> logger, Models.Config.Discord discordConfig, IServiceProvider serviceProvider, DiscordSocketClient discordSocketClient, App appConfig)
     {
         _logger = logger;
@@ -69,6 +71,9 @@ public class Worker : BackgroundService
         {
             _logger.LogInformation("Bot is connected");
 
+            if (_appInitialized) return Task.CompletedTask;
+            
+            _appInitialized = true;
             Task.Run(async () =>
             {
                 try
@@ -99,7 +104,7 @@ public class Worker : BackgroundService
                     _logger.LogError(ex, "Exception on startup");
                 }
             }, stoppingToken);
-            
+
             return Task.CompletedTask;
         };
 
