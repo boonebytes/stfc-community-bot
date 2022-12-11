@@ -78,6 +78,7 @@ public class Program
                 services.AddScoped<RequestContext>();
                 
                 services.AddScoped<IAllianceRepository, AllianceRepository>();
+                services.AddScoped<ICustomMessageJobRepository, CustomMessageJobRepository>();
                 services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
                 services.AddScoped<IZoneRepository, ZoneRepository>();
                 services.AddScoped<IServiceRepository, ServiceRepository>();

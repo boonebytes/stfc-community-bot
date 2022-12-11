@@ -21,7 +21,8 @@ namespace DiscordBot;
 
 public class SchedulerHandler :
     INotificationHandler<ZoneUpdatedDomainEvent>,
-    INotificationHandler<AllianceUpdatedDomainEvent>
+    INotificationHandler<AllianceUpdatedDomainEvent>,
+    INotificationHandler<CustomMessageJobUpdatedDomainEvent>
 {
     private readonly ILogger<SchedulerHandler> _logger;
     private readonly Scheduler _scheduler;
@@ -41,5 +42,11 @@ public class SchedulerHandler :
     {
         if (notification.Zone != null)
             _ = _scheduler.HandleZoneUpdatedAsync(notification.Zone.Id);
+    }
+
+    public async Task Handle(CustomMessageJobUpdatedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        if (notification.Job != null)
+            _ = _scheduler.HandleCustomMessageJobUpdatedAsync(notification.Job.Id);
     }
 }

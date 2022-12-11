@@ -18,6 +18,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordBot.AutocompleteHandlers;
+using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Request;
 using DiscordBot.Domain.Shared;
@@ -32,7 +33,121 @@ public class AdminModule : BaseModule
     public AdminModule(ILogger<AdminModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
     {
     }
-    
+
+    [SlashCommand("schedule-message", "Admin - Schedule a message to be posted at a specific date/time")]
+    [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
+    public async Task ScheduledMessageAsync(
+        [Summary("Timezone", "Source timezone")] [Autocomplete(typeof(TimeZones))]  string timezone,
+        [Summary("Timestamp", "Date/Time to post the message")] DateTime dateTime,
+        [Summary("Message", "Message to post")] string message,
+        [Summary("Channel", "Channel to post; this one if not specified")] ITextChannel channel = null
+        )
+    {
+        using var serviceScope = ServiceProvider.CreateScope();
+        _ = DeferAsync(true);
+        
+        if (Context.Guild == null)
+        {
+            await ModifyResponseAsync(
+                "I can't do that; I can't detect the alliance from this channel.",
+                ephemeral: true);
+            return;
+        }
+
+        try
+        {
+            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+            var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+
+            if (thisAlliance == null)
+            {
+                await ModifyResponseAsync("Unable to determine alliance from this channel", ephemeral: true);
+                return;
+            }
+
+            serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+
+            var scheduledChannel = channel;
+            if (scheduledChannel == null)
+            {
+                if (Context.Channel is not ITextChannel currentChannel)
+                {
+                    await ModifyResponseAsync(
+                        "I cannot find the channel specified.",
+                        ephemeral: true);
+                    return;
+                }
+
+                scheduledChannel = currentChannel;
+            }
+
+            if (scheduledChannel.Guild != Context.Guild)
+            {
+                await ModifyResponseAsync(
+                    "I cannot find the channel specified.",
+                    ephemeral: true);
+                return;
+            }
+
+            DateTime utcTime = DateTime.MaxValue;
+            try
+            {
+                var sourceTimezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+                var destinationTimezone = TimeZoneInfo.Utc;
+                utcTime = TimeZoneInfo.ConvertTime(dateTime, sourceTimezone, destinationTimezone);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Unexpected exception getting timestamp for {Timezone} / {DateTime} on {Guild}",
+                    timezone, dateTime, Context.Guild.Id);
+                await ModifyResponseAsync(
+                    "An unexpected error has occurred. If this continues, please contact the developer for support.",
+                    true);
+                return;
+            }
+
+            if (utcTime == DateTime.MaxValue)
+            {
+                Logger.LogError("DateTime did not return a proper value {Timezone} / {DateTime} on {Guild}", timezone,
+                    dateTime, Context.Guild.Id);
+                await ModifyResponseAsync(
+                    "An unexpected error has occurred. If this continues, please contact the developer for support.",
+                    true);
+                return;
+            }
+
+            var guildUser = Context.Guild.GetUser(Context.User.Id);
+            var nickname = guildUser.Nickname;
+
+            var newJob = new CustomMessageJob(
+                utcTime,
+                Context.User.Id,
+                Context.User.Username + '#' + Context.User.Discriminator,
+                nickname,
+                thisAlliance,
+                scheduledChannel.Id,
+                message);
+            newJob.Schedule();
+
+            var customMessageJobRepository = serviceScope.ServiceProvider.GetService<ICustomMessageJobRepository>();
+            customMessageJobRepository.Add(newJob);
+            await customMessageJobRepository.UnitOfWork.SaveEntitiesAsync();
+            
+            await ModifyResponseAsync(
+                $"Done! Scheduled for <t:{utcTime.ToUnixTimestamp()}>",
+                true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected exception creating custom scheduled message for {UserId}",
+                 Context.User.Id);
+            await ModifyResponseAsync(
+                "An unexpected error has occurred. If this continues, please contact the developer for support.",
+                true);
+        }
+    }
+
     [SlashCommand("reload", "Bot Owner - Reload all data from database, without refreshing schedules.")]
     [RequireOwner]
     public async Task ReloadAsync()

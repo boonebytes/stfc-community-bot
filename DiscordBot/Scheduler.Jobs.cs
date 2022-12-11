@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using DiscordBot.Domain.Entities.Admin;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
 using DiscordBot.Jobs;
@@ -91,10 +92,22 @@ public partial class Scheduler
                     }
                 }
             }
+
+            await LoadCustomMessageJobs(thisServiceScope);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception while loading jobs");
+        }
+    }
+
+    private async Task LoadCustomMessageJobs(IServiceScope thisServiceScope)
+    {
+        var customMessagesRepository = thisServiceScope.ServiceProvider.GetService<ICustomMessageJobRepository>();
+        var customMessageJobs = await customMessagesRepository.GetAllScheduledAsync();
+        foreach (var job in customMessageJobs)
+        {
+            await AddOrUpdateJob<PostCustomMessage>(job.ScheduledTimestamp, job.Alliance.Id, job.Id);
         }
     }
 

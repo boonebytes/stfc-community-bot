@@ -39,6 +39,7 @@ namespace DiscordBot.Infrastructure
         public DbSet<Audit> AuditLogs { get; set; }
         public DbSet<Alliance> Alliances { get; set; }
         public DbSet<AllianceGroup> AllianceGroups { get; set; }
+        public DbSet<CustomMessageJob> CustomMessageJobs { get; set; }
         public DbSet<Diplomacy> Diplomacies { get; set; }
         public DbSet<DiplomaticRelation> DiplomaticRelaitons { get; set; }
         public DbSet<DirectMessage> DirectMessages { get; set; }
@@ -85,9 +86,11 @@ namespace DiscordBot.Infrastructure
             modelBuilder.ApplyConfiguration(new AllianceGroupEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceServiceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AllianceServiceLevelEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CustomMessageJobEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomacyEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomaticRelationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DirectMessageTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new JobStatusEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceCostEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceEntityTypeConfiguration());
