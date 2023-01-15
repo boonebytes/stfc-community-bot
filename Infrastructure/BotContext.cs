@@ -41,7 +41,7 @@ namespace DiscordBot.Infrastructure
         public DbSet<AllianceGroup> AllianceGroups { get; set; }
         public DbSet<CustomMessageJob> CustomMessageJobs { get; set; }
         public DbSet<Diplomacy> Diplomacies { get; set; }
-        public DbSet<DiplomaticRelation> DiplomaticRelaitons { get; set; }
+        public DbSet<DiplomaticRelation> DiplomaticRelations { get; set; }
         public DbSet<DirectMessage> DirectMessages { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<StarSystem> StarSystems { get; set; }
@@ -50,6 +50,8 @@ namespace DiscordBot.Infrastructure
         public DbSet<Service> Services { get; set; }
         public DbSet<ServiceCost> ServiceCosts { get; set; }
         public DbSet<AllianceService> AllianceServices { get; set; }
+
+        public DbSet<ReactMessage> ReactMessages { get; set; }
 
         private readonly IMediator _mediator;
         private readonly ILogger<BotContext> _logger;
@@ -91,6 +93,8 @@ namespace DiscordBot.Infrastructure
             modelBuilder.ApplyConfiguration(new DiplomaticRelationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DirectMessageTypeConfiguration());
             modelBuilder.ApplyConfiguration(new JobStatusEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ReactionEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ReactMessageEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceCostEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceEntityTypeConfiguration());
@@ -119,7 +123,7 @@ namespace DiscordBot.Infrastructure
                 entityType.SetTableName(entityType.GetTableName().ToUpper());
                 foreach(var property in entityType.GetProperties())
                 {
-                    property.SetColumnName(property.GetColumnName().ToUpper());
+                    property.SetColumnName(property.GetColumnBaseName().ToUpper());
                 }
                 
                 if (entityType.IsKeyless)

@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DiscordBot.Infrastructure
@@ -26,7 +27,13 @@ namespace DiscordBot.Infrastructure
             serviceCollection.AddDbContext<BotContext>(options =>
                     {
                         //options.UseMySql(connectionString);
-                        options.UseOracle(connectionString);
+                        options.UseOracle(
+                            connectionString,
+                            oracleOptions =>
+                            {
+                                oracleOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                            });
+                        //options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
                     },
                     ServiceLifetime.Scoped
                 );

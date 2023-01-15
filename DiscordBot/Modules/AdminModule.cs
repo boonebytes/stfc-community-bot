@@ -29,9 +29,11 @@ namespace DiscordBot.Modules;
 [Group("admin", "Admin Commands")]
 public class AdminModule : BaseModule
 {
+    private readonly IReactMessageRepository _reactMessageRepository; 
     
-    public AdminModule(ILogger<AdminModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
+    public AdminModule(ILogger<AdminModule> logger, IServiceProvider serviceProvider, IReactMessageRepository reactMessageRepository) : base(logger, serviceProvider)
     {
+        _reactMessageRepository = reactMessageRepository;
     }
 
     [SlashCommand("schedule-message", "Admin - Schedule a message to be posted at a specific date/time")]
@@ -371,5 +373,103 @@ public class AdminModule : BaseModule
         allianceRepository.Update(thisAlliance);
         await allianceRepository.UnitOfWork.SaveEntitiesAsync();
         return "Value updated successfully";
+    }
+
+
+    [RequireOwner]
+    [SlashCommand("post-message", "Post a reaction message from the database")]
+    public async Task PrintReactMessage(long messageId)
+    {
+        await Context.Interaction.DeferAsync(ephemeral: true);
+        
+        if (messageId == default)
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+            {
+                properties.Content = "Sorry, the ID was invalid.";
+            });
+            return;
+        }
+
+        var message = await _reactMessageRepository.GetAsync(messageId);
+        if (message is null)
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+            {
+                properties.Content = "Sorry, the message could not be found.";
+            });
+            return;
+        }
+
+        if (message.Posted.HasValue || message.MessageId.HasValue)
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+            {
+                properties.Content = "Sorry, the message has already been posted.";
+            });
+            return;
+        }
+        
+        var targetGuild = Context.Client.GetGuild(message.GuildId);
+        var targetChannel = targetGuild.GetTextChannel(message.ChannelId);
+
+        var componentBuilder = new ComponentBuilder()
+            .WithButton(message.ResponseText, "react-" + message.Id);
+
+        var postedMessage = await targetChannel.SendMessageAsync(message.Message, components: componentBuilder.Build());
+        message.MarkPosted(postedMessage.Id);
+
+        _reactMessageRepository.Update(message);
+        await _reactMessageRepository.UnitOfWork.SaveEntitiesAsync();
+        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+        {
+            properties.Content = "Message posted and updated.";
+        });
+    }
+    
+    [ComponentInteraction("react-*", ignoreGroupNames: true)]
+    public async Task ReactMessage_Clicked(string id)
+    {
+        await Context.Interaction.RespondAsync("Processing...", ephemeral: true);
+        //await Context.Interaction.DeferAsync(ephemeral: true);
+
+        var messageId = long.Parse(id);
+        if (messageId == default)
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+            {
+                properties.Content = "Sorry, the ID was invalid.";
+            });
+            return;
+        }
+
+        var message = await _reactMessageRepository.GetAsync(messageId);
+        if (message is null)
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+            {
+                properties.Content = "Sorry, the message could not be found.";
+            });
+            return;
+        }
+
+        if (message.Reactions.Any(r => r.UserId == Context.User.Id))
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+            {
+                properties.Content = "Your response has already been received.";
+            });
+            return;
+        }
+
+        var thisUser = Context.Guild.GetUser(Context.User.Id);
+        message.AddReaction(Context.User.Id, Context.User.Username, thisUser.Nickname);
+        _reactMessageRepository.Update(message);
+        await _reactMessageRepository.UnitOfWork.SaveEntitiesAsync();
+        
+        await Context.Interaction.ModifyOriginalResponseAsync(properties =>
+        {
+            properties.Content = "Thank you! Your response has been received!";
+        });
     }
 }

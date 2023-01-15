@@ -82,6 +82,7 @@ public class Program
                 services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
                 services.AddScoped<IZoneRepository, ZoneRepository>();
                 services.AddScoped<IServiceRepository, ServiceRepository>();
+                services.AddScoped<IReactMessageRepository, ReactMessageRepository>();
 
                 services.AddSingleton(discordConfig);
                 services.AddSingleton(appConfig);
@@ -122,8 +123,6 @@ public class Program
                 services.AddSingleton(discordClient);
 
                     
-                var interactionService = new InteractionService(discordClient.Rest);
-                services.AddSingleton(interactionService);
                 services.AddSingleton<Services.InteractionHandler>();
                     
 

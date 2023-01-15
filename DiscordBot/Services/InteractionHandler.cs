@@ -34,23 +34,30 @@ public class InteractionHandler
     private static readonly ConcurrentDictionary<ulong, DateTime> _respondingInteractions = new();
 
     // Retrieve client and CommandService instance via ctor
-    public InteractionHandler(ILogger<InteractionHandler> logger, DiscordSocketClient client, InteractionService interactionService,  IServiceProvider serviceProvider)
+    public InteractionHandler(ILogger<InteractionHandler> logger, DiscordSocketClient client, IServiceProvider serviceProvider)
     {
         _logger = logger;
-        _interactionService = interactionService;
         _client = client;
         _serviceProvider = serviceProvider;
 
         var serviceScope = _serviceProvider.CreateScope();
         _scopedProvider = serviceScope.ServiceProvider;
+        
+        _interactionService = new InteractionService(_client, new InteractionServiceConfig
+        {
+            WildCardExpression = "*",
+            UseCompiledLambda = true,
+            //DefaultRunMode = RunMode.Sync
+        });
+        
+        // Hook the event into our command handler
+        _client.InteractionCreated += InteractionCreatedAsync;
+        _client.JoinedGuild += OnJoinedGuild;
     }
         
     public async Task InstallCommandsAsync()
     {
         _logger.LogInformation("Initializing the interaction handler");
-        // Hook the event into our command handler
-        _client.InteractionCreated += InteractionCreatedAsync;
-        _client.JoinedGuild += OnJoinedGuild;
         
 
         // Here we discover all of the command modules in the entry 
@@ -71,10 +78,10 @@ public class InteractionHandler
         */
             
         
-#if DEBUG && false
+#if DEBUG
         // For debugging, just register them to the sandbox server.
         await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _scopedProvider);
-        await _interactionService.RegisterCommandsToGuildAsync(671097115233091630);
+        await _interactionService.RegisterCommandsToGuildAsync(1024465149505060864);
 #else
 
         // Single-use: Remove commands defined per-server
@@ -133,45 +140,47 @@ public class InteractionHandler
     {
         var handling = _respondingInteractions.TryAdd(arg.Id, DateTime.Now);
         if (!handling) return;
-        _ = Task.Run(async () =>
+        _ = RunInteractionCreatedAsync(arg);
+    }
+    
+    protected async Task RunInteractionCreatedAsync(SocketInteraction arg)
+    {
+        _logger.LogDebug("Interaction started. ID = {ID} / Type = {Type} / Guild {Guild} ", arg.Id, arg.Type, arg.GuildId);
+        if (arg is ISlashCommandInteraction slashCommandInteraction)
         {
-            _logger.LogInformation("Interaction started. ID = {ID} / Type = {Type} / Guild {Guild} ", arg.Id, arg.Type, arg.GuildId);
-            if (arg is ISlashCommandInteraction slashCommandInteraction)
-            {
-                _logger.LogInformation("Slash command ID = {ID} / Name {Name}", 
-                    slashCommandInteraction.Data.Id,
-                    slashCommandInteraction.Data.Name);
-            }
-            var context = new SocketInteractionContext(_client, arg);
-            var result = await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
+            _logger.LogDebug("Slash command ID = {ID} / Name {Name}", 
+                slashCommandInteraction.Data.Id,
+                slashCommandInteraction.Data.Name);
+        }
+        var context = new SocketInteractionContext(_client, arg);
+        var result = await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
 
-            if (!result.IsSuccess)
+        if (!result.IsSuccess)
+        {
+            switch (result.Error)
             {
-                switch (result.Error)
-                {
-                    case InteractionCommandError.UnmetPrecondition:
-                        _logger.LogError("Unmet Precondition: {ErrorReason}", result.ErrorReason);
-                        break;
-                    case InteractionCommandError.UnknownCommand:
-                        _logger.LogError("Unknown command");
-                        break;
-                    case InteractionCommandError.BadArgs:
-                        _logger.LogError("Invalid number or arguments");
-                        break;
-                    case InteractionCommandError.Exception:
-                        _logger.LogError("Command exception:{ErrorReason}", result.ErrorReason);
-                        break;
-                    case InteractionCommandError.Unsuccessful:
-                        _logger.LogError("Command could not be executed");
-                        break;
-                    default:
-                        break;
-                }
-                //await interactionContext.Interaction.RespondAsync("An unexpected error has occured.", ephemeral: true);
+                case InteractionCommandError.UnmetPrecondition:
+                    _logger.LogError("Unmet Precondition: {ErrorReason}", result.ErrorReason);
+                    break;
+                case InteractionCommandError.UnknownCommand:
+                    _logger.LogError("Unknown command");
+                    break;
+                case InteractionCommandError.BadArgs:
+                    _logger.LogError("Invalid number or arguments");
+                    break;
+                case InteractionCommandError.Exception:
+                    _logger.LogError("Command exception:{ErrorReason}", result.ErrorReason);
+                    break;
+                case InteractionCommandError.Unsuccessful:
+                    _logger.LogError("Command could not be executed");
+                    break;
+                default:
+                    break;
             }
+            //await interactionContext.Interaction.RespondAsync("An unexpected error has occured.", ephemeral: true);
+        }
 
-            //_logger.LogInformation("Interaction finished");
-        });
+        //_logger.LogInformation("Interaction finished");
     }
 
     //private async Task SlashCommandHandlerAsync(SocketSlashCommand command)
