@@ -1,0 +1,733 @@
+{
+  "id":"10014"
+ ,"Identification":{
+    "Name":"Add Multiple Users - Step 2"
+   ,"Alias":"ADD-MULTIPLE-USERS-STEP-2"
+   ,"Title":"Add Multiple Users"
+   ,"Page Group":"Administration (54557183068995950)"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+   ,"Page Mode":"Modal Dialog"
+   ,"Dialog Template":"Theme Default"
+  }
+ ,"Dialog":{
+    "Chained":true
+  }
+ ,"Navigation Menu":{
+    "Override User Interface Level":false
+  }
+ ,"Navigation":{
+    "Cursor Focus":"Do not focus cursor"
+   ,"Warn on Unsaved Changes":true
+  }
+ ,"CSS":{
+    "Inline":".uReportList {\n    margin: 0;\n    list-style: none;\n}\n.uReportList li {\n    margin: 0 0 4px 0;\n}\n.check_icon {\n    display: inline-block;\n    width: 16px;\n    height: 16px;\n    line-height: 16px;\n    background: #69B86B;\n    color: #FFF;\n    text-align: center;\n    border-radius: 12px;\n    font-size: 15px;\n    border: 1px solid green;\n    text-shadow: 0 -1px 0 rgba(0,0,0,.15);\n    vertical-align: top;\n    margin-right: 4px;\n}\n.valid_user {\n    display: inline-block;\n    padding: 4px 8px 4px 4px;\n    border: 1px solid #D0D0D0;\n    border-radius: 3px;\n    line-height: 20px;\n    background-color: #F8F8F8;\n    color: #404040;\n}"
+  }
+ ,"Security":{
+    "Authorization Scheme":"Administration Rights (54555301792995935)"
+   ,"Authentication":"Page Requires Authentication"
+   ,"Deep Linking":"Disabled"
+   ,"Page Access Protection":"Arguments Must Have Checksum"
+   ,"Form Auto Complete":"Off"
+   ,"Browser Cache":"Application Default"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Application Default"
+  }
+ ,"Advanced":{
+    "Enable duplicate page submissions":"Yes - Enable page to be re-posted"
+   ,"Reload on Submit":"Only for Success"
+  }
+ ,"Server Cache":{
+    "Caching":"Disabled"
+  }
+ ,"Configuration":{
+    "Build Option":"Feature: Access Control (54553266873995923)"
+  }
+ ,"Regions":[
+    {
+      "id":"54583151022996073"
+     ,"Identification":{
+        "Title":"Button Bar"
+       ,"Type":"Static Content"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"REGION_POSITION_03"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Buttons Container (54432201299995716)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+   ,{
+      "id":"54583214822996073"
+     ,"Identification":{
+        "Title":"Add Multiple Users - Step 2"
+       ,"Type":"Static Content"
+      }
+     ,"Layout":{
+        "Sequence":40
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-Form--stretchInputs"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+   ,{
+      "id":"54583614130996073"
+     ,"Identification":{
+        "Title":"Exceptions"
+       ,"Type":"Classic Report"
+      }
+     ,"Source":{
+        "Location":"Local Database"
+       ,"Type":"SQL Query"
+       ,"SQL Query":"select c001 username, c002 reason\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_INVALID\u0027\norder by 1"
+      }
+     ,"Layout":{
+        "Sequence":60
+       ,"Parent Region":"Add Multiple Users - Step 2 (54583214822996073)"
+       ,"Position":"SUB_REGIONS"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Collapsible (54442677486995725)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-Region--noPadding"
+         ,"is-collapsed"
+         ,"t-Region--noUI"
+         ,"t-Region--scrollBody"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server-side Condition":{
+        "Type":"Rows returned"
+       ,"SQL Query":"select 1\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_INVALID\u0027"
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Layout":{
+          "Number of Rows Type":"Static Value"
+         ,"Number of Rows":10000
+        }
+       ,"Appearance":{
+          "Template Type":"Theme"
+         ,"Template":"Standard (54489773601995757)"
+         ,"Template Options":[
+            "t-Report--stretch"
+           ,"t-Report--staticRowColors"
+           ,"t-Report--rowHighlightOff"
+          ]
+        }
+       ,"Pagination":{
+          "Type":"No Pagination (Show All Rows)"
+         ,"Partial Page Refresh":true
+        }
+       ,"Performance":{
+          "Lazy Loading":false
+         ,"Maximum Rows to Process":500
+        }
+       ,"Messages":{
+          "When No Data Found":"no data found"
+        }
+       ,"Break Formatting":{
+          "Break Columns":"No Break"
+        }
+       ,"Advanced":{
+          "Strip HTML":true
+         ,"Sort Nulls":"Last"
+        }
+       ,"Heading":{
+          "Type":"Custom Headings"
+        }
+       ,"Download":{
+          "CSV Export Enabled":false
+        }
+       ,"Printing":{
+          "Enabled":false
+        }
+      }
+     ,"Columns":[
+        {
+          "id":"54590453485996095"
+         ,"Identification":{
+            "Column Name":"USERNAME"
+           ,"Type":"Plain Text"
+          }
+         ,"Heading":{
+            "Heading":"Username"
+           ,"Alignment":"start"
+          }
+         ,"Layout":{
+            "Sequence":1
+           ,"Column Alignment":"start"
+          }
+         ,"Accessibility":{
+            "Value Identifies Row":false
+          }
+         ,"Sorting":{
+            "Sortable":false
+          }
+         ,"Export \/ Printing":{
+            "Include In Export \/ Print":true
+          }
+         ,"Advanced":{
+            "Compute Sum":false
+          }
+         ,"UI Defaults Reference":{
+            "Table Owner":"Parsing Schema"
+          }
+         ,"Security":{
+            "Escape special characters":true
+          }
+        }
+       ,{
+          "id":"54590845995996097"
+         ,"Identification":{
+            "Column Name":"REASON"
+           ,"Type":"Plain Text"
+          }
+         ,"Heading":{
+            "Heading":"Reason"
+           ,"Alignment":"start"
+          }
+         ,"Layout":{
+            "Sequence":2
+           ,"Column Alignment":"start"
+          }
+         ,"Accessibility":{
+            "Value Identifies Row":false
+          }
+         ,"Sorting":{
+            "Sortable":false
+          }
+         ,"Export \/ Printing":{
+            "Include In Export \/ Print":true
+          }
+         ,"Advanced":{
+            "Compute Sum":false
+          }
+         ,"UI Defaults Reference":{
+            "Table Owner":"Parsing Schema"
+          }
+         ,"Security":{
+            "Escape special characters":true
+          }
+        }
+      ]
+    }
+   ,{
+      "id":"54583695273996073"
+     ,"Identification":{
+        "Title":"\u0026P10014_VALID_COUNT. Users to Add"
+       ,"Type":"List View"
+      }
+     ,"Source":{
+        "Location":"Local Database"
+       ,"Type":"SQL Query"
+       ,"SQL Query":"select distinct c001 username\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_VALID\u0027\norder by 1"
+      }
+     ,"Layout":{
+        "Sequence":50
+       ,"Parent Region":"Add Multiple Users - Step 2 (54583214822996073)"
+       ,"Position":"SUB_REGIONS"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server-side Condition":{
+        "Type":"Rows returned"
+       ,"SQL Query":"select 1\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_VALID\u0027"
+      }
+     ,"Security":{
+        "Escape special characters":true
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Features":"Advanced Formatting"
+         ,"Text Formatting":"\u003Cspan class=\"fa fa-check-circle u-success-text\" aria-hidden=\"true\"\u003E\u003C\/span\u003E \u003Cspan style=\"line-height:36px;text-transform:lowercase;\"\u003E\u0026USERNAME!HTML.\u003C\/span\u003E"
+        }
+       ,"Layout":{
+          "Number of Rows Type":"Static Value"
+         ,"Number of Rows":10000
+        }
+      }
+    }
+   ,{
+      "id":"54583799532996073"
+     ,"Identification":{
+        "Title":"Hidden Items"
+       ,"Type":"Static Content"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+   ,{
+      "id":"54593961930996123"
+     ,"Identification":{
+        "Title":"Valid Users Exist - Page Info"
+       ,"Type":"PL\/SQL Dynamic Content"
+      }
+     ,"Source":{
+        "PL\/SQL Code":"sys.htp.prn(\u0027\u003Cp\u003E\u0027);\nsys.htp.prn(apex_lang.message (\n                \u0027APEX.FEATURE.ACL.BULK_USER.CREATE_CONFIRM\u0027,\n                apex_escape.html(:P10014_VALID_COUNT),\n                apex_escape.html(:P10014_ROLE)));\nsys.htp.prn(\u0027\u003C\/p\u003E\u0027);"
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"margin-bottom-sm"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server-side Condition":{
+        "Type":"Rows returned"
+       ,"SQL Query":"select 1\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_VALID\u0027"
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+    }
+   ,{
+      "id":"54594600426996125"
+     ,"Identification":{
+        "Title":"No Valid Users Exist - Page Info"
+       ,"Type":"Static Content"
+      }
+     ,"Source":{
+        "HTML Code":"\u003Cp\u003ENo valid new users found\u003C\/p\u003E"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Blank with Attributes (54431268247995715)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"margin-bottom-sm"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":false
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server-side Condition":{
+        "Type":"No Rows returned"
+       ,"SQL Query":"select 1\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_VALID\u0027"
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+  ]
+ ,"Page Items":[
+    {
+      "id":"54596027608996126"
+     ,"Identification":{
+        "Name":"P10014_ROLE"
+       ,"Type":"Hidden"
+      }
+     ,"Settings":{
+        "Value Protected":true
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Region":"Hidden Items (54583799532996073)"
+       ,"Position":"BODY"
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"SQL Query (return single value)"
+       ,"SQL Query":"select LISTAGG( role_name, \u0027, \u0027)\n         WITHIN GROUP (ORDER BY role_name) role_name\nfrom APEX_APPL_ACL_ROLES\nwhere application_id = :APP_ID\nand instr(:P10013_ROLE, role_id, 1) \u003E 0"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Security":{
+        "Session State Protection":"Restricted - May not be set from browser"
+       ,"Store value encrypted in session state":false
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+   ,{
+      "id":"54596444330996127"
+     ,"Identification":{
+        "Name":"P10014_VALID_COUNT"
+       ,"Type":"Hidden"
+      }
+     ,"Settings":{
+        "Value Protected":true
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Region":"Hidden Items (54583799532996073)"
+       ,"Position":"BODY"
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"SQL Query (return single value)"
+       ,"SQL Query":"select count(*)\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_VALID\u0027"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Security":{
+        "Session State Protection":"Restricted - May not be set from browser"
+       ,"Store value encrypted in session state":false
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+   ,{
+      "id":"54596818924996128"
+     ,"Identification":{
+        "Name":"P10014_INVALID_COUNT"
+       ,"Type":"Hidden"
+      }
+     ,"Settings":{
+        "Value Protected":true
+      }
+     ,"Layout":{
+        "Sequence":30
+       ,"Region":"Hidden Items (54583799532996073)"
+       ,"Position":"BODY"
+      }
+     ,"Advanced":{
+        "Warn on Unsaved Changes":"Page Default"
+      }
+     ,"Source":{
+        "Type":"SQL Query (return single value)"
+       ,"SQL Query":"select count(*)\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_VALID\u0027"
+       ,"Used":"Only when current value in session state is null"
+       ,"Maintain Session State":"Per Session (Disk)"
+      }
+     ,"Security":{
+        "Session State Protection":"Restricted - May not be set from browser"
+       ,"Store value encrypted in session state":false
+       ,"Restricted Characters":"All characters can be saved."
+      }
+    }
+  ]
+ ,"Buttons":[
+    {
+      "id":"54583443579996073"
+     ,"Identification":{
+        "Button Name":"CANCEL"
+       ,"Label":"Cancel"
+      }
+     ,"Layout":{
+        "Sequence":30
+       ,"Region":"Button Bar (54583151022996073)"
+       ,"Position":"PREVIOUS"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Text (54527310383995804)"
+       ,"Hot":false
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Behavior":{
+        "Action":"Defined by Dynamic Action"
+       ,"Execute Validations":false
+      }
+    }
+   ,{
+      "id":"54583923186996073"
+     ,"Identification":{
+        "Button Name":"SUBMIT"
+       ,"Label":"Add Users"
+      }
+     ,"Layout":{
+        "Sequence":20
+       ,"Region":"Button Bar (54583151022996073)"
+       ,"Position":"NEXT"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Text (54527310383995804)"
+       ,"Hot":true
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+      }
+     ,"Behavior":{
+        "Action":"Submit Page"
+       ,"Execute Validations":true
+       ,"Warn on Unsaved Changes":"Do Not Check"
+      }
+     ,"Server-side Condition":{
+        "Type":"Rows returned"
+       ,"SQL Query":"select 1\n  from apex_collections\n where collection_name = \u0027ACL_BULK_USER_VALID\u0027"
+      }
+    }
+   ,{
+      "id":"54595303016996125"
+     ,"Identification":{
+        "Button Name":"PREVIOUS"
+       ,"Label":"Previous"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Region":"Button Bar (54583151022996073)"
+       ,"Position":"PREVIOUS"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Button Template":"Icon (54526679066995800)"
+       ,"Hot":false
+       ,"Template Options":[
+          "#DEFAULT#"
+        ]
+       ,"Icon":"fa-chevron-left"
+      }
+     ,"Behavior":{
+        "Action":"Redirect to URL"
+       ,"Target":"javascript:history.back();"
+       ,"Execute Validations":true
+       ,"Warn on Unsaved Changes":"Do Not Check"
+      }
+    }
+  ]
+ ,"Dynamic Actions":[
+    {
+      "id":"54583552470996073"
+     ,"Identification":{
+        "Name":"Cancel Modal"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+      }
+     ,"When":{
+        "Event":"EVENT.EVENT.BROWSER.CLICK"
+       ,"Selection Type":"Button"
+       ,"Button":"CANCEL (54583443579996073)"
+      }
+     ,"Advanced":{
+        "Event Scope":"Static"
+      }
+     ,"Actions":[
+        {
+          "id":"54597518411996128"
+         ,"Identification":{
+            "Action":"Cancel Dialog"
+          }
+         ,"Execution Options":{
+            "Sequence":10
+           ,"Event":"Cancel Modal (54583552470996073)"
+           ,"Fire When Event Result Is":"True"
+           ,"Fire on Initialization":false
+          }
+        }
+      ]
+    }
+  ]
+ ,"Processes":[
+    {
+      "id":"54598003132996128"
+     ,"Identification":{
+        "Name":"Add Users to Access Control List"
+       ,"Type":"Execute Code"
+      }
+     ,"Source":{
+        "Location":"Local Database"
+       ,"Language":"PL\/SQL"
+       ,"PL\/SQL Code":"declare\n    l_user_role_ids apex_application_global.vc_arr2;\nbegin\n    for c in (  select distinct c001 as username, c003 as user_roles\n                from   apex_collections\n                where  collection_name = \u0027ACL_BULK_USER_VALID\u0027 ) loop\n         l_user_role_ids := apex_util.string_to_table(c.user_roles);\n         for i in 1..l_user_role_ids.count loop\n             apex_acl.add_user_role(p_application_id =\u003E :APP_ID, p_user_name =\u003E c.username, p_role_id =\u003E l_user_role_ids(i));\n         end loop;\n    end loop;\n\n    apex_collection.DELETE_COLLECTION(\u0027ACL_BULK_USER_INVALID\u0027);\n    apex_collection.DELETE_COLLECTION(\u0027ACL_BULK_USER_VALID\u0027);\n    :P10013_PRELIM_USERS := null;\nend;"
+      }
+     ,"Execution Options":{
+        "Sequence":10
+       ,"Point":"Processing"
+       ,"Run Process":"Once Per Page Visit (default)"
+      }
+     ,"Success Message":{
+        "Success Message":"User(s) added."
+      }
+     ,"Error":{
+        "Display Location":"Inline in Notification"
+      }
+     ,"Server-side Condition":{
+        "When Button Pressed":"SUBMIT (54583923186996073)"
+      }
+    }
+   ,{
+      "id":"54598416067996129"
+     ,"Identification":{
+        "Name":"Close Dialog"
+       ,"Type":"Close Dialog"
+      }
+     ,"Execution Options":{
+        "Sequence":20
+       ,"Point":"Processing"
+       ,"Run Process":"Once Per Page Visit (default)"
+      }
+     ,"Error":{
+        "Display Location":"Inline in Notification"
+      }
+    }
+  ]
+}

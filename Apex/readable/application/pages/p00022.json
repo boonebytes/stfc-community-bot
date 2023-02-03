@@ -1,0 +1,86 @@
+{
+  "id":"22"
+ ,"Identification":{
+    "Name":"Privacy Policy"
+   ,"Alias":"PRIVACY-POLICY"
+   ,"Title":"Privacy Policy"
+  }
+ ,"Appearance":{
+    "User Interface":"Desktop (54551875302995858)"
+   ,"Page Mode":"Normal"
+   ,"Page Template":"Theme Default"
+   ,"Template Options":[
+      "#DEFAULT#"
+    ]
+  }
+ ,"Navigation Menu":{
+    "Override User Interface Level":false
+  }
+ ,"Navigation":{
+    "Cursor Focus":"Do not focus cursor"
+   ,"Warn on Unsaved Changes":true
+  }
+ ,"Security":{
+    "Authentication":"Page Is Public"
+   ,"Deep Linking":"Application Default"
+   ,"Page Access Protection":"Arguments Must Have Checksum"
+   ,"Form Auto Complete":"Off"
+   ,"Browser Cache":"Application Default"
+  }
+ ,"Session Management":{
+    "Rejoin Sessions":"Application Default"
+  }
+ ,"Advanced":{
+    "Enable duplicate page submissions":"Yes - Enable page to be re-posted"
+   ,"Reload on Submit":"Only for Success"
+  }
+ ,"Server Cache":{
+    "Caching":"Disabled"
+  }
+ ,"Regions":[
+    {
+      "id":"2314835883727731"
+     ,"Identification":{
+        "Title":"Privacy Policy"
+       ,"Type":"Static Content"
+      }
+     ,"Source":{
+        "HTML Code":"\u003Cp\u003E\u003Ci\u003ELast Updated: October 17, 2022\u003C\/i\u003E\u003C\/p\u003E\n\n\u003Cp\u003EBy using the STFC World Community Bot or website, you agree that you have\n    read and agree to this policy.\u003C\/p\u003E\n\n\u003Cp\u003EThis is our \"Privacy Policy\" which sets out the policy which governs our\n    use of information you provide in connection with the STFC World bot and website.\n    The terms \"you\", \"your\", and \"end-users\" refer to all individuals or entities accessing the bot\/website.\n    The terms \"we\", \"us\", and \"our\" refer to STFC World and \"bot\" refers to the Discord bot itself.\n    STFC refers to Star Trek Fleet Command, a mobile game from Scopely.\u003C\/p\u003E\n\n\u003Cp\u003EWe may update this Privacy Policy from time to time. Changes in our Privacy Policy will be\n    effective immediately. By using the website and\/or bot, you consent to the collection, use,\n    and transfer of your information in accordance with this Privacy Policy. If you do not agree\n    to this Privacy Policy, please do not use this website or our bot. You may revoke your consent\n    at any time by contacting the bot developer.\u003C\/p\u003E\n\n\u003Ch2\u003EPrivacy Statement\u003C\/h2\u003E\n\n\u003Cp\u003EInformation we collect about our direct users and why:\u003C\/p\u003E\n\u003Cul\u003E\n    \u003Cli\u003EDiscord User IDs and associated usernames - This information is used to connect your Discord\n        account to an application profile.\u003C\/li\u003E\n    \u003Cli\u003EAssociated Discord servers - This information is used to determine associated servers where\n        you may have sufficient rights to make administrative changes to the bot\u0027s local\n        configuration.\u003C\/li\u003E\n    \u003Cli\u003ENon-Personally Identifiable Information - We may automatically collect certain technical\n        information from your computer such as your Internet service provider, your IP address,\n        your browser type, your operating system, the pages viewed, the pages viewed immediately\n        before and after accessing the website, and the search terms entered to get to our site.\n        This information allows us to improve, customize, and secure our services. We and our\n        service providers may collect this information using \"cookies\" or similar technologies.\u003C\/li\u003E\n\u003C\/ul\u003E\n\n\u003Cp\u003EWe do not collect email adresses, nor do we attempt to associate any data provided with true\n    identities.\u003C\/p\u003E\n\n\u003Cp\u003EThis privacy policy does not cover information provided by end-users with respect to their alliance\n    membership, inventory, etc.\u003C\/p\u003E\n\n\n\u003Ch2\u003EThe information we collect and how we collect it\u003C\/h2\u003E\n\n\u003Cul\u003E\n    \u003Cli\u003EDiscord User IDs, associated usernames, and connected servers are provided from Discord when\n        you log in. The Discord User ID may be keyed prior to the initial login as an attempt to\n        initialize \/ register your account for first use.\u003C\/li\u003E\n    \u003Cli\u003EAlliance and member information, as well as territory details, are retrieved from the STFC game\n        using the standard front-end provided to all users of the STFC game. This data is then keyed\n        into this website by other end-users.\u003C\/li\u003E\n    \u003Cli\u003ENon-Personally Identifiable Information, such as your IP address, web browser, and operating\n        system, are gathered automatically by the infrastructure while you access our website. This\n        information is retained in log files and may be referenced to identify any potential\n        functionality or security issues. Some of this information is collected by the use of\n        web browser cookies, especially to associate a web browser session to a server session.\u003C\/li\u003E\n\u003C\/ul\u003E\n\n\u003Cp\u003EThe technologies we use for this automatic data collection may include:\u003C\/p\u003E\n\u003Col\u003E\n    \u003Cli\u003ECookies (or browser cookies). You may refuse to accept browser cookies by activating the\n        appropriate setting on your browser. However, if you select this setting you may be unable\n        to access certain parts of our website. Unless you have adjusted your browser setting so\n        that it will refuse cookies, our system will issue cookies when you direct your browser\n        to our website.\u003C\/li\u003E\n\u003C\/ol\u003E\n\n\u003Ch2\u003EThird-party websites\u003C\/h2\u003E\n\n\u003Cp\u003EThis website or interactions completed via the bot may contain links to other third-party websites.\n    These websites are not under our control, and we are not responsible for the privacy practices\n    or contents of any such linked website or any link contained within a linked website. We recommend\n    that you familiarize yourself with the privacy policies of any third parties.\u003C\/p\u003E\n\n\u003Cp\u003EBy nature, the bot utilizes services provided by Discord. For the purposes of this document, Discord\n    is considered a third-party. Information provided to our bot through the Discord APIs will fall\n    under this privacy policy, but we cannot be accountable for how the information may be used by\n    Discord. Please refer to Discord\u0027s website for details on how the information is handled on their\n    end.\u003C\/p\u003E\n\n\n\u003Ch2\u003EThe way we use information\u003C\/h2\u003E\n\n\u003Cp\u003EInformation provided to the website or the bot may be used for the following purposes:\u003C\/p\u003E\n\u003Cul\u003E\n    \u003Cli\u003ETo authenticate and authorize access to the website \/ bot.\u003C\/li\u003E\n    \u003Cli\u003ETo provide relevant information related to your in-game alliance. For instance, the bot may\n        use the information about your alliance to provide a territory defense schedule in a Discord\n        channel that you identify, presenting only information that is of interest to your alliance.\n        Based on the options selected, it may also \"ping\" the Discord roles for certain events.\u003C\/li\u003E\n    \u003Cli\u003ETo aid in reporting for alliance leadership. These reports are based off of data provided\n        by the alliance leadership, such as membership and territory inventory.\u003C\/li\u003E\n\u003C\/ul\u003E\n\n\u003Cp\u003EUnder certain circumstances, we may attempt to reach out to you via private messages on Discord.\n    These messages will be sent from a human using a standard Discord end-user account. Should this\n    fail, and depending on the urgency of the communication, the bot may be utilized to deliver the\n    message in a secure manner. Such a delivery mechanism is not yet coded for the bot, and may vary\n    based on the bot\u0027s permissions on your Discord server, if private messages are enabled, and if\n    the communication from the bot is determined urgent in nature. Please note: The bot will never\n    be used to send advertising messages.\u003C\/p\u003E\n\n\u003Cp\u003EWe may also use or disclose information to resolve disputes, investigate problems or enforce our\n    Terms of Use. At times, we may review status or activity of multiple users to do so. We may\n    disclose or access information whenever we believe in good faith that the law so requires or\n    if we otherwise consider it necessary to do so to maintain service and improve our services.\n    We use your IP address to help diagnose problems with our server and to manage our website.\u003C\/p\u003E\n\n\n\u003Ch2\u003EDisclosure of information\u003C\/h2\u003E\n\n\u003Cp\u003EInformation may be disclosed for one of the following reasons:\u003C\/p\u003E\n\u003Cul\u003E\n    \u003Cli\u003ETo comply with any court order, law or legal process, including to respond to any\n        government or regulatory request.\u003C\/li\u003E\n    \u003Cli\u003ETo enforce or apply our Terms of Use and other agreements.\u003C\/li\u003E\n    \u003Cli\u003EIf we believe disclosure is necessary or appropriate to protect the rights, property, or\n        safety of STFC World, our participants, or others. This includes exchanging information with\n        other organizations for the purposes of fraud protection and security analysis.\u003C\/li\u003E\n\u003C\/ul\u003E\n\n\n\u003Ch2\u003EContact Information\u003C\/h2\u003E\n\n\u003Cp\u003ETo ask questions or comment about this Privacy Policy and our privacy practices,\n    please contact us via Discord.\u003C\/p\u003E"
+      }
+     ,"Layout":{
+        "Sequence":10
+       ,"Parent Region":"No Parent"
+       ,"Position":"BODY"
+       ,"Start New Layout":false
+       ,"Start New Row":true
+       ,"Column":"Automatic"
+       ,"New Column":true
+       ,"Column Span":"Automatic"
+      }
+     ,"Appearance":{
+        "Template":"Standard (54462243687995736)"
+       ,"Template Options":[
+          "#DEFAULT#"
+         ,"t-Region--scrollBody"
+        ]
+       ,"Render Components":"Above Content"
+      }
+     ,"Advanced":{
+        "Region Display Selector":true
+       ,"Exclude Title from Translation":false
+      }
+     ,"Server Cache":{
+        "Caching":"Disabled"
+      }
+     ,"Customization":{
+        "Customizable":"Not Customizable By End Users"
+      }
+     ,"Attributes":{
+        "Settings":{
+          "Output As":"HTML"
+         ,"Expand Shortcuts":false
+        }
+      }
+    }
+  ]
+}

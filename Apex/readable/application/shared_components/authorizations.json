@@ -1,0 +1,58 @@
+[
+  {
+    "id":"54555301792995935"
+   ,"Identification":{
+      "Name":"Administration Rights"
+    }
+   ,"Authorization Scheme":{
+      "Type":"Is In Role or Group"
+    }
+   ,"Settings":{
+      "Type":"Application Role"
+     ,"Name(s)":"Administrator"
+    }
+   ,"Server Cache":{
+      "Evaluation Point":"Once per Page View"
+    }
+   ,"Error":{
+      "Error Message":"Insufficient privileges, user is not an Administrator"
+    }
+  }
+ ,{
+    "id":"54555478695995935"
+   ,"Identification":{
+      "Name":"Reader Rights"
+    }
+   ,"Authorization Scheme":{
+      "Type":"PL\/SQL Function Returning Boolean"
+    }
+   ,"Settings":{
+      "PL\/SQL Function Body":"if nvl(apex_app_setting.get_value(\n   p_name =\u003E \u0027ACCESS_CONTROL_SCOPE\u0027),\u0027x\u0027) = \u0027ALL_USERS\u0027 then\n    -- allow user not in the ACL to access the application\n    return true;\nelse\n    -- require user to have at least one role\n    return apex_acl.has_user_any_roles (\n        p_application_id =\u003E :APP_ID, \n        p_user_name      =\u003E :APP_USER);\nend if;"
+    }
+   ,"Server Cache":{
+      "Evaluation Point":"Once per Session"
+    }
+   ,"Error":{
+      "Error Message":"You are not authorized to view this application, either because you have not been granted access, or your account has been locked. Please contact the application administrator."
+    }
+  }
+ ,{
+    "id":"54555485978995935"
+   ,"Identification":{
+      "Name":"Contribution Rights"
+    }
+   ,"Authorization Scheme":{
+      "Type":"Is In Role or Group"
+    }
+   ,"Settings":{
+      "Type":"Application Role"
+     ,"Name(s)":"Administrator,Contributor"
+    }
+   ,"Server Cache":{
+      "Evaluation Point":"Once per Page View"
+    }
+   ,"Error":{
+      "Error Message":"Insufficient privileges, user is not a Contributor"
+    }
+  }
+]
