@@ -34,7 +34,7 @@
     <Folder Include="Entities\Admin\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="10.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="MediatR" Version="12.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 </Project>
