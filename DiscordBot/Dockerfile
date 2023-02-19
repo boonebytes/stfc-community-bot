@@ -26,19 +26,10 @@ FROM mcr.microsoft.com/dotnet/runtime:7.0 AS base
 ARG CHROME_VERSION="81.0.4044.138-1"
 
 RUN apt-get update && apt-get -f install && apt-get -y install wget gnupg2 apt-utils
-RUN wget --no-verbose -O /tmp/chrome.deb http://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb \
-    && apt-get update \
-    && apt-get install -y /tmp/chrome.deb --no-install-recommends --allow-downgrades fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
-    && rm /tmp/chrome.deb
-
-# Add user, so we don't need --no-sandbox.
-# same layer as npm install to keep re-chowned files from using up several hundred MBs more space    
-RUN groupadd -r stfcbot_user && useradd -r -g stfcbot_user -G audio,video stfcbot_user \
-    && mkdir -p /home/stfcbot_user/Downloads \
-    && chown -R stfcbot_user:stfcbot_user /home/stfcbot_user
-
-# Run everything after as non-privileged user.
-USER stfcbot_user
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list
+RUN apt-get update \
+    && apt-get install -y google-chrome-stable --no-install-recommends --allow-downgrades fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf
 
 WORKDIR /app
 
@@ -58,7 +49,7 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 # COPY DiscordBot/*.csv ./
 
-ENV PUPPETEER_EXECUTABLE_PATH "/usr/bin/google-chrome-unstable"
+ENV PUPPETEER_EXECUTABLE_PATH "/usr/bin/google-chrome-stable"
 
 #VOLUME ["/app/Defends.csv", "/app/DiscordServers.csv", "/app/appsettings.json"]
 ENTRYPOINT ["dotnet", "DiscordBot.dll"]

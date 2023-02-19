@@ -38,6 +38,11 @@ public class InventoryModule : BaseModule
     public InventoryModule(ILogger<InventoryModule> logger, IServiceProvider serviceProvider) : base(logger, serviceProvider)
     {
     }
+
+    private decimal parseMetricToDecimal(string input)
+    {
+        return (decimal) input.ToLower().Replace("m", "M").FromMetric();
+    }
     
     [SlashCommand("update", "Update alliance inventory")]
     public async Task UpdateAsync(
@@ -92,46 +97,34 @@ public class InventoryModule : BaseModule
                 return;
             }
             
-            isogen1 = isogen1.ToLower();
-            isogen2 = isogen2.ToLower();
-            isogen3 = isogen3.ToLower();
-            cores = cores.ToLower();
-            diodes = diodes.ToLower();
-            emitters = emitters.ToLower();
-            reactors = reactors.ToLower();
-            reserves = reserves.ToLower();
-            collisionalPlasma = collisionalPlasma.ToLower();
-            magneticPlasma = magneticPlasma.ToLower();
-            superconductors = superconductors.ToLower();
-
             await allianceRepository.UpdateInventory(
                 actualEffectiveDate,
-                (decimal) isogen1.FromMetric(),
-                (decimal) isogen2.FromMetric(),
-                (decimal) isogen3.FromMetric(),
-                (decimal) cores.FromMetric(),
-                (decimal) diodes.FromMetric(),
-                (decimal) emitters.FromMetric(),
-                (decimal) reactors.FromMetric(),
-                (decimal) reserves.FromMetric(),
-                (decimal) collisionalPlasma.FromMetric(),
-                (decimal) magneticPlasma.FromMetric(),
-                (decimal) superconductors.FromMetric()
+                parseMetricToDecimal(isogen1),
+                parseMetricToDecimal(isogen2),
+                parseMetricToDecimal(isogen3),
+                parseMetricToDecimal(cores),
+                parseMetricToDecimal(diodes),
+                parseMetricToDecimal(emitters),
+                parseMetricToDecimal(reactors),
+                parseMetricToDecimal(reserves),
+                parseMetricToDecimal(collisionalPlasma),
+                parseMetricToDecimal(magneticPlasma),
+                parseMetricToDecimal(superconductors)
                 );
 
             var result = "Done! Saved values:\n"
                          + "Effective Date: " + actualEffectiveDate.ToString("yyyy-MM-dd") + "\n"
-                         + "Isogen 1: " + isogen1.FromMetric().ToString("#,##0") + "\n"
-                         + "Isogen 2: " + isogen2.FromMetric().ToString("#,##0") + "\n"
-                         + "Isogen 3: " + isogen3.FromMetric().ToString("#,##0") + "\n"
-                         + "Cores: " + cores.FromMetric().ToString("#,##0") + "\n"
-                         + "Diodes: " + diodes.FromMetric().ToString("#,##0") + "\n"
-                         + "Emitters: " + emitters.FromMetric().ToString("#,##0") + "\n"
-                         + "Reactors: " + reactors.FromMetric().ToString("#,##0") + "\n"
-                         + "Reserves: " + reserves.FromMetric().ToString("#,##0") + "\n"
-                         + "Collisional Plasma: " + collisionalPlasma.FromMetric().ToString("#,##0") + "\n"
-                         + "Magnetic Plasma: " + magneticPlasma.FromMetric().ToString("#,##0") + "\n"
-                         + "Superconductors: " + superconductors.FromMetric().ToString("#,##0");
+                         + "Isogen 1: " + parseMetricToDecimal(isogen1).ToString("#,##0") + "\n"
+                         + "Isogen 2: " + parseMetricToDecimal(isogen2).ToString("#,##0") + "\n"
+                         + "Isogen 3: " + parseMetricToDecimal(isogen3).ToString("#,##0") + "\n"
+                         + "Cores: " + parseMetricToDecimal(cores).ToString("#,##0") + "\n"
+                         + "Diodes: " + parseMetricToDecimal(diodes).ToString("#,##0") + "\n"
+                         + "Emitters: " + parseMetricToDecimal(emitters).ToString("#,##0") + "\n"
+                         + "Reactors: " + parseMetricToDecimal(reactors).ToString("#,##0") + "\n"
+                         + "Reserves: " + parseMetricToDecimal(reserves).ToString("#,##0") + "\n"
+                         + "Collisional Plasma: " + parseMetricToDecimal(collisionalPlasma).ToString("#,##0") + "\n"
+                         + "Magnetic Plasma: " + parseMetricToDecimal(magneticPlasma).ToString("#,##0") + "\n"
+                         + "Superconductors: " + parseMetricToDecimal(superconductors).ToString("#,##0");
             
             await ModifyResponseAsync(result, true);
         }
