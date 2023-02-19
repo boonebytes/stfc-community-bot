@@ -35,14 +35,6 @@ SELECT
         DELTA_CORES             CoresDelta,
         PROGENITOR_REACTORS     Reactors,
         DELTA_REACTORS          ReactorsDelta
-        -- COLLISIONAL_PLASMA
-        -- DELTA_COLLISIONAL
-        -- MAGNETIC_PLASMA
-        -- DELTA_MAGNETIC
-        -- SUBSPACE_SUPERCONDUCTOR
-        -- DELTA_SUPERC
-        -- ALLIANCE_RESERVES
-        -- DELTA_RESERVES
     FROM V_ALLIANCE_INVENTORY_DELTAS
     WHERE alliance_id = :AllianceId
     AND effective_date > sysdate - (7*12)

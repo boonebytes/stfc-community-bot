@@ -8,39 +8,39 @@
     <h1>Territory Inventory for {{Alliance}}</h1>
     <table class="table table-striped table-bordered">
         <tr>
-            <th scope="col">Effective Date</th>
-            <th scope="col">Isogen 1</th>
-            <th scope="col">&Delta; Isogen 1</th>
-            <th scope="col">Isogen 2</th>
-            <th scope="col">&Delta; Isogen 2</th>
-            <th scope="col">Isogen 3</th>
-            <th scope="col">&Delta; Isogen 3</th>
-            <th scope="col">Cores</th>
-            <th scope="col">&Delta; Cores</th>
-            <th scope="col">Diodes</th>
-            <th scope="col">&Delta; Diodes</th>
-            <th scope="col">Emitters</th>
-            <th scope="col">&Delta; Emitters</th>
-            <th scope="col">Reactors</th>
-            <th scope="col">&Delta; Reactors</th>
+            <th class="value-date" scope="col">Effective Date</th>
+            <th class="value-numeric" scope="col">Isogen 1</th>
+            <th class="value-numeric" scope="col">&Delta; Isogen 1</th>
+            <th class="value-numeric" scope="col">Isogen 2</th>
+            <th class="value-numeric" scope="col">&Delta; Isogen 2</th>
+            <th class="value-numeric" scope="col">Isogen 3</th>
+            <th class="value-numeric" scope="col">&Delta; Isogen 3</th>
+            <th class="value-numeric" scope="col">Cores</th>
+            <th class="value-numeric" scope="col">&Delta; Cores</th>
+            <th class="value-numeric" scope="col">Diodes</th>
+            <th class="value-numeric" scope="col">&Delta; Diodes</th>
+            <th class="value-numeric" scope="col">Emitters</th>
+            <th class="value-numeric" scope="col">&Delta; Emitters</th>
+            <th class="value-numeric" scope="col">Reactors</th>
+            <th class="value-numeric" scope="col">&Delta; Reactors</th>
         </tr>
         {{#each Rows}}
         <tr>
-            <th scope="row">{{this.EffectiveDate}}</th>
-            <td>{{this.Isogen1}}</td>
-            <td>{{this.Isogen1Delta}}</td>
-            <td>{{this.Isogen2}}</td>
-            <td>{{this.Isogen2Delta}}</td>
-            <td>{{this.Isogen3}}</td>
-            <td>{{this.Isogen3Delta}}</td>
-            <td>{{this.Cores}}</td>
-            <td>{{this.CoresDelta}}</td>
-            <td>{{this.Diodes}}</td>
-            <td>{{this.DiodesDelta}}</td>
-            <td>{{this.Emitters}}</td>
-            <td>{{this.EmittersDelta}}</td>
-            <td>{{this.Reactors}}</td>
-            <td>{{this.ReactorsDelta}}</td>
+            <th class="value-date" scope="row">{{this.EffectiveDate}}</th>
+            <td class="value-numeric">{{this.Isogen1}}</td>
+            <td class="value-numeric">{{this.Isogen1Delta}}</td>
+            <td class="value-numeric">{{this.Isogen2}}</td>
+            <td class="value-numeric">{{this.Isogen2Delta}}</td>
+            <td class="value-numeric">{{this.Isogen3}}</td>
+            <td class="value-numeric">{{this.Isogen3Delta}}</td>
+            <td class="value-numeric">{{this.Cores}}</td>
+            <td class="value-numeric">{{this.CoresDelta}}</td>
+            <td class="value-numeric">{{this.Diodes}}</td>
+            <td class="value-numeric">{{this.DiodesDelta}}</td>
+            <td class="value-numeric">{{this.Emitters}}</td>
+            <td class="value-numeric">{{this.EmittersDelta}}</td>
+            <td class="value-numeric">{{this.Reactors}}</td>
+            <td class="value-numeric">{{this.ReactorsDelta}}</td>
         </tr>
         {{/each}}
     </table>

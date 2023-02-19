@@ -25,6 +25,7 @@ namespace DiscordBot.Html;
 public class Generator
 {
     private static bool _initComplete = false;
+    private static SemaphoreSlim _fetchLock = new(1, 1);
     private static HandlebarsTemplate<object, object> _territoryInventoryTemplate = null;
     private static HandlebarsTemplate<object, object> _starbaseInventoryTemplate = null;
 
@@ -68,13 +69,34 @@ public class Generator
 
     public static async Task<byte[]> ConvertToImage(string html, int width = 800)
     {
-        //lock { }
-        using var browserFetcher = new BrowserFetcher();
-        await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+#if DEBUG
+        await _fetchLock.WaitAsync();
+        try
+        {
+            using var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+        }
+        finally
+        {
+            _fetchLock.Release();
+        }
+
         var browser = await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true
         });
+#else
+        // This assumes that all release builds are executed in Docker.
+        // Note: The "no-sandbox" is not any more-safe in Docker; only
+        // use that argument if you trust your HTML source!
+        
+        var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+        {
+            Headless = true,
+            Args = new[] {"--no-sandbox"}
+        });
+#endif        
+        
         var page = await browser.NewPageAsync();
         await page.SetViewportAsync(new ViewPortOptions
         {
