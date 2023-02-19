@@ -14,9 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DiscordBot.Domain.Seedwork;
+using DiscordBot.Domain.Summaries;
 
 namespace DiscordBot.Domain.Entities.Alliances
 {
@@ -46,5 +48,15 @@ namespace DiscordBot.Domain.Entities.Alliances
         Alliance FlagSchedulePosted(Alliance alliance);
 
         Task InitPostSchedule();
+
+        Task<List<TerritoryInventory>> GetTerritoryInventory(Alliance alliance);
+        
+        Task<List<StarbaseInventory>> GetStarbaseInventory(Alliance alliance);
+
+        Task UpdateInventory(
+            DateTime effectiveDate,
+            decimal isogen1, decimal isogen2, decimal isogen3, decimal cores, decimal diodes, decimal emitters, decimal reactors,
+            decimal reserves, decimal collisionalPlasma, decimal magneticPlasma, decimal superconductors
+        );
     }
 }

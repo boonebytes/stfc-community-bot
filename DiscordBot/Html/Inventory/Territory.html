@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> header}}
+    <title>Territory Inventory for {{Alliance}}</title>
+</head>
+<body>
+    <h1>Territory Inventory for {{Alliance}}</h1>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th scope="col">Effective Date</th>
+            <th scope="col">Isogen 1</th>
+            <th scope="col">&Delta; Isogen 1</th>
+            <th scope="col">Isogen 2</th>
+            <th scope="col">&Delta; Isogen 2</th>
+            <th scope="col">Isogen 3</th>
+            <th scope="col">&Delta; Isogen 3</th>
+            <th scope="col">Cores</th>
+            <th scope="col">&Delta; Cores</th>
+            <th scope="col">Diodes</th>
+            <th scope="col">&Delta; Diodes</th>
+            <th scope="col">Emitters</th>
+            <th scope="col">&Delta; Emitters</th>
+            <th scope="col">Reactors</th>
+            <th scope="col">&Delta; Reactors</th>
+        </tr>
+        {{#each Rows}}
+        <tr>
+            <th scope="row">{{this.EffectiveDate}}</th>
+            <td>{{this.Isogen1}}</td>
+            <td>{{this.Isogen1Delta}}</td>
+            <td>{{this.Isogen2}}</td>
+            <td>{{this.Isogen2Delta}}</td>
+            <td>{{this.Isogen3}}</td>
+            <td>{{this.Isogen3Delta}}</td>
+            <td>{{this.Cores}}</td>
+            <td>{{this.CoresDelta}}</td>
+            <td>{{this.Diodes}}</td>
+            <td>{{this.DiodesDelta}}</td>
+            <td>{{this.Emitters}}</td>
+            <td>{{this.EmittersDelta}}</td>
+            <td>{{this.Reactors}}</td>
+            <td>{{this.ReactorsDelta}}</td>
+        </tr>
+        {{/each}}
+    </table>
+</body>
+</html>

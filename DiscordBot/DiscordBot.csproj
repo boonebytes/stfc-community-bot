@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <UserSecretsId>dotnet-DiscordBot-3B7CAA54-CBB8-4404-9573-4E066DA0E483</UserSecretsId>
     <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -13,12 +14,15 @@
     <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="12.0.0" />
+    <PackageReference Include="Handlebars.Net" Version="2.1.3" />
+    <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Discord.Net" Version="3.9.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="PuppeteerSharp" Version="9.0.2" />
     <PackageReference Include="Quartz" Version="3.6.0" />
     <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.6.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.6.0" />
@@ -49,5 +53,13 @@
   <ItemGroup>
     <Compile Remove="Components\Service.cs" />
     <Compile Remove="Modules\StfcModule.Service.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Html\Inventory\Starbase.html" />
+    <EmbeddedResource Include="Html\Inventory\Starbase.html" />
+    <None Remove="Html\Inventory\Territory.html" />
+    <EmbeddedResource Include="Html\Inventory\Territory.html" />
+    <None Remove="Html\_header.html" />
+    <EmbeddedResource Include="Html\_header.html" />
   </ItemGroup>
 </Project>

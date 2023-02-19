@@ -24,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
-    <Folder Include="Entities\Account" />
     <Folder Include="Shared\" />
     <Folder Include="Entities\Zones\" />
     <Folder Include="Entities\Alliances\" />
@@ -34,7 +33,7 @@
     <Folder Include="Entities\Admin\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="12.0.0" />
+    <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 </Project>

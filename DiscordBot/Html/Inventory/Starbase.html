@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> header}}
+    <title>Starbase Inventory for {{Alliance}}</title>
+</head>
+<body>
+    <h1>Starbase Inventory for {{Alliance}}</h1>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th scope="col">Effective Date</th>
+            <th scope="col">Alliance Reserves</th>
+            <th scope="col">&Delta; Reserves</th>
+            <th scope="col">Collisional Plasma</th>
+            <th scope="col">&Delta; Collisional Plasma</th>
+            <th scope="col">Magnetic Plasma</th>
+            <th scope="col">&Delta; Magnetic Plasma</th>
+            <th scope="col">Superconductors</th>
+            <th scope="col">&Delta; Superconductors</th>
+        </tr>
+        {{#each Rows}}
+        <tr>
+            <th scope="row">{{this.EffectiveDate}}</th>
+            <td>{{this.Reserves}}</td>
+            <td>{{this.ReservesDelta}}</td>
+            <td>{{this.CollisionalPlasma}}</td>
+            <td>{{this.CollisionalPlasmaDelta}}</td>
+            <td>{{this.MagneticPlasma}}</td>
+            <td>{{this.MagneticPlasmaDelta}}</td>
+            <td>{{this.Superconductors}}</td>
+            <td>{{this.SuperconductorsDelta}}</td>
+        </tr>
+        {{/each}}
+    </table>
+</body>
+</html>
