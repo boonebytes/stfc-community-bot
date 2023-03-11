@@ -17,6 +17,7 @@ limitations under the License.
 using System.Text;
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using DiscordBot.Domain.Entities.Alliances;
 using DiscordBot.Domain.Entities.Zones;
@@ -407,9 +408,17 @@ public class Schedule
                 .ToList();
             if (pinnedNotifications.Any())
             {
-                foreach (Discord.Rest.RestSystemMessage msg in pinnedNotifications)
+                foreach (IMessage msg in pinnedNotifications)
                 {
-                    await msg.DeleteAsync();
+                    switch (msg)
+                    {
+                        case RestSystemMessage restMessage:
+                            await restMessage.DeleteAsync();
+                            break;
+                        case SocketSystemMessage socketMessage:
+                            await socketMessage.DeleteAsync();
+                            break;
+                    }
                 }
             }
         }
@@ -429,6 +438,7 @@ public class Schedule
             {
                 await TryUpdateDayMessage(channelMessages, alliance, currentDay);
                 currentDay += 1;
+                Thread.Sleep(500);
             }
         }
         catch (Exception ex)
