@@ -81,9 +81,117 @@ public class AllianceModule : BaseModule
         }
     }
     
+    
+    
+    [SlashCommand("add", "Bot Admin - Adds a new alliance")]
+    [RequireOwner(Group = "Permission")]
+    [RequireAdminDelegate(Group = "Permission")]
+    public async Task AllianceAddAsync(
+        [Summary("Acronym", "Acronym of the new alliance")] string acronym,
+        [Summary("Name", "Name of the new alliance")] string name)
+    {
+        using var serviceScope = ServiceProvider.CreateScope();
+        await this.DeferAsync(ephemeral: true);
+        try
+        {
+            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+
+            if (Context.Channel is IPrivateChannel)
+            {
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(null);
+            }
+            else
+            {
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            }
+
+            var alliance = new Alliance();
+            alliance.Rename(acronym, name);
+            try
+            {
+                allianceRepository.Add(alliance);
+                await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+                await this.ModifyResponseAsync(
+                    "Done!",
+                    ephemeral: true);
+                return;
+            }
+            catch (Exception ex)
+            {
+                await this.ModifyResponseAsync(
+                    "The alliance could not be added. Make sure one does not already exist with the same name or acronym.",
+                    ephemeral: true);
+                Logger.LogError(ex, "An unexpected error has occured while trying to run AllianceAddAsync");
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            await ModifyResponseAsync(
+                "An unexpected error has occured.",
+                ephemeral: true);
+            Logger.LogError(ex, "An unexpected error has occured while trying to run AllianceAddAsync");
+        }
+    }
+    
+    [SlashCommand("rename", "Bot Admin - Renames an alliance")]
+    [RequireOwner(Group = "Permission")]
+    [RequireAdminDelegate(Group = "Permission")]
+    public async Task AllianceRenameAsync(
+        [Summary("OldName", "Old name or acronym")] string oldName,
+        [Summary("NewName", "New acronym for the alliance")] string acronym,
+        [Summary("NewAcronym", "New name for the alliance")] string name = "")
+    {
+        using var serviceScope = ServiceProvider.CreateScope();
+        await this.DeferAsync(ephemeral: true);
+        try
+        {
+            var allianceRepository = serviceScope.ServiceProvider.GetService<IAllianceRepository>();
+
+            if (Context.Channel is IPrivateChannel)
+            {
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(null);
+            }
+            else
+            {
+                var thisAlliance = allianceRepository.FindFromGuildId(Context.Guild.Id);
+                serviceScope.ServiceProvider.GetService<RequestContext>().Init(thisAlliance.Id);
+            }
+
+            var alliance = await allianceRepository.GetByNameOrAcronymAsync(oldName);
+            if (alliance == null)
+            {
+                await this.ModifyResponseAsync(
+                    "Error: Old alliance not found.",
+                    ephemeral: true);
+                return;
+            }
+
+            alliance.Rename(acronym, name);
+            allianceRepository.Update(alliance);
+            await allianceRepository.UnitOfWork.SaveEntitiesAsync();
+            await this.ModifyResponseAsync(
+                "Done!",
+                ephemeral: true);
+            return;
+        }
+        catch (Exception ex)
+        {
+            await this.ModifyResponseAsync(
+                "The alliance could not be renamed.",
+                ephemeral: true);
+            Logger.LogError(ex, "An unexpected error has occured while trying to run AllianceAddAsync");
+            return;
+        }
+    }
+    
+    
+    
     [SlashCommand("services", "Show alliance service costs")]
     [RequireUserPermission(GuildPermission.SendMessages, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
+    [RequireAdminDelegate(Group = "Permission")]
     public async Task ServicesShowAsync()
     {
         if (Context.Channel is IPrivateChannel channel)

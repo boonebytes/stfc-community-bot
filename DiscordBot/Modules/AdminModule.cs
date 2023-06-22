@@ -39,6 +39,7 @@ public class AdminModule : BaseModule
     [SlashCommand("schedule-message", "Admin - Schedule a message to be posted at a specific date/time")]
     [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
+    [RequireAdminDelegate(Group = "Permission")]
     public async Task ScheduledMessageAsync(
         [Summary("Timezone", "Source timezone")] [Autocomplete(typeof(TimeZones))]  string timezone,
         [Summary("Timestamp", "Date/Time to post the message")] DateTime dateTime,
@@ -197,6 +198,7 @@ public class AdminModule : BaseModule
     [SlashCommand("get-role", "Get information about a specific role")]
     [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
+    [RequireAdminDelegate(Group = "Permission")]
     public async Task GetRoleId([Summary("Role")] IRole role)
     {
         if (Context.Channel is IPrivateChannel channel)
@@ -238,6 +240,7 @@ public class AdminModule : BaseModule
     [SlashCommand("config", "Admin - Show or set a configuration variable for this Discord server")]
     [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
+    [RequireAdminDelegate(Group = "Permission")]
     public async Task ConfigAsync(
         [Summary("Name", "Name of variable to show or set")][Autocomplete(typeof(VariableNames))] string name,
         [Summary("Value","If provided, the new value for the variable. When applicable, set to None or -1 to clear")] string value = "")

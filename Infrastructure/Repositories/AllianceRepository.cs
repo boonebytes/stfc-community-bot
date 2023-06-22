@@ -42,6 +42,9 @@ namespace DiscordBot.Infrastructure.Repositories
         {
             if (alliance.IsTransient())
             {
+                if (Context.Alliances.Any(a => a.Acronym.ToUpper() == alliance.Acronym.ToUpper()
+                                               || a.Name.ToUpper() == alliance.Name.ToUpper()))
+                    throw new DuplicateNameException();
                 return Context.Alliances
                     .Add(alliance)
                     .Entity;

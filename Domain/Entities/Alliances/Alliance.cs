@@ -50,6 +50,13 @@ namespace DiscordBot.Domain.Entities.Alliances
         public virtual bool? DefendBroadcastPingForLowRisk { get; protected set; }
         public virtual ulong? AlliedBroadcastRole { get; protected set; }
 
+        public void Rename(string acronym, string name)
+        {
+            Acronym = acronym;
+            Name = name;
+            AddAllianceChangedDomainEvent();
+        }
+        
         public void SetDefendBroadcastLeadTime(int? value)
         {
             DefendBroadcastLeadTime = value;

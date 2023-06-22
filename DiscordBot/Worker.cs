@@ -45,6 +45,16 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        /*
+        TaskScheduler.UnobservedTaskException += (s, e) =>
+        {
+            _logger.LogError(e.Exception, "Unobserved Task Exception");
+            //Console.WriteLine($"Unobserved Task Exception : {e.Exception.Message}");
+            //to actually observe the task, uncomment the below line of code
+            //e.SetObserved();
+        };
+        */
+        
         if (_appConfig.RunInit && !_appConfig.RunScheduler)
         {
             using var thisServiceScope = _serviceProvider.CreateScope();
@@ -108,6 +118,8 @@ public class Worker : BackgroundService
             return Task.CompletedTask;
         };
 
+        //await Task.Delay(10000);
+        //GC.Collect(2);
         await Task.Delay(-1, stoppingToken);
 
         await _client.StopAsync();

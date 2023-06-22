@@ -33,8 +33,9 @@ public class ZoneModule : BaseModule
     {
     }
     
-    [SlashCommand("set", "Bot Owner - Create or update a zone")]
-    [RequireOwner]
+    [SlashCommand("set", "Bot Admin - Create or update a zone")]
+    [RequireOwner(Group = "Permission")]
+    [RequireAdminDelegate(Group = "Permission")]
     public async Task ZoneCreateUpdateAsync(
         [Summary("Zone", "Zone Name")][Autocomplete(typeof(ZoneNames))] string name,
         [Summary("Owner", "Current owner, or None if unclaimed")] string owner,
